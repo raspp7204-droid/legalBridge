@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
+import { blockLawyers } from "@/lib/auth";
 import { LawyerCard } from "@/components/lawyer-card";
 import { FilterRail } from "@/components/filter-rail";
 import { FilterSheet } from "@/components/filter-sheet";
@@ -46,6 +47,8 @@ export default async function LawyersPage({
 }: {
   searchParams: Promise<RawSearchParams>;
 }) {
+  // Advocates do not browse or book advocates (lib/auth.ts).
+  await blockLawyers();
   const sp = await searchParams;
 
   const categorySlugs = toList(sp.category);

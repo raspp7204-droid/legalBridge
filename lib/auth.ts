@@ -161,6 +161,20 @@ export async function requireLawyerProfile() {
   return profile;
 }
 
+/**
+ * The client-side of the marketplace — browsing and booking advocates — is
+ * not the advocate's product. A signed-in advocate landing on any of it goes
+ * to their own dashboard instead.
+ */
+export async function blockLawyers(to = "/lawyer") {
+  const { userId } = await auth();
+  if (!userId) return null;
+
+  const user = await db.user.findUnique({ where: { clerkId: userId } });
+  if (user?.role === "LAWYER") redirect(to);
+  return user;
+}
+
 export async function requireAdmin() {
   const user = await requireUser("/sign-in");
   if (user.role !== "ADMIN") redirect("/");

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { blockLawyers } from "@/lib/auth";
 import { CategoryTile } from "@/components/category-tile";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -10,6 +11,8 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Legal matters — LawNest" };
 
 export default async function CategoriesPage() {
+  // Advocates do not browse or book advocates (lib/auth.ts).
+  await blockLawyers();
   const categories = await db.category.findMany({
     orderBy: { name: "asc" },
     include: {

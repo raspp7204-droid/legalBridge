@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Scale } from "lucide-react";
 import { Engraving } from "@/components/engraving";
+import { getDbUser } from "@/lib/auth";
 
 const COLUMNS = [
   {
@@ -42,12 +43,50 @@ const COLUMNS = [
   },
 ];
 
-export function SiteFooter() {
+/* An advocate has no use for the booking funnel, so their footer is their own
+   product: chambers links, then the platform's terms. */
+const LAWYER_COLUMNS = [
+  {
+    title: "My chambers",
+    links: [
+      { href: "/lawyer", label: "Dashboard" },
+      { href: "/lawyer/inbox", label: "Consultation inbox" },
+      { href: "/lawyer/profile", label: "Edit my profile" },
+    ],
+  },
+  {
+    title: "Earnings",
+    links: [
+      { href: "/lawyer", label: "Payouts & balance" },
+      { href: "/lawyer", label: "Consultation history" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { href: "/privacy", label: "Privacy policy" },
+      { href: "/", label: "About LawNest" },
+    ],
+  },
+];
+
+export async function SiteFooter() {
+  const user = await getDbUser();
+  const columns = user?.role === "LAWYER" ? LAWYER_COLUMNS : COLUMNS;
+  const blurb =
+    user?.role === "LAWYER"
+      ? "You keep 80% of every consultation fee. Clients see the split before they pay, so nobody negotiates in the dark."
+      : "Verified advocates across India at a fixed fee. You see the price, and the split, before you pay.";
+
   return (
     <footer className="relative mt-24 overflow-hidden border-t border-rule bg-surface">
       <Engraving side="left" />
       <div className="container relative py-14">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+        <div
+          className={`grid gap-10 sm:grid-cols-2 ${
+            columns.length === 3 ? "lg:grid-cols-4" : "lg:grid-cols-5"
+          }`}
+        >
           <div>
             <div className="flex items-center gap-2">
               <span className="flex size-8 items-center justify-center rounded-lg border border-rule bg-surface-2">
@@ -58,12 +97,11 @@ export function SiteFooter() {
               </span>
             </div>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate">
-              Verified advocates across India at a fixed fee. You see the price,
-              and the split, before you pay.
+              {blurb}
             </p>
           </div>
 
-          {COLUMNS.map((col) => (
+          {columns.map((col) => (
             <div key={col.title}>
               <p className="mono-label text-muted">{col.title}</p>
               <ul className="mt-4 space-y-2.5">

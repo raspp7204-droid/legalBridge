@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { IdCard, Mail, ArrowRight } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { blockLawyers, requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { formatRupees } from "@/lib/money";
 
@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "My account — LawNest" };
 
 export default async function AccountPage() {
+  await blockLawyers("/lawyer/profile");
   const user = await requireUser();
 
   const [count, spend] = await Promise.all([

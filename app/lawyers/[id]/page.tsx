@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Star, MapPin, Scale, Languages } from "lucide-react";
 import { db } from "@/lib/db";
+import { blockLawyers } from "@/lib/auth";
 import { FeeBreakdown } from "@/components/fee-breakdown";
 import { SlotPicker } from "@/components/slot-picker";
 import { VerifiedBadge } from "@/components/verified-badge";
@@ -15,6 +16,8 @@ export default async function LawyerProfilePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  // Advocates do not browse or book advocates (lib/auth.ts).
+  await blockLawyers();
   const { id } = await params;
 
   const lawyer = await db.lawyerProfile.findUnique({

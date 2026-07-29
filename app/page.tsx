@@ -8,6 +8,7 @@ import {
   Quote,
 } from "lucide-react";
 import { db } from "@/lib/db";
+import { blockLawyers } from "@/lib/auth";
 import { Starfield } from "@/components/starfield";
 import { Engraving } from "@/components/engraving";
 import { LiveStrip } from "@/components/live-strip";
@@ -72,6 +73,8 @@ const PRESS = [
 ];
 
 export default async function Home() {
+  // Advocates do not browse or book advocates (lib/auth.ts).
+  await blockLawyers();
   const [categories, featured, onlineCount] = await Promise.all([
     db.category.findMany({
       orderBy: { name: "asc" },
