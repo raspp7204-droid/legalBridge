@@ -5,81 +5,99 @@ matter, compare advocates at a fixed fee with the split shown before you pay,
 book a slot, pay by UPI, then chat and video-consult.
 
 **Stack: Next.js 15 (App Router) + TypeScript + Tailwind v4 + Prisma +
-Postgres.** There is no Vite in this project and none can be added — `next
-build` is the only build.
+Postgres + Clerk.** There is no Vite in this project and none can be added —
+`next build` is the only build.
+
+What is real: authentication (Clerk), the consultation chat, the advocate
+dashboard, and paid placement. What is deliberately mock: the UPI payment
+confirmation and the video room.
 
 ---
 
-## Run the demo locally (this is the plan for the pitch)
+## Run it locally
 
 ```bash
 pnpm install
 pnpm db:up          # local embedded Postgres on :5433 — skip if DATABASE_URL points at Neon
-pnpm db:reset       # prisma db push + seed (advocates, slots, the pre-seeded paid chat)
-pnpm build
-pnpm start          # production build on http://localhost:3000
+pnpm db:reset       # schema + seed (8 matters, 18 catalog advocates, 3 live placements)
+pnpm dev            # or: pnpm build && pnpm start
 ```
 
-Use `pnpm start`, not `pnpm dev` — the production build is faster and quieter
-on stage.
+`pnpm db:reset` seeds **no** users, bookings or messages. Real people arrive
+through Clerk sign-up; chat threads start empty and fill only with real
+messages.
 
-### Two-window chat demo
+### Accounts
 
-The chat is a polled `Message` table: both sides read and write the same
-booking thread, refreshed every 2 seconds. To show it live you need two
-*separate* cookie jars — one normal window and one incognito window (or two
-browser profiles).
+| Who | Sign up at | Becomes |
+|---|---|---|
+| Client | `/sign-up` | `User(role=CLIENT)` + a LawNest ID (`LB-2026-00001`) |
+| Advocate | `/lawyer/sign-up` | `User(role=LAWYER)` + a `PENDING` profile to complete |
+| Admin | any sign-up with an email listed in `ADMIN_EMAILS` | `User(role=ADMIN)` |
 
-1. **Window A (client)** — open `http://localhost:3000/login`, sign in as
-   **Aarav Mehta**, then open the consultation from `/me`.
-2. **Window B (advocate, incognito)** — open
-   `http://localhost:3000/lawyer/login`, sign in as **Adv. Meera Nair**, then
-   open the same thread from `/lawyer/inbox`.
-3. Type in either window. The message appears in the other within ~2s, both
-   directions.
+Verification is a one-time code sent to the email address — Clerk's built-in
+email code. No SMS, and we never collect Aadhaar, PAN or any government ID.
 
-Sign-in is demo-only: picking a name sets the `lb_session` cookie to
-`ROLE:userId`. No passwords, by design.
+A new advocate completes `/lawyer/profile` (court, years, enrolment number,
+bio, practice areas), then an admin approves them at `/admin/verification`,
+which sets their tier and fee and puts them in the public listing.
 
-### The 90-second walkthrough
+### Two-window chat check
 
-Landing → **Property & land** → filter to Bengaluru → open a HIGH-tier
-advocate → pause on the fee breakdown → pick a slot → UPI pay → confirmed →
-open chat (already has a thread) → join video room → switch to Admin →
-approve a pending advocate → open the assistant and ask a question in Hindi.
+1. Window A (normal): sign up/in as a client, book and pay for the advocate,
+   open the consultation.
+2. Window B (incognito): sign in as that advocate, open the same thread from
+   `/lawyer/inbox`.
+3. Messages appear in the other window within ~2s, both directions, and
+   survive a refresh.
 
 ---
 
 ## Environment
 
-`.env`
-
 ```
-DATABASE_URL=            # local embedded Postgres, or a Neon *pooled* string
-NEXT_PUBLIC_UPI_VPA=     # the VPA the payment QR pays to
-NEXT_PUBLIC_UPI_NAME=    # payee name shown in the UPI app
-```
-
-`.env.local`
-
-```
-DEEPSEEK_API_KEY=        # the AI assistant; everything else works without it
+DATABASE_URL=                        # Neon pooled connection string
+DIRECT_URL=                          # Neon direct string (prisma db push / migrate)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=   # Clerk
+CLERK_SECRET_KEY=                    # Clerk
+ADMIN_EMAILS=                        # comma-separated; these become ADMIN
+DEEPSEEK_API_KEY=                    # AI assistant (optional)
+NEXT_PUBLIC_UPI_VPA=                 # mock UPI QR payee
+NEXT_PUBLIC_UPI_NAME=
 ```
 
 ---
 
-## Optional: deploy to Vercel
+## Deploy to Vercel
 
-1. Push to GitHub and import the repo in Vercel (framework preset: Next.js —
-   it is detected automatically).
-2. Set `DATABASE_URL` (Neon **pooled** connection string), `DEEPSEEK_API_KEY`,
-   `NEXT_PUBLIC_UPI_VPA`, `NEXT_PUBLIC_UPI_NAME` in the project's env vars.
-3. Deploy, then seed the Neon database once from your machine:
-   `DATABASE_URL=<neon-pooled> pnpm db:reset`.
+1. Push to GitHub, import the repo in Vercel (framework preset: Next.js).
+2. Add every variable above to **Production** and **Preview**. Use the Clerk
+   **production** instance keys for Production.
+3. Push the schema to Neon once, from your machine:
+   `DATABASE_URL=<pooled> DIRECT_URL=<direct> pnpm db:deploy && pnpm db:seed`
+4. In Clerk: add the Vercel domain to the production instance, enable
+   **Email address** + **Password**, and set the verification strategy to
+   **Email verification code**.
+5. Deploy. `postinstall` runs `prisma generate`, so the build has a client.
 
-The polled chat works on serverless because the route handler is
-`force-dynamic` with `no-store`, the client fetches relative URLs, and Prisma
-is a `globalThis` singleton.
+Live checks: client sign-up with the email code → book → pay → chat;
+advocate sign-in → `/lawyer/inbox` → reply; messages both ways. If chat looks
+frozen in production it is always one of: route handler not `force-dynamic`,
+a poll without `cache: 'no-store'`, an absolute fetch URL, or the non-pooled
+Neon string.
+
+---
+
+## Revenue: paid placement
+
+Advocates can pay to rank above organic results. Basic ₹999/mo, Featured
+₹2,499/mo, Spotlight ₹4,999/mo. `/admin/promotions` toggles a campaign live
+and shows promotion MRR, active campaigns and slots filled.
+
+Rules that keep it honest: every promoted card carries a `PROMOTED` label,
+promoted advocates appear **only** when they match the client's active
+filters, each appears once, and an expired `promotedUntil` silently falls
+back to organic.
 
 ---
 
@@ -87,9 +105,14 @@ is a `globalThis` singleton.
 
 | Command | What it does |
 |---|---|
-| `pnpm db:up` | starts the local embedded Postgres on port 5433 |
-| `pnpm db:push` | pushes `prisma/schema.prisma` to the database |
-| `pnpm db:seed` | seeds categories, 18 advocates, slots, the demo booking |
-| `pnpm db:reset` | push + seed in one command — run this before the pitch |
+| `pnpm db:up` | local embedded Postgres on port 5433 |
+| `pnpm db:push` / `pnpm db:deploy` | push `prisma/schema.prisma` to the database |
+| `pnpm db:seed` | categories, catalog advocates, slots, launch placements |
+| `pnpm db:reset` | push + seed in one command |
 | `pnpm db:studio` | Prisma Studio |
 | `pnpm build` / `pnpm start` | production build and server |
+
+LawNest is a technology platform, not a law firm, and does not provide legal
+advice. Paid ranking and the fee model sit in the Bar Council of India
+advertising/solicitation grey area — get legal sign-off before charging real
+advocates or pointing real users at it.
