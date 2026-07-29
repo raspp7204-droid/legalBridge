@@ -1,9 +1,9 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CalendarDays, FileText, Timer } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { ChatThread } from "@/components/chat-thread";
+import { Avatar } from "@/components/avatar";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatSlotFull } from "@/lib/lawyers";
 import { formatRupees } from "@/lib/money";
@@ -86,21 +86,12 @@ export default async function ConsultPage({
             {as === "LAWYER" ? "Your client" : "Your advocate"}
           </p>
           <div className="mt-3 flex items-center gap-3">
-            <span
-              className={`shrink-0 rounded-full p-[2px] ${
-                as === "LAWYER" || lawyer.online ? "bg-verified" : "bg-rule"
-              }`}
-            >
-              <Image
-                src={
-                  as === "LAWYER" ? booking.client.avatar : lawyer.user.avatar
-                }
-                alt=""
-                width={44}
-                height={44}
-                className="size-11 rounded-full object-cover"
-              />
-            </span>
+            <Avatar
+              src={as === "LAWYER" ? booking.client.avatar : lawyer.user.avatar}
+              name={as === "LAWYER" ? booking.client.name : lawyer.user.name}
+              size={44}
+              ring={as === "LAWYER" || lawyer.online ? "online" : "quiet"}
+            />
             <div className="min-w-0">
               <p className="font-display truncate text-[0.95rem] leading-tight">
                 {as === "LAWYER" ? booking.client.name : lawyer.user.name}

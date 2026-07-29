@@ -3,6 +3,28 @@ import { Scale } from "lucide-react";
 import { Engraving } from "@/components/engraving";
 import { getDbUser } from "@/lib/auth";
 
+const INSTAGRAM = "https://www.instagram.com/lawnest_";
+
+/** Instagram glyph as line art — lucide v1 no longer ships brand icons. */
+function InstagramMark({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 const COLUMNS = [
   {
     title: "Legal matters",
@@ -35,6 +57,7 @@ const COLUMNS = [
     title: "Company",
     links: [
       { href: "/privacy", label: "Privacy policy" },
+      { href: INSTAGRAM, label: "Instagram" },
       { href: "/admin", label: "Platform admin" },
       { href: "/admin/verification", label: "Verification queue" },
       { href: "/lawyers?online=1", label: "Advocates online" },
@@ -65,6 +88,7 @@ const LAWYER_COLUMNS = [
     title: "Company",
     links: [
       { href: "/privacy", label: "Privacy policy" },
+      { href: INSTAGRAM, label: "Instagram" },
       { href: "/", label: "About LawNest" },
     ],
   },
@@ -99,22 +123,45 @@ export async function SiteFooter() {
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate">
               {blurb}
             </p>
+
+            <a
+              href={INSTAGRAM}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mono-label mt-5 inline-flex items-center gap-2 rounded-full border border-rule bg-surface-2 px-3 py-2 text-slate transition-colors hover:border-accent/40 hover:text-accent"
+            >
+              <InstagramMark className="size-4" />
+              @lawnest_
+            </a>
           </div>
 
           {columns.map((col) => (
             <div key={col.title}>
               <p className="mono-label text-muted">{col.title}</p>
               <ul className="mt-4 space-y-2.5">
-                {col.links.map((l) => (
-                  <li key={l.href + l.label}>
-                    <Link
-                      href={l.href}
-                      className="text-sm text-slate transition-colors hover:text-accent"
-                    >
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
+                {col.links.map((l) =>
+                  l.href.startsWith("http") ? (
+                    <li key={l.href + l.label}>
+                      <a
+                        href={l.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-slate transition-colors hover:text-accent"
+                      >
+                        {l.label}
+                      </a>
+                    </li>
+                  ) : (
+                    <li key={l.href + l.label}>
+                      <Link
+                        href={l.href}
+                        className="text-sm text-slate transition-colors hover:text-accent"
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  ),
+                )}
               </ul>
             </div>
           ))}

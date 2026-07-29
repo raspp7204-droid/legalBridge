@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   Video,
@@ -9,8 +8,13 @@ import {
   ShieldCheck,
   Loader2,
   RotateCw,
+  CheckCheck,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import type { SessionRole } from "@/lib/roles";
+import { Avatar } from "@/components/avatar";
+import { playReceive, playSend } from "@/lib/chat-sounds";
 
 type ChatMessage = {
   id: string;
@@ -26,6 +30,8 @@ type Pending = {
   createdAt: string;
   failed: boolean;
 };
+
+const MUTE_KEY = "lawnest.chat.muted";
 
 function timeLabel(iso: string) {
   return new Intl.DateTimeFormat("en-IN", {
@@ -73,13 +79,37 @@ export function ChatThread({
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [pending, setPending] = useState<Pending[]>([]);
   const [input, setInput] = useState("");
+  const [muted, setMuted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const pinnedToBottom = useRef(true);
+  const mutedRef = useRef(false);
+  // Ids we've already rendered — anything new from the other side chimes.
+  const seen = useRef(new Set(initialMessages.map((m) => m.id)));
 
   const myRole: "CLIENT" | "LAWYER" = as === "LAWYER" ? "LAWYER" : "CLIENT";
 
+  const myName = myRole === "LAWYER" ? lawyerName : clientName;
+  const myAvatar = myRole === "LAWYER" ? lawyerAvatar : clientAvatar;
+  const otherName = myRole === "LAWYER" ? clientName : lawyerName;
+  const otherAvatar = myRole === "LAWYER" ? clientAvatar : lawyerAvatar;
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(MUTE_KEY) === "1";
+    setMuted(stored);
+    mutedRef.current = stored;
+  }, []);
+
+  function toggleMute() {
+    setMuted((m) => {
+      const next = !m;
+      mutedRef.current = next;
+      window.localStorage.setItem(MUTE_KEY, next ? "1" : "0");
+      return next;
+    });
+  }
+
   // Poll every 2000ms with no-store — relative URL so it works on Vercel too
-  // (CHAT-AND-POLISH.md Task 2).
+  // (LAUNCH.md Task 2).
   useEffect(() => {
     let alive = true;
     const tick = async () => {
@@ -91,6 +121,13 @@ export function ChatThread({
         if (!res.ok || !alive) return;
         const data = (await res.json()) as { messages: ChatMessage[] };
         if (!alive) return;
+
+        const fresh = data.messages.filter((m) => !seen.current.has(m.id));
+        for (const m of fresh) seen.current.add(m.id);
+        if (fresh.some((m) => m.senderRole !== myRole) && !mutedRef.current) {
+          playReceive();
+        }
+
         setMessages((prev) => mergeById(prev, data.messages));
       } catch {
         /* transient network blip — next tick retries */
@@ -102,7 +139,7 @@ export function ChatThread({
       alive = false;
       clearInterval(timer);
     };
-  }, [bookingId]);
+  }, [bookingId, myRole]);
 
   useEffect(() => {
     if (pinnedToBottom.current) {
@@ -125,8 +162,10 @@ export function ChatThread({
         });
         if (!res.ok) throw new Error(String(res.status));
         const data = (await res.json()) as { message: ChatMessage };
+        seen.current.add(data.message.id);
         setMessages((prev) => mergeById(prev, [data.message]));
         setPending((p) => p.filter((x) => x.tmpId !== tmpId));
+        if (!mutedRef.current) playSend();
       } catch {
         setPending((p) =>
           p.map((x) => (x.tmpId === tmpId ? { ...x, failed: true } : x)),
@@ -149,30 +188,44 @@ export function ChatThread({
     void deliver(tmpId, text);
   }
 
-  const otherName = as === "LAWYER" ? clientName : lawyerName;
-  const otherAvatar = as === "LAWYER" ? clientAvatar : lawyerAvatar;
-
-  const bubbleMine =
-    "rounded-br-sm border border-accent/25 bg-accent-bg";
-  const bubbleTheirs = "rounded-bl-sm border border-rule bg-surface-2";
+  /* Sent and received must never be mistakable for each other, so they differ
+     on four axes at once: side, fill, corner tail, and the name above them.
+     Mine is a solid oxblood bubble in white type; theirs is white paper. */
+  const rows: {
+    key: string;
+    mine: boolean;
+    body: string;
+    time: string | null;
+    state: "sent" | "sending" | "failed";
+    tmpId?: string;
+  }[] = [
+    ...messages.map((m) => ({
+      key: m.id,
+      mine: m.senderRole === myRole,
+      body: m.body,
+      time: timeLabel(m.createdAt),
+      state: "sent" as const,
+    })),
+    ...pending.map((p) => ({
+      key: p.tmpId,
+      mine: true,
+      body: p.body,
+      time: null,
+      state: p.failed ? ("failed" as const) : ("sending" as const),
+      tmpId: p.tmpId,
+    })),
+  ];
 
   return (
     <div className="card flex h-[calc(100vh-13rem)] min-h-[520px] flex-col overflow-hidden">
       {/* Sticky header */}
       <header className="flex items-center gap-3 border-b border-rule bg-surface-2 px-4 py-3">
-        <span
-          className={`shrink-0 rounded-full p-[2px] ${
-            online ? "bg-verified" : "bg-rule"
-          }`}
-        >
-          <Image
-            src={otherAvatar}
-            alt=""
-            width={40}
-            height={40}
-            className="size-10 rounded-full object-cover"
-          />
-        </span>
+        <Avatar
+          src={otherAvatar}
+          name={otherName}
+          size={40}
+          ring={online ? "online" : "quiet"}
+        />
         <div className="min-w-0 flex-1">
           <p className="font-display truncate text-[0.95rem]">{otherName}</p>
           <p className="mono-label text-muted">
@@ -183,6 +236,24 @@ export function ChatThread({
             )}
           </p>
         </div>
+
+        <button
+          type="button"
+          onClick={toggleMute}
+          aria-pressed={muted}
+          title={muted ? "Turn message sounds on" : "Turn message sounds off"}
+          className="flex size-9 shrink-0 items-center justify-center rounded-full border border-rule bg-surface text-muted transition-colors hover:border-accent/40 hover:text-ink"
+        >
+          {muted ? (
+            <VolumeX className="size-4" strokeWidth={2} />
+          ) : (
+            <Volume2 className="size-4" strokeWidth={2} />
+          )}
+          <span className="sr-only">
+            {muted ? "Message sounds off" : "Message sounds on"}
+          </span>
+        </button>
+
         <Link
           href={`/consult/${bookingId}/room`}
           className="btn-primary mono-label flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2"
@@ -212,69 +283,82 @@ export function ChatThread({
         className="flex-1 overflow-y-auto px-4 py-4"
       >
         {/* Thread stays a readable 720px inside a wider pane */}
-        <div className="mx-auto w-full max-w-[720px] space-y-3">
-          {messages.length === 0 && pending.length === 0 && (
+        <div className="mx-auto w-full max-w-[720px] space-y-4">
+          {rows.length === 0 && (
             <p className="mono-label py-10 text-center text-muted">
               New consultation · say hello to get started
             </p>
           )}
 
-          {messages.map((m) => {
-            const mine = m.senderRole === myRole;
-            return (
-              <div
-                key={m.id}
-                className={`flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}
-              >
-                {!mine && (
-                  <Image
-                    src={otherAvatar}
-                    alt=""
-                    width={28}
-                    height={28}
-                    className="size-7 shrink-0 rounded-full object-cover"
-                  />
-                )}
+          {rows.map((r) => (
+            <div
+              key={r.key}
+              className={`flex items-end gap-2 ${
+                r.mine ? "flex-row-reverse" : "flex-row"
+              }`}
+            >
+              {/* Chat head on both sides, so it always reads as a conversation */}
+              <Avatar
+                src={r.mine ? myAvatar : otherAvatar}
+                name={r.mine ? myName : otherName}
+                size={28}
+                className="mb-4"
+              />
+
+              <div className={`min-w-0 ${r.mine ? "items-end" : "items-start"}`}>
+                <p
+                  className={`mono-label mb-1 text-muted ${
+                    r.mine ? "text-right" : "text-left"
+                  }`}
+                >
+                  {r.mine ? "You" : otherName.replace(/^Adv\.\s*/, "")}
+                </p>
+
                 <div
-                  className={`max-w-[78%] rounded-2xl px-3.5 py-2 ${mine ? bubbleMine : bubbleTheirs}`}
+                  className={[
+                    "max-w-[78%] px-3.5 py-2",
+                    r.mine
+                      ? "ml-auto rounded-2xl rounded-br-sm bg-accent text-white"
+                      : "mr-auto rounded-2xl rounded-bl-sm border border-rule bg-surface",
+                    r.state === "failed" ? "ring-2 ring-danger/50" : "",
+                    r.state === "sending" ? "opacity-80" : "",
+                  ].join(" ")}
                 >
                   <p className="whitespace-pre-wrap text-[0.95rem] leading-relaxed">
-                    {m.body}
+                    {r.body}
                   </p>
-                  <p className="mono-label mt-1 text-right text-muted">
-                    {timeLabel(m.createdAt)}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
 
-          {/* Optimistic — always mine, always last */}
-          {pending.map((p) => (
-            <div key={p.tmpId} className="flex items-end justify-end gap-2">
-              <div
-                className={`max-w-[78%] rounded-2xl px-3.5 py-2 ${bubbleMine} ${
-                  p.failed ? "border-danger/40" : "opacity-80"
-                }`}
-              >
-                <p className="whitespace-pre-wrap text-[0.95rem] leading-relaxed">
-                  {p.body}
-                </p>
-                {p.failed ? (
-                  <button
-                    type="button"
-                    onClick={() => void deliver(p.tmpId, p.body)}
-                    className="mono-label mt-1 flex items-center gap-1 text-danger hover:underline"
+                  <div
+                    className={`mono-label mt-1 flex items-center justify-end gap-1 ${
+                      r.mine ? "text-white/70" : "text-muted"
+                    }`}
                   >
-                    <RotateCw className="size-3" strokeWidth={2.5} />
-                    Not sent — retry
-                  </button>
-                ) : (
-                  <p className="mono-label mt-1 flex items-center justify-end gap-1 text-muted">
-                    <Loader2 className="size-3 animate-spin" strokeWidth={2.5} />
-                    Sending
-                  </p>
-                )}
+                    {r.state === "sending" && (
+                      <>
+                        <Loader2 className="size-3 animate-spin" strokeWidth={2.5} />
+                        Sending
+                      </>
+                    )}
+                    {r.state === "failed" && (
+                      <button
+                        type="button"
+                        onClick={() => r.tmpId && void deliver(r.tmpId, r.body)}
+                        className="flex items-center gap-1 underline"
+                      >
+                        <RotateCw className="size-3" strokeWidth={2.5} />
+                        Not sent — retry
+                      </button>
+                    )}
+                    {r.state === "sent" && (
+                      <>
+                        {r.time}
+                        {r.mine ? (
+                          <CheckCheck className="size-3" strokeWidth={2.5} />
+                        ) : null}
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           ))}
