@@ -17,7 +17,7 @@ choose legal matter → see ranked lawyers → filter → open lawyer
 
 **Rule for this build: the landing page is the LAST thing polished, not the first thing shipped.** Build the loop first, top to bottom, every page reachable by clicking. Do not spend a second polishing the hero until a client can pay a lawyer and chat.
 
-If any single task runs past ~75 minutes, cut its scope and move to the next — a reachable ugly page beats a perfect dead end.
+If any single task runs past ~75 minutes, cut its scope and move to the next — a reachable ugly page beats a perfect dead end. test commit
 
 ---
 
