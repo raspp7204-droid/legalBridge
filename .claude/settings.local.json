@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sS http://127.0.0.1:3000/)",
+      "Bash(curl -sS -X POST http://127.0.0.1:3000/api/session -H 'content-type: application/json' -d '{\"role\":\"HACKER\"}' -w \" \\(HTTP %{http_code}\\)\\\\n\")",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(curl -s http://127.0.0.1:3000/lawyers/__TRACKED_VAR__)",
+      "Bash(grep -oE \"Advocate receives.{0,120}\" /tmp/claude-1000/-home-sameer-legalBridge/5f8fb70c-073c-4723-ae8a-353938a6bdf0/scratchpad/prof.html)",
+      "Bash(grep -oE \"Consultation.{0,140}\" /tmp/claude-1000/-home-sameer-legalBridge/5f8fb70c-073c-4723-ae8a-353938a6bdf0/scratchpad/prof.html)",
+      "Bash(python3 -)",
+      "Bash(curl -s http://127.0.0.1:3000/consult/__TRACKED_VAR__)",
+      "Bash(node -e ' *)",
+      "Bash(curl -s \"http://127.0.0.1:3000/lawyers\")",
+      "Bash(python3 -c ' *)"
+    ]
+  }
+}

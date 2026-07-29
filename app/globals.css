@@ -1,0 +1,160 @@
+@import "tailwindcss";
+
+/* PLAN.md §2 — dark, legal, premium. Replaces the v1 light navy/paper theme. */
+:root {
+  --bg:        #0D1017;   /* near-black, faint blue-ink */
+  --surface:   #151A22;   /* cards */
+  --surface-2: #1B222C;   /* hover / elevated */
+  --brass:     #D4A24E;   /* primary accent — aged brass/gold */
+  --brass-dim: #A87F35;   /* pressed / borders on brass */
+  --verified:  #34D399;   /* verified badge + online dot */
+  --live:      #F59E0B;   /* LIVE pulse */
+  --danger:    #E5484D;   /* few slots left / errors */
+  --text:      #F4F1EA;   /* warm white */
+  --muted:     #8B95A3;   /* secondary text */
+  --rule:      #242C37;   /* hairlines, card borders */
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-brass: var(--brass);
+  --color-brass-dim: var(--brass-dim);
+  --color-verified: var(--verified);
+  --color-live: var(--live);
+  --color-danger: var(--danger);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Display face: Fraunces at optical size 72, weight 600 (PLAN.md §2) */
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: "opsz" 72;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: clamp(2.75rem, 6vw, 5rem); }
+h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); }
+h3 { font-size: 1.25rem; }
+
+/* Utility face: ₹ amounts, BCI numbers, ratings, timestamps, tier labels */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.font-mono-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Two-tone hero trick — one word in brass */
+.tone-accent {
+  color: var(--brass);
+}
+
+/* Cards: surface + hairline, lift to surface-2 with a brass edge on hover */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 0.875rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  transition: transform 120ms ease, border-color 120ms ease, background-color 120ms ease;
+}
+
+.card-interactive:hover {
+  background: var(--surface-2);
+  border-color: color-mix(in oklab, var(--brass) 45%, transparent);
+  transform: translateY(-2px);
+}
+
+/* Resting brass glow on the one primary CTA per view */
+.cta-brass {
+  background: var(--brass);
+  color: #14100A;
+  box-shadow: 0 0 0 1px var(--brass-dim), 0 6px 20px -8px color-mix(in oklab, var(--brass) 70%, transparent);
+  transition: box-shadow 120ms ease, background-color 120ms ease, transform 120ms ease;
+}
+
+.cta-brass:hover {
+  background: color-mix(in oklab, var(--brass) 88%, white);
+  box-shadow: 0 0 0 1px var(--brass), 0 10px 30px -8px color-mix(in oklab, var(--brass) 85%, transparent);
+}
+
+.cta-brass:active {
+  background: var(--brass-dim);
+  transform: translateY(1px);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--brass) 35%, transparent);
+  color: var(--text);
+}
+
+/* Scrollbars follow the dark theme */
+* {
+  scrollbar-color: var(--rule) transparent;
+}
+
+@keyframes lb-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(0.82); }
+}
+
+@keyframes lb-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes lb-twinkle {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 0.85; }
+}
+
+.animate-pulse-dot { animation: lb-pulse 1.6s ease-in-out infinite; }
+
+/* Hero + tiles fade/slide up on load in a short stagger */
+.animate-rise {
+  animation: lb-rise 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-rise { opacity: 1; transform: none; }
+}

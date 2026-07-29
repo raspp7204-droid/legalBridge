@@ -1,0 +1,102 @@
+// Schema per CLAUDE.md §6. The only addition is LawyerProfile.online,
+// which PLAN.md §6 explicitly allows so the LIVE strip and online dots
+// have real data behind them.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CLIENT
+  LAWYER
+  ADMIN
+}
+
+enum Tier {
+  LOWER
+  MIDDLE
+  HIGH
+}
+
+enum Status {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model User {
+  id       String         @id @default(cuid())
+  name     String
+  phone    String         @unique
+  avatar   String
+  role     Role           @default(CLIENT)
+  lawyer   LawyerProfile?
+  bookings Booking[]
+}
+
+model Category {
+  id      String          @id @default(cuid())
+  slug    String          @unique
+  name    String
+  icon    String // lucide icon name
+  blurb   String // one sentence, plain language
+  lawyers LawyerProfile[] @relation("LawyerCats")
+}
+
+model LawyerProfile {
+  id          String     @id @default(cuid())
+  userId      String     @unique
+  user        User       @relation(fields: [userId], references: [id])
+  bio         String
+  city        String
+  court       String // e.g. "Delhi High Court"
+  years       Int
+  tier        Tier
+  fee         Int // 399 | 549 | 799
+  bciNumber   String
+  status      Status     @default(PENDING)
+  rating      Float      @default(4.6)
+  reviewCount Int        @default(0)
+  online      Boolean    @default(false)
+  languages   String[]
+  categories  Category[] @relation("LawyerCats")
+  slots       Slot[]
+  bookings    Booking[]
+}
+
+model Slot {
+  id       String        @id @default(cuid())
+  lawyerId String
+  lawyer   LawyerProfile @relation(fields: [lawyerId], references: [id])
+  startsAt DateTime
+  booked   Boolean       @default(false)
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  clientId    String
+  client      User          @relation(fields: [clientId], references: [id])
+  lawyerId    String
+  lawyer      LawyerProfile @relation(fields: [lawyerId], references: [id])
+  slotAt      DateTime
+  amount      Int
+  lawyerCut   Int
+  platformCut Int
+  paid        Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  messages    Message[]
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  bookingId  String
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  senderRole Role
+  body       String
+  createdAt  DateTime @default(now())
+}

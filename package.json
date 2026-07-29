@@ -1,0 +1,42 @@
+{
+  "name": "legalbridge",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "eslint",
+    "db:up": "node scripts/pg.mjs",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma db push && pnpm db:seed"
+  },
+  "dependencies": {
+    "@ai-sdk/deepseek": "^3.0.13",
+    "@ai-sdk/react": "^4.0.40",
+    "@prisma/client": "^6.19.3",
+    "ai": "^7.0.37",
+    "geist": "^1.7.2",
+    "lucide-react": "^1.26.0",
+    "next": "15.5.21",
+    "qrcode.react": "^4.2.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "embedded-postgres": "18.4.0-beta.17",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.21",
+    "prisma": "^6.19.3",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.1",
+    "typescript": "^5"
+  }
+}
