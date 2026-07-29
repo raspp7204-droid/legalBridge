@@ -58,6 +58,47 @@ export default async function LawyerProfilePage() {
 
       <form action={saveProfile} className="mt-10 space-y-6">
         <div className="card p-5">
+          <p className="mono-label text-muted">Practice details</p>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="mono-label text-muted">Court</span>
+              <input
+                name="court"
+                defaultValue={profile.court}
+                placeholder="Karnataka High Court"
+                className="mt-2 w-full rounded-lg border border-rule bg-surface-2 px-3 py-2.5 text-[0.95rem]"
+              />
+            </label>
+            <label className="block">
+              <span className="mono-label text-muted">Years in practice</span>
+              <input
+                name="years"
+                type="number"
+                min={0}
+                max={60}
+                defaultValue={profile.years || ""}
+                className="font-mono-num mt-2 w-full rounded-lg border border-rule bg-surface-2 px-3 py-2.5 text-[0.95rem]"
+              />
+            </label>
+            <label className="block sm:col-span-2">
+              <span className="mono-label text-muted">
+                Bar Council enrolment number
+              </span>
+              <input
+                name="bciNumber"
+                defaultValue={profile.bciNumber}
+                placeholder="KAR/2913/2012"
+                className="font-mono-num mt-2 w-full rounded-lg border border-rule bg-surface-2 px-3 py-2.5 text-[0.95rem]"
+              />
+              <span className="mono-label mt-2 block text-muted">
+                Verified against the State Bar Council register. We never ask
+                for Aadhaar or any government ID.
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div className="card p-5">
           <label htmlFor="bio" className="mono-label text-muted">
             Bio
           </label>

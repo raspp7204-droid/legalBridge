@@ -1,5 +1,5 @@
-import { PrismaClient, Role, Status, Tier } from "@prisma/client";
-import { splitFee, TIER_FEE } from "../lib/money";
+import { PrismaClient, PromoTier, Role, Status, Tier } from "@prisma/client";
+import { TIER_FEE } from "../lib/money";
 
 const db = new PrismaClient();
 
@@ -504,101 +504,40 @@ async function main() {
     });
   }
 
-  /* Platform users — 1 admin + 3 clients, Aarav is the demo persona (§7) */
-  const admin = await db.user.create({
-    data: {
-      name: "Riva Sharma",
-      phone: "+919900000001",
-      avatar: women(65),
-      role: Role.ADMIN,
-    },
-  });
-
-  const aarav = await db.user.create({
-    data: {
-      name: "Aarav Mehta",
-      phone: "+919900000002",
-      avatar: men(3),
-      role: Role.CLIENT,
-    },
-  });
-
-  await db.user.create({
-    data: {
-      name: "Ishita Verma",
-      phone: "+919900000003",
-      avatar: women(8),
-      role: Role.CLIENT,
-    },
-  });
-
-  await db.user.create({
-    data: {
-      name: "Karan Malhotra",
-      phone: "+919900000004",
-      avatar: men(15),
-      role: Role.CLIENT,
-    },
-  });
-
-  /* Pre-seeded paid demo booking: Aarav ↔ Meera Nair (HIGH), slot 2h out.
-     This is the thread shown on stage — it must not be empty (PLAN §6). */
-  const meera = profiles.find((p) => p.seed.name === "Adv. Meera Nair");
-  if (!meera) throw new Error("Demo lawyer Meera Nair missing from seed");
-
-  const split = splitFee(meera.fee);
-  const booking = await db.booking.create({
-    data: {
-      clientId: aarav.id,
-      lawyerId: meera.id,
-      slotAt: new Date(Date.now() + 2 * 60 * 60 * 1000),
-      amount: split.amount,
-      lawyerCut: split.lawyerCut,
-      platformCut: split.platformCut,
-      paid: true,
-    },
-  });
-
-  const thread: { role: Role; body: string }[] = [
-    {
-      role: Role.CLIENT,
-      body: "Namaste ma'am. My father passed away last year and the property in Jayanagar is still in his name. My brother has applied for mutation without telling me.",
-    },
-    {
-      role: Role.LAWYER,
-      body: "Sorry for your loss. Two things decide this — whether your father left a will, and whether the khata application has already been approved by the BBMP. Do you know either?",
-    },
-    {
-      role: Role.CLIENT,
-      body: "There is no will. I checked at the BBMP office and they said the application is still under process, filed about three weeks ago.",
-    },
-    {
-      role: Role.LAWYER,
-      body: "Good, it is not too late. With no will, you and your brother inherit equally under the Hindu Succession Act. File a written objection with the Assistant Revenue Officer stating your share, and insist on an acknowledgement.",
-    },
-    {
-      role: Role.CLIENT,
-      body: "What documents will I need for that objection?",
-    },
-    {
-      role: Role.LAWYER,
-      body: "Death certificate, the original sale deed in your father's name, your Aadhaar, and an affidavit of legal heirship. Bring them to our call and I will draft the objection with you.",
-    },
+  /* Launch placements — three paid campaigns across the three tiers so the
+     promoted block and the MRR card are populated on day one (LAUNCH.md
+     Task 5). Everyone else is organic. */
+  const PLACEMENTS: { name: string; tier: PromoTier; rank: number }[] = [
+    { name: "Adv. Meera Nair", tier: PromoTier.SPOTLIGHT, rank: 1 },
+    { name: "Adv. Rajat Khanna", tier: PromoTier.FEATURED, rank: 2 },
+    { name: "Adv. Divya Menon", tier: PromoTier.BASIC, rank: 3 },
   ];
 
-  const base = Date.now() - 40 * 60 * 1000;
-  for (const [i, m] of thread.entries()) {
-    await db.message.create({
+  const campaignEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  for (const p of PLACEMENTS) {
+    const target = profiles.find((x) => x.seed.name === p.name);
+    if (!target) throw new Error(`Promoted advocate missing from seed: ${p.name}`);
+    await db.lawyerProfile.update({
+      where: { id: target.id },
       data: {
-        bookingId: booking.id,
-        senderRole: m.role,
-        body: m.body,
-        createdAt: new Date(base + i * 5 * 60 * 1000),
+        promoted: true,
+        promotedTier: p.tier,
+        promotedRank: p.rank,
+        promotedUntil: campaignEnd,
       },
     });
   }
 
-  const [lawyers, verified, pending, rejected, online, slots, booked] =
+  /* No seeded clients or admins. Real people arrive through Clerk sign-up;
+     an email listed in ADMIN_EMAILS becomes the admin on first sign-in
+     (LAUNCH.md Task 1). Seeded advocates keep clerkId = null — they are the
+     browseable roster until they claim their profile. */
+
+  /* No pre-seeded bookings and no pre-seeded messages. Chat is real: every
+     thread starts empty and fills only with messages real accounts send
+     (LAUNCH.md Task 2). */
+
+  const [lawyers, verified, pending, rejected, online, slots, booked, promoted] =
     await Promise.all([
       db.lawyerProfile.count(),
       db.lawyerProfile.count({ where: { status: Status.VERIFIED } }),
@@ -607,6 +546,7 @@ async function main() {
       db.lawyerProfile.count({ where: { online: true } }),
       db.slot.count(),
       db.slot.count({ where: { booked: true } }),
+      db.lawyerProfile.count({ where: { promoted: true } }),
     ]);
 
   console.log(
@@ -615,7 +555,8 @@ async function main() {
       `advocates   ${lawyers} (${verified} verified / ${pending} pending / ${rejected} rejected)`,
       `online      ${online}`,
       `slots       ${slots} (${booked} booked)`,
-      `users       ${await db.user.count()} · admin ${admin.name}`,
+      `users       ${await db.user.count()} (catalog advocates; real users sign up via Clerk)`,
+      `promoted    ${promoted} active placements`,
       `bookings    ${await db.booking.count()} · messages ${await db.message.count()}`,
     ].join("\n"),
   );

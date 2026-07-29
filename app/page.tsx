@@ -14,6 +14,7 @@ import { LiveStrip } from "@/components/live-strip";
 import { CategoryTile } from "@/components/category-tile";
 import { LawyerCard, LawyerCardCompact } from "@/components/lawyer-card";
 import { lawyerCardSelect } from "@/lib/lawyers";
+import { activePromoWhere, PROMO_ORDER } from "@/lib/promotions";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +87,17 @@ export default async function Home() {
     }),
     db.lawyerProfile.count({ where: { status: "VERIFIED", online: true } }),
   ]);
+
+  // Featured strip — up to 3 currently-promoted advocates, labelled
+  // PROMOTED, never duplicated in the organic row below (LAUNCH.md Task 5).
+  const featuredPromoted = await db.lawyerProfile.findMany({
+    where: { status: "VERIFIED", ...activePromoWhere() },
+    orderBy: PROMO_ORDER,
+    take: 3,
+    ...lawyerCardSelect,
+  });
+  const promotedIds = new Set(featuredPromoted.map((l) => l.id));
+  const organicFeatured = featured.filter((l) => !promotedIds.has(l.id));
 
   // Marketplace numbers — advocate and court counts are real (seed), the
   // lifetime consultation figure is the platform's own running total.
@@ -181,8 +193,15 @@ export default async function Home() {
             </p>
 
             <div className="mt-4 space-y-2.5">
-              {featured.slice(0, 2).map((l) => (
-                <LawyerCardCompact key={l.id} lawyer={l} />
+              {(featuredPromoted.length > 0
+                ? featuredPromoted.slice(0, 2)
+                : featured.slice(0, 2)
+              ).map((l) => (
+                <LawyerCardCompact
+                  key={l.id}
+                  lawyer={l}
+                  promoted={promotedIds.has(l.id)}
+                />
               ))}
             </div>
 
@@ -277,7 +296,35 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Featured advocates */}
+      {/* Featured advocates — paid placement, always labelled */}
+      {featuredPromoted.length > 0 && (
+        <section className="container section-tight">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2>Featured advocates</h2>
+              <p className="mt-2 text-slate">
+                These advocates have paid for placement. They are verified like
+                everyone else on LawNest.
+              </p>
+            </div>
+            <Link
+              href="/lawyers"
+              className="mono-label flex items-center gap-1 text-accent hover:underline"
+            >
+              All advocates
+              <ArrowRight className="size-3.5" strokeWidth={2.5} />
+            </Link>
+          </div>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredPromoted.map((l) => (
+              <LawyerCard key={l.id} lawyer={l} promoted />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Online now — organic */}
       <section className="container section">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -295,9 +342,9 @@ export default async function Home() {
           </Link>
         </div>
 
-        {/* The hero panel already shows the first two — don't repeat them */}
+        {/* Promoted advocates appear once, in the strip above */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.slice(2).map((l) => (
+          {organicFeatured.slice(0, 3).map((l) => (
             <LawyerCard key={l.id} lawyer={l} />
           ))}
         </div>

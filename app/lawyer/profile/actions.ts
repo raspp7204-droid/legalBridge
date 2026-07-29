@@ -9,6 +9,11 @@ export async function saveProfile(formData: FormData) {
 
   const bio = String(formData.get("bio") ?? "").trim();
   const city = String(formData.get("city") ?? "").trim();
+  const court = String(formData.get("court") ?? "").trim();
+  const bciNumber = String(formData.get("bciNumber") ?? "").trim();
+  const yearsRaw = Number(formData.get("years"));
+  const years =
+    Number.isFinite(yearsRaw) && yearsRaw >= 0 ? Math.trunc(yearsRaw) : null;
   const languages = formData
     .getAll("languages")
     .map(String)
@@ -20,6 +25,9 @@ export async function saveProfile(formData: FormData) {
     data: {
       bio: bio || profile.bio,
       city: city || profile.city,
+      court: court || profile.court,
+      bciNumber: bciNumber || profile.bciNumber,
+      years: years ?? profile.years,
       languages: languages.length ? languages : profile.languages,
       categories: {
         set: categorySlugs.map((slug) => ({ slug })),
@@ -28,5 +36,6 @@ export async function saveProfile(formData: FormData) {
   });
 
   revalidatePath("/lawyer/profile");
+  revalidatePath("/lawyer");
   revalidatePath("/lawyers");
 }

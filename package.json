@@ -12,7 +12,8 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "db:reset": "prisma db push && pnpm db:seed"
+    "db:reset": "prisma db push && pnpm db:seed",
+    "db:deploy": "prisma db push --skip-generate"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^3.0.13",
