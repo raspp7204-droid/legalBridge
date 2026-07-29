@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MessageSquare, Video } from "lucide-react";
 import { db } from "@/lib/db";
-import { getClientUser } from "@/lib/session";
+import { requireClient } from "@/lib/auth";
 import { EmptyState } from "@/components/empty-state";
 import { formatRupees } from "@/lib/money";
 import { formatSlotFull } from "@/lib/lawyers";
@@ -67,7 +67,7 @@ function BookingCard({ b, past }: { b: BookingRow; past: boolean }) {
 }
 
 export default async function MePage() {
-  const client = await getClientUser();
+  const client = await requireClient();
   if (!client) {
     return (
       <main className="container section">
@@ -88,7 +88,10 @@ export default async function MePage() {
 
   return (
     <main className="container section-tight">
-      <p className="mono-label text-muted">Signed in as {client.name}</p>
+      <p className="mono-label text-muted">
+        Signed in as {client.name}
+        {client.clientCode ? ` · ${client.clientCode}` : ""}
+      </p>
       <h1 className="mt-3 text-[2.5rem] sm:text-[3rem]">
         My <span className="tone-accent">consultations</span>
       </h1>

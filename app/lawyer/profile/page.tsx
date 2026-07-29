@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { requireLawyerProfile } from "@/lib/session";
+import { requireLawyerProfile } from "@/lib/auth";
 import { SaveButton } from "@/components/save-button";
 import { formatRupees } from "@/lib/money";
 import { saveProfile } from "./actions";

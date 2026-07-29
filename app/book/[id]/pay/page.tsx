@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { getClientUser } from "@/lib/session";
+import { requireClient } from "@/lib/auth";
 import { splitFee } from "@/lib/money";
 import { formatSlotFull } from "@/lib/lawyers";
 import { PaymentSheet } from "@/components/payment-sheet";
@@ -27,7 +27,7 @@ export default async function PayPage({
       where: { id: lawyerId },
       include: { user: { select: { name: true, avatar: true } } },
     }),
-    getClientUser(),
+    requireClient(),
   ]);
 
   if (!lawyer || !client) notFound();

@@ -7,8 +7,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Neon pooled for the app, direct for migrations (LAUNCH.md Task 3).
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -29,12 +31,29 @@ enum Status {
   REJECTED
 }
 
+// Paid placement tiers (LAUNCH.md Task 5)
+enum PromoTier {
+  NONE
+  BASIC
+  FEATURED
+  SPOTLIGHT
+}
+
 model User {
-  id       String         @id @default(cuid())
-  name     String
-  phone    String         @unique
-  avatar   String
-  role     Role           @default(CLIENT)
+  id     String  @id @default(cuid())
+  name   String
+  // Optional: Clerk accounts sign up with an email, never a phone, and we
+  // never collect a government ID (LAUNCH.md ground rules).
+  phone  String? @unique
+  avatar String
+  role   Role    @default(CLIENT)
+
+  clerkId    String? @unique // null for the seeded catalog advocates
+  email      String? @unique
+  clientCode String? @unique // "LB-2026-00042", generated on client signup
+
+  createdAt DateTime @default(now())
+
   lawyer   LawyerProfile?
   bookings Booking[]
 }
@@ -49,9 +68,9 @@ model Category {
 }
 
 model LawyerProfile {
-  id          String     @id @default(cuid())
-  userId      String     @unique
-  user        User       @relation(fields: [userId], references: [id])
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
   bio         String
   city        String
   court       String // e.g. "Delhi High Court"
@@ -59,14 +78,21 @@ model LawyerProfile {
   tier        Tier
   fee         Int // 399 | 549 | 799
   bciNumber   String
-  status      Status     @default(PENDING)
-  rating      Float      @default(4.6)
-  reviewCount Int        @default(0)
-  online      Boolean    @default(false)
+  status      Status   @default(PENDING)
+  rating      Float    @default(4.6)
+  reviewCount Int      @default(0)
+  online      Boolean  @default(false)
   languages   String[]
-  categories  Category[] @relation("LawyerCats")
-  slots       Slot[]
-  bookings    Booking[]
+
+  // Paid placement (LAUNCH.md Task 5)
+  promoted      Boolean   @default(false)
+  promotedRank  Int? // 1 = top; null if not promoted
+  promotedUntil DateTime? // campaign end; past = treated as not promoted
+  promotedTier  PromoTier @default(NONE)
+
+  categories Category[] @relation("LawyerCats")
+  slots      Slot[]
+  bookings   Booking[]
 }
 
 model Slot {

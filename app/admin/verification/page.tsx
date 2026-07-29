@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { FileText, Check, X } from "lucide-react";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 import { EmptyState } from "@/components/empty-state";
 import { approveLawyer, rejectLawyer } from "./actions";
 
@@ -11,6 +12,7 @@ export const metadata = { title: "Verification queue — LawNest" };
 const DOCS = ["Bar Council certificate", "Photo ID", "Practice address proof"];
 
 export default async function VerificationQueue() {
+  await requireAdmin();
   const pending = await db.lawyerProfile.findMany({
     where: { status: "PENDING" },
     include: {

@@ -3,10 +3,12 @@
 import { revalidatePath } from "next/cache";
 import type { Tier } from "@prisma/client";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 import { TIER_FEE } from "@/lib/money";
 
 /** Approve → VERIFIED at the chosen tier, with the fee that tier implies. */
 export async function approveLawyer(formData: FormData) {
+  await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const tier = String(formData.get("tier") ?? "MIDDLE") as Tier;
   if (!id) throw new Error("Missing lawyer id");
@@ -56,6 +58,7 @@ export async function approveLawyer(formData: FormData) {
 }
 
 export async function rejectLawyer(formData: FormData) {
+  await requireAdmin();
   const id = String(formData.get("id") ?? "");
   if (!id) throw new Error("Missing lawyer id");
 

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { requireLawyerProfile } from "@/lib/session";
+import { requireLawyerProfile } from "@/lib/auth";
 
 export async function saveProfile(formData: FormData) {
   const profile = await requireLawyerProfile();

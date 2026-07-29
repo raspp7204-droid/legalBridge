@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Scale, Globe } from "lucide-react";
-import { getSession, getCurrentUser } from "@/lib/session";
-import { RoleSwitcher } from "@/components/role-switcher";
+import { UserButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
+import { getDbUser } from "@/lib/auth";
 
 const CLIENT_NAV = [
   { href: "/categories", label: "Legal matters" },
@@ -15,11 +16,19 @@ const LAWYER_NAV = [
   { href: "/lawyer/profile", label: "My profile" },
 ];
 
+const ADMIN_NAV = [
+  { href: "/admin", label: "Overview" },
+  { href: "/admin/verification", label: "Verification" },
+  { href: "/admin/promotions", label: "Promotions" },
+];
+
 export async function SiteHeader() {
-  const session = await getSession();
-  const role = session?.role ?? null;
-  const user = role ? await getCurrentUser() : null;
-  const NAV = role === "LAWYER" ? LAWYER_NAV : CLIENT_NAV;
+  const [{ userId }, user] = await Promise.all([auth(), getDbUser()]);
+  const signedIn = !!userId;
+  const role = user?.role ?? null;
+
+  const NAV =
+    role === "LAWYER" ? LAWYER_NAV : role === "ADMIN" ? ADMIN_NAV : CLIENT_NAV;
 
   return (
     <header className="sticky top-0 z-40 border-b border-rule bg-paper/90 backdrop-blur-md">
@@ -56,29 +65,63 @@ export async function SiteHeader() {
             <span className="mono-label">EN</span>
           </button>
 
-          <RoleSwitcher role={role} name={user?.name ?? null} />
-
-          {role === "LAWYER" ? (
-            <Link
-              href="/lawyer/inbox"
-              className="btn-primary mono-label hidden rounded-full px-4 py-2 sm:inline-block"
-            >
-              Open inbox
-            </Link>
-          ) : (
+          {!signedIn && (
             <>
-              <Link
-                href="/lawyer/login"
-                className="mono-label hidden rounded-full border border-rule px-3 py-2 text-slate transition-colors hover:border-accent/40 hover:text-ink lg:inline-block"
+            <Link
+              href="/lawyer/sign-in"
+              className="mono-label hidden rounded-full border border-rule px-3 py-2 text-slate transition-colors hover:border-accent/40 hover:text-ink lg:inline-block"
+            >
+              For advocates
+            </Link>
+            <Link
+              href="/sign-in"
+              className="mono-label rounded-full border border-rule px-3 py-2 text-ink transition-colors hover:border-accent/40"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/sign-up"
+              className="btn-primary mono-label hidden rounded-full px-4 py-2 sm:inline-block"
               >
-                For advocates
+                Get started
               </Link>
+            </>
+          )}
+
+          {signedIn && (
+            <>
+            {user?.clientCode && (
+              <Link
+                href="/account"
+                className="mono-label hidden rounded-full border border-rule bg-surface px-3 py-1.5 text-muted transition-colors hover:border-accent/40 hover:text-ink sm:inline-block"
+                title="Your LawNest ID"
+              >
+                {user.clientCode}
+              </Link>
+            )}
+            <span className="mono-label hidden max-w-[9rem] truncate text-ink lg:inline-block">
+              {user?.name.replace(/^Adv\.\s*/, "") ?? ""}
+            </span>
+            <UserButton
+              appearance={{ elements: { avatarBox: "size-9" } }}
+              userProfileUrl="/account"
+              userProfileMode="navigation"
+            />
+            {role === "LAWYER" ? (
+              <Link
+                href="/lawyer/inbox"
+                className="btn-primary mono-label hidden rounded-full px-4 py-2 sm:inline-block"
+              >
+                Open inbox
+              </Link>
+            ) : role === "CLIENT" ? (
               <Link
                 href="/lawyers"
                 className="btn-primary mono-label hidden rounded-full px-4 py-2 sm:inline-block"
               >
                 Consult now
               </Link>
+              ) : null}
             </>
           )}
         </div>

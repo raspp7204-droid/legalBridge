@@ -2,7 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CalendarDays, FileText, Timer } from "lucide-react";
 import { db } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
+import { requireUser } from "@/lib/auth";
 import { ChatThread } from "@/components/chat-thread";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatSlotFull } from "@/lib/lawyers";
@@ -47,7 +47,7 @@ export default async function ConsultPage({
         },
       },
     }),
-    getCurrentUser(),
+    requireUser(),
   ]);
 
   if (!booking) notFound();
@@ -55,7 +55,7 @@ export default async function ConsultPage({
   const lawyer = booking.lawyer;
 
   // Which side of the thread is this? Decided by identity, not by the role
-  // label — the advocate signs in as themselves at /lawyer/login (Task 2).
+  // label — the advocate signs in as themselves (LAUNCH.md Task 2).
   const as = viewer?.id === lawyer.userId ? "LAWYER" : "CLIENT";
 
   return (

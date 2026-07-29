@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 import { formatRupees } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +15,7 @@ const STATUS_STYLE = {
 } as const;
 
 export default async function AdminLawyers() {
+  await requireAdmin();
   const lawyers = await db.lawyerProfile.findMany({
     orderBy: [{ status: "asc" }, { rating: "desc" }],
     include: { user: { select: { name: true, avatar: true } } },

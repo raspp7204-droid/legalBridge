@@ -1,8 +1,8 @@
 import { db } from "@/lib/db";
-import { getCurrentUser, getSession } from "@/lib/session";
+import { getDbUser } from "@/lib/auth";
 
 // Route handlers must never be cached — the poll depends on fresh reads
-// (CHAT-AND-POLISH.md Task 2, bug 1).
+// (LAUNCH.md Task 2).
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const fetchCache = "force-no-store";
@@ -10,8 +10,8 @@ export const fetchCache = "force-no-store";
 const NO_STORE = { "cache-control": "no-store, max-age=0" };
 
 /**
- * Who is asking, and are they part of this booking? Cookie role + user id
- * only — deliberately simple (Task 2).
+ * Who is asking, and are they part of this booking? The sender is derived
+ * from the Clerk session, never from the request body (LAUNCH.md Task 2).
  */
 async function authorize(bookingId: string) {
   const booking = await db.booking.findUnique({
@@ -20,17 +20,16 @@ async function authorize(bookingId: string) {
   });
   if (!booking) return { error: "Booking not found.", status: 404 } as const;
 
-  const session = await getSession();
-  const role = session?.role ?? "CLIENT";
-  const user = await getCurrentUser();
+  const user = await getDbUser();
+  if (!user) return { error: "Sign in required.", status: 401 } as const;
 
-  if (role === "ADMIN") {
+  if (user.role === "ADMIN") {
     // Admin can read a thread for oversight, but never writes into it.
-    return { booking, role, canWrite: false } as const;
+    return { booking, role: "ADMIN" as const, canWrite: false } as const;
   }
 
-  const isClient = !!user && user.id === booking.clientId;
-  const isLawyer = !!user && user.id === booking.lawyer.userId;
+  const isClient = user.id === booking.clientId;
+  const isLawyer = user.id === booking.lawyer.userId;
   if (!isClient && !isLawyer) {
     return { error: "Not your consultation.", status: 403 } as const;
   }
@@ -104,7 +103,7 @@ export async function POST(
     );
   }
 
-  // senderRole comes from the session, never from the request (Task 2).
+  // senderRole comes from the Clerk session, never from the request body.
   const message = await db.message.create({
     data: { bookingId, senderRole: auth.role, body: text.slice(0, 2000) },
     select: { id: true, senderRole: true, body: true, createdAt: true },

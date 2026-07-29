@@ -17,14 +17,14 @@ const COLUMNS = [
     links: [
       { href: "/lawyers", label: "Find an advocate" },
       { href: "/me", label: "My consultations" },
-      { href: "/login", label: "Client sign-in" },
+      { href: "/sign-in", label: "Client sign-in" },
       { href: "/categories", label: "How it works" },
     ],
   },
   {
     title: "For advocates",
     links: [
-      { href: "/lawyer/login", label: "Advocate sign-in" },
+      { href: "/lawyer/sign-in", label: "Advocate sign-in" },
       { href: "/lawyer", label: "Advocate dashboard" },
       { href: "/lawyer/inbox", label: "Consultation inbox" },
       { href: "/lawyer/profile", label: "Edit my profile" },
@@ -33,6 +33,7 @@ const COLUMNS = [
   {
     title: "Company",
     links: [
+      { href: "/privacy", label: "Privacy policy" },
       { href: "/admin", label: "Platform admin" },
       { href: "/admin/verification", label: "Verification queue" },
       { href: "/lawyers?online=1", label: "Advocates online" },

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import { db } from "@/lib/db";
-import { requireLawyerProfile } from "@/lib/session";
+import { requireLawyerProfile } from "@/lib/auth";
 import { EmptyState } from "@/components/empty-state";
 import { formatRupees } from "@/lib/money";
 import { formatSlotFull } from "@/lib/lawyers";

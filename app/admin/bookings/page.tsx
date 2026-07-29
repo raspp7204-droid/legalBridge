@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 import { EmptyState } from "@/components/empty-state";
 import { formatRupees } from "@/lib/money";
 import { formatSlotFull } from "@/lib/lawyers";
@@ -9,6 +10,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "All bookings — LawNest" };
 
 export default async function AdminBookings() {
+  await requireAdmin();
   const bookings = await db.booking.findMany({
     orderBy: { createdAt: "desc" },
     include: {

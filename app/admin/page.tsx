@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Users, ShieldQuestion, CalendarCheck, IndianRupee, ArrowRight } from "lucide-react";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 import { formatRupees } from "@/lib/money";
 import { formatSlotFull } from "@/lib/lawyers";
 
@@ -39,6 +40,7 @@ function Stat({
 }
 
 export default async function AdminPage() {
+  await requireAdmin();
   const [lawyers, pending, bookings, revenue, recent] = await Promise.all([
     db.lawyerProfile.count(),
     db.lawyerProfile.count({ where: { status: "PENDING" } }),

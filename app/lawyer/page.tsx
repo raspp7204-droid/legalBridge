@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { IndianRupee, CalendarDays, Inbox, ArrowRight } from "lucide-react";
 import { db } from "@/lib/db";
-import { requireLawyerProfile } from "@/lib/session";
+import { requireLawyerProfile } from "@/lib/auth";
 import { AvailabilityToggle } from "@/components/availability-toggle";
 import { formatRupees } from "@/lib/money";
 import { formatSlotFull, formatSlotTime } from "@/lib/lawyers";

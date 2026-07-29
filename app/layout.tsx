@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Fraunces, Inter } from "next/font/google";
 import { GeistMono } from "geist/font/mono";
 import { SiteHeader } from "@/components/site-header";
@@ -31,19 +32,22 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
+    // Clerk owns authentication for the whole app (LAUNCH.md Task 1).
     // Font vars live on <html> so :root can resolve them — --font-display in
     // globals.css references --font-fraunces and only sees :root scope.
-    <html
-      lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${GeistMono.variable}`}
-    >
-      <body className="flex min-h-screen flex-col antialiased">
-        <SiteHeader />
-        <div className="flex-1">{children}</div>
-        <SiteFooter />
-        {/* Floating assistant, available on every public page */}
-        <AssistantWidget />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html
+        lang="en"
+        className={`${fraunces.variable} ${inter.variable} ${GeistMono.variable}`}
+      >
+        <body className="flex min-h-screen flex-col antialiased">
+          <SiteHeader />
+          <div className="flex-1">{children}</div>
+          <SiteFooter />
+          {/* Floating assistant, available on every public page */}
+          <AssistantWidget />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
