@@ -183,11 +183,11 @@ Install `qrcode.react`. Add `NEXT_PUBLIC_UPI_VPA` and `NEXT_PUBLIC_UPI_NAME` to 
 
 Note for the founder in a comment: *this shows a real, payable QR but does not auto-verify. For real payments post-demo, swap the confirm step for Razorpay UPI Collect + webhook.* Do not build that now.
 
-Optional stretch only if everything else is done and there's time left: Razorpay test mode checkout as a second tab. Skip otherwise.
+Optional stretch only if everything else is done and there's time left: Razorpay test mode checkout as a second tab. Skip otherwise.test
 
 ---
 
-## 5. Pages — every one must be reachable and non-empty
+## 5. Pages — every one must be reachable and non-empty 
 
 Acceptance criterion for the whole build: **starting from `/`, a person can reach every screen below by clicking, with zero dead links and zero empty lists.**
 
