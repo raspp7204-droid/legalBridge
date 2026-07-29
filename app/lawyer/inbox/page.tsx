@@ -7,7 +7,7 @@ import { formatSlotFull } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Inbox — LegalBridge" };
+export const metadata = { title: "Inbox — LawNest" };
 
 export default async function LawyerInbox() {
   const profile = await getLawyerProfile();

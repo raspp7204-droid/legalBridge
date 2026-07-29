@@ -20,7 +20,7 @@ export async function SiteHeader() {
             <Scale className="size-4 text-accent" strokeWidth={2} />
           </span>
           <span className="font-display text-lg tracking-tight">
-            Legal<span className="tone-accent">Bridge</span>
+            Law<span className="tone-accent">Nest</span>
           </span>
         </Link>
 

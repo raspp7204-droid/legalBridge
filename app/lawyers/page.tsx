@@ -14,7 +14,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Advocates — LegalBridge" };
+export const metadata = { title: "Advocates — LawNest" };
 
 const CITIES = [
   "Bengaluru",

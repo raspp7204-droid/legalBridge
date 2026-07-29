@@ -10,7 +10,7 @@ import { formatSlotFull, formatSlotTime } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Advocate dashboard — LegalBridge" };
+export const metadata = { title: "Advocate dashboard — LawNest" };
 
 function Stat({
   icon: Icon,

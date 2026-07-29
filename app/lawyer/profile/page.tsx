@@ -7,7 +7,7 @@ import { saveProfile } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Edit profile — LegalBridge" };
+export const metadata = { title: "Edit profile — LawNest" };
 
 const ALL_LANGUAGES = [
   "Hindi",
@@ -155,7 +155,7 @@ export default async function LawyerProfilePage() {
             </span>
           </div>
           <p className="mt-3 text-sm text-muted">
-            Set by LegalBridge during verification.
+            Set by LawNest during verification.
           </p>
         </div>
 

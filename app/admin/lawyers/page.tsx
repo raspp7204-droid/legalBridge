@@ -5,7 +5,7 @@ import { formatRupees } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "All advocates — LegalBridge" };
+export const metadata = { title: "All advocates — LawNest" };
 
 const STATUS_STYLE = {
   VERIFIED: "border-verified/40 text-verified",

@@ -1,4 +1,4 @@
-# LegalBridge — Build Spec
+# LawNest — Build Spec
 
 > **How to use this file:** save it as `CLAUDE.md` in the repo root. Claude Code reads it automatically on every session. Then work through `TASKS` below one at a time — paste a single task number as your prompt (`Do Task 3.`). Do not paste the whole file as a prompt.
 
@@ -6,7 +6,7 @@
 
 ## 1. Context
 
-LegalBridge is a marketplace connecting Indian clients with verified lawyers. Pick a legal category (divorce, property, criminal…), see matched lawyers with transparent fixed fees, book a slot, pay, then chat and video-consult.
+LawNest is a marketplace connecting Indian clients with verified lawyers. Pick a legal category (divorce, property, criminal…), see matched lawyers with transparent fixed fees, book a slot, pay, then chat and video-consult.
 
 **This build is a demo for a pitch competition.** It has 2 days of solo build time. It will be walked through live on a projector for ~90 seconds by a non-technical presenter. It will never take real money or real users.
 
@@ -308,7 +308,7 @@ Earnings card (total received = sum of `lawyerCut` on paid bookings), today's bo
 List of threads → opens the same chat component, rendered as `LAWYER`.
 
 ### `/lawyer/profile`
-Editable bio, city, languages, categories. Saves via server action. Fee and tier shown read-only with the note "Set by LegalBridge during verification."
+Editable bio, city, languages, categories. Saves via server action. Fee and tier shown read-only with the note "Set by LawNest during verification."
 
 ### `/admin`
 Four stat tiles: total lawyers, pending verification, bookings, platform revenue (sum of `platformCut`). Recent bookings table.

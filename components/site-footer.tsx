@@ -38,7 +38,7 @@ export function SiteFooter() {
                 <Scale className="size-4 text-accent" strokeWidth={2} />
               </span>
               <span className="font-display text-lg">
-                Legal<span className="tone-accent">Bridge</span>
+                Law<span className="tone-accent">Nest</span>
               </span>
             </div>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate">
@@ -68,10 +68,10 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col gap-3 border-t border-rule pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="mono-label text-muted">
-            © 2026 LegalBridge · Bengaluru
+            © 2026 LawNest · Bengaluru
           </p>
           <p className="max-w-lg text-xs leading-relaxed text-muted/90">
-            LegalBridge is a technology platform. It does not provide legal
+            LawNest is a technology platform. It does not provide legal
             advice and is not a law firm. Advocates listed here are independent
             practitioners enrolled with a State Bar Council.
           </p>

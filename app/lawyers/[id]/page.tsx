@@ -92,7 +92,7 @@ export default async function LawyerProfilePage({
                   </span>
                 </span>
                 <span className="mono-label text-muted">
-                  {lawyer._count.bookings} consults on LegalBridge
+                  {lawyer._count.bookings} consults on LawNest
                 </span>
                 {lawyer.online && (
                   <span className="flex items-center gap-1.5">

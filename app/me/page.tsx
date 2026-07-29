@@ -9,7 +9,7 @@ import { formatSlotFull } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "My consultations — LegalBridge" };
+export const metadata = { title: "My consultations — LawNest" };
 
 type BookingRow = Awaited<ReturnType<typeof getBookings>>[number];
 

@@ -8,7 +8,7 @@ import { confirmPayment } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Pay — LegalBridge" };
+export const metadata = { title: "Pay — LawNest" };
 
 export default async function PayPage({
   params,
@@ -62,12 +62,12 @@ export default async function PayPage({
   if (booking.paid) redirect(`/book/${booking.id}/confirmed`);
 
   const vpa = process.env.NEXT_PUBLIC_UPI_VPA ?? "founder@okhdfcbank";
-  const payeeName = process.env.NEXT_PUBLIC_UPI_NAME ?? "LegalBridge";
+  const payeeName = process.env.NEXT_PUBLIC_UPI_NAME ?? "LawNest";
   const upiLink =
     `upi://pay?pa=${encodeURIComponent(vpa)}` +
     `&pn=${encodeURIComponent(payeeName)}` +
     `&am=${split.amount}&cu=INR` +
-    `&tn=${encodeURIComponent(`LegalBridge-${booking.id}`)}`;
+    `&tn=${encodeURIComponent(`LawNest-${booking.id}`)}`;
 
   return (
     <main className="container container-narrow section-tight">

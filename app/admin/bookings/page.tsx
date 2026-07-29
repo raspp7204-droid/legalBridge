@@ -6,7 +6,7 @@ import { formatSlotFull } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "All bookings — LegalBridge" };
+export const metadata = { title: "All bookings — LawNest" };
 
 export default async function AdminBookings() {
   const bookings = await db.booking.findMany({

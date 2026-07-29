@@ -6,7 +6,7 @@ import { approveLawyer, rejectLawyer } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Verification queue — LegalBridge" };
+export const metadata = { title: "Verification queue — LawNest" };
 
 const DOCS = ["Bar Council certificate", "Photo ID", "Practice address proof"];
 

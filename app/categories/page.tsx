@@ -4,7 +4,7 @@ import { Starfield } from "@/components/starfield";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Legal matters — LegalBridge" };
+export const metadata = { title: "Legal matters — LawNest" };
 
 export default async function CategoriesPage() {
   const categories = await db.category.findMany({

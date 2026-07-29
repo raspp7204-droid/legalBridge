@@ -75,7 +75,7 @@ export function PaymentSheet({
         <div className="h-[3px] w-full bg-accent" aria-hidden="true" />
 
         <div className="border-b border-rule p-5 sm:p-6">
-          <p className="mono-label text-muted">Pay to LegalBridge</p>
+          <p className="mono-label text-muted">Pay to LawNest</p>
           <p className="font-mono-num mt-1 text-4xl text-accent">
             {formatRupees(amount)}
           </p>

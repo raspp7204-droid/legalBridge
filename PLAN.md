@@ -1,4 +1,4 @@
-# LegalBridge — Astrotalk-grade Build (v2)
+# LawNest — Astrotalk-grade Build (v2)
 
 > **This file supersedes the design and task sections of CLAUDE.md.** Keep CLAUDE.md's schema (§6), seed spec (§7), and non-goals (§3). Replace its design (§4) and task list (§9) with everything below.
 >
@@ -162,7 +162,7 @@ Install `qrcode.react`. Add `NEXT_PUBLIC_UPI_VPA` and `NEXT_PUBLIC_UPI_NAME` to 
 
 ```
 ┌───────────────────────────────────────┐
-│  Pay ₹799 to LegalBridge              │
+│  Pay ₹799 to LawNest              │
 │  Consultation with Adv. Meera Nair     │
 │                                        │
 │   [ QR code ]      Scan with any UPI   │
@@ -176,7 +176,7 @@ Install `qrcode.react`. Add `NEXT_PUBLIC_UPI_VPA` and `NEXT_PUBLIC_UPI_NAME` to 
 └───────────────────────────────────────┘
 ```
 
-- QR value: `upi://pay?pa=${VPA}&pn=${NAME}&am=${amount}&cu=INR&tn=LegalBridge-${bookingId}`
+- QR value: `upi://pay?pa=${VPA}&pn=${NAME}&am=${amount}&cu=INR&tn=LawNest-${bookingId}`
 - Render it with `<QRCodeSVG value={upiLink} />`, brass on dark
 - "Pay via UPI app" button is an `<a href={upiLink}>` — on a phone it launches the UPI app for real
 - "I've completed the payment" → server action sets `booking.paid = true`, marks slot booked, redirects to `/book/[id]/confirmed`. This is the mocked step — a 1.5s "Verifying payment…" spinner first so it reads as real.

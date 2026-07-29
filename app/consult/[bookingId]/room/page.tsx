@@ -5,7 +5,7 @@ import { formatSlotFull } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Video room — LegalBridge" };
+export const metadata = { title: "Video room — LawNest" };
 
 export default async function RoomPage({
   params,

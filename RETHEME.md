@@ -1,4 +1,4 @@
-# LegalBridge — Re-theme + Layout Fix (Daylight Chambers)
+# LawNest — Re-theme + Layout Fix (Daylight Chambers)
 
 > This is a **restyle pass on the existing, working build.** Do NOT rebuild the consultation loop, the schema, the seed, the AI assistant, or any routing. Every page must keep working exactly as it does now. You are only changing: (1) the colour tokens, (2) the fonts, (3) the container/layout system, (4) filling the empty left/right space on pages that currently look sparse.
 >

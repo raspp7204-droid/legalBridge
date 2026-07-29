@@ -6,7 +6,7 @@ import { formatSlotFull } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Admin — LegalBridge" };
+export const metadata = { title: "Admin — LawNest" };
 
 function Stat({
   icon: Icon,

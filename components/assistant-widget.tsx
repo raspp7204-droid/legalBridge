@@ -70,7 +70,7 @@ export function AssistantWidget() {
         <div
           id="lb-assistant-panel"
           role="dialog"
-          aria-label="LegalBridge assistant"
+          aria-label="LawNest assistant"
           className="fixed inset-x-3 bottom-20 z-40 flex max-h-[min(78vh,640px)] flex-col overflow-hidden rounded-2xl border border-rule bg-surface shadow-[0_12px_40px_rgb(23_35_58/0.16)] sm:inset-x-auto sm:bottom-24 sm:right-6 sm:w-[400px]"
         >
           {/* Oxblood rule — the one accent in this component */}
@@ -82,7 +82,7 @@ export function AssistantWidget() {
             </span>
             <div className="min-w-0">
               <p className="font-display text-[0.95rem] leading-tight">
-                LegalBridge Assistant
+                LawNest Assistant
               </p>
               <p className="mono-label text-muted">Free · not legal advice</p>
             </div>

@@ -8,7 +8,7 @@ import { formatSlotFull } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Booking confirmed — LegalBridge" };
+export const metadata = { title: "Booking confirmed — LawNest" };
 
 export default async function ConfirmedPage({
   params,

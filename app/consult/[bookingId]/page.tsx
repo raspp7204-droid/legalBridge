@@ -10,7 +10,7 @@ import { formatRupees } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Consultation — LegalBridge" };
+export const metadata = { title: "Consultation — LawNest" };
 
 // Static placeholders — file upload is out of scope (CLAUDE.md §3)
 const DOCUMENTS = [

@@ -22,7 +22,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "LegalBridge — verified advocates at a fixed fee",
+  title: "LawNest — verified advocates at a fixed fee",
   description:
     "Talk to a verified Indian advocate for a fixed fee. See the price, and the split, before you pay.",
 };
