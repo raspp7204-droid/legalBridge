@@ -45,16 +45,32 @@ export async function ensureDbUser(intendedRole: Role = "CLIENT") {
   const clerkUser = await currentUser();
   if (!clerkUser) return null;
 
-  const existing = await db.user.findUnique({
-    where: { clerkId: clerkUser.id },
-    include: { lawyer: true },
-  });
-  if (existing) return existing;
-
   const email =
     clerkUser.primaryEmailAddress?.emailAddress ??
     clerkUser.emailAddresses[0]?.emailAddress ??
     null;
+
+  const existing = await db.user.findUnique({
+    where: { clerkId: clerkUser.id },
+    include: { lawyer: true },
+  });
+
+  if (existing) {
+    // ADMIN_EMAILS is checked on every visit, not just at signup, so adding
+    // an address to the env promotes that account on its next page load.
+    if (
+      email &&
+      existing.role !== "ADMIN" &&
+      adminEmails().includes(email.toLowerCase())
+    ) {
+      return db.user.update({
+        where: { id: existing.id },
+        data: { role: "ADMIN" },
+        include: { lawyer: true },
+      });
+    }
+    return existing;
+  }
 
   const role: Role =
     email && adminEmails().includes(email.toLowerCase())

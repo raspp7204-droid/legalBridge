@@ -23,14 +23,16 @@ async function authorize(bookingId: string) {
   const user = await getDbUser();
   if (!user) return { error: "Sign in required.", status: 401 } as const;
 
-  if (user.role === "ADMIN") {
-    // Admin can read a thread for oversight, but never writes into it.
-    return { booking, role: "ADMIN" as const, canWrite: false } as const;
-  }
-
+  // Participation decides first: an admin who booked a consultation is that
+  // booking's client and writes as one.
   const isClient = user.id === booking.clientId;
   const isLawyer = user.id === booking.lawyer.userId;
+
   if (!isClient && !isLawyer) {
+    if (user.role === "ADMIN") {
+      // Admin can read any thread for oversight, but never writes into it.
+      return { booking, role: "ADMIN" as const, canWrite: false } as const;
+    }
     return { error: "Not your consultation.", status: 403 } as const;
   }
 

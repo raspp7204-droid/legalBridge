@@ -5,6 +5,7 @@ import type { Tier } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { TIER_FEE } from "@/lib/money";
+import { ensureUpcomingSlots } from "@/lib/slots";
 
 /** Approve → VERIFIED at the chosen tier, with the fee that tier implies. */
 export async function approveLawyer(formData: FormData) {
@@ -18,43 +19,15 @@ export async function approveLawyer(formData: FormData) {
     data: { status: "VERIFIED", tier, fee: TIER_FEE[tier] },
   });
 
-  // A newly verified advocate needs slots or their profile looks dead.
-  const existing = await db.slot.count({ where: { lawyerId: id } });
-  if (existing === 0) {
-    const now = new Date();
-    const istNow = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
-    const data = [];
-    for (let day = 1; day <= 3 && data.length < 8; day++) {
-      for (const [h, m] of [
-        [10, 0],
-        [11, 30],
-        [14, 0],
-        [16, 30],
-      ]) {
-        if (data.length >= 8) break;
-        data.push({
-          lawyerId: id,
-          startsAt: new Date(
-            Date.UTC(
-              istNow.getUTCFullYear(),
-              istNow.getUTCMonth(),
-              istNow.getUTCDate() + day,
-              h,
-              m,
-            ) -
-              5.5 * 60 * 60 * 1000,
-          ),
-          booked: false,
-        });
-      }
-    }
-    await db.slot.createMany({ data });
-  }
+  // A newly verified advocate needs bookable time or their profile is a
+  // dead end for clients.
+  await ensureUpcomingSlots(id);
 
   revalidatePath("/admin/verification");
   revalidatePath("/admin");
   revalidatePath("/lawyers");
   revalidatePath("/categories");
+  revalidatePath("/lawyer");
 }
 
 export async function rejectLawyer(formData: FormData) {

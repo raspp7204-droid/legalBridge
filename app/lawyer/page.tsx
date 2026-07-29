@@ -99,7 +99,7 @@ export default async function LawyerDashboard() {
 
   // Pending payout — everything earned that hasn't reached a payout run yet.
   // Payouts settle weekly; nothing here is a real bank transfer.
-  const pending = bookings
+  const pendingPayout = bookings
     .filter((b) => b.createdAt >= thirtyDaysAgo)
     .reduce((sum, b) => sum + b.lawyerCut, 0);
 
@@ -129,7 +129,16 @@ export default async function LawyerDashboard() {
     ? Math.round((answered / bookings.length) * 100)
     : 100;
 
-  const incomplete = !profile.court || !profile.bio;
+  // What still stands between this advocate and a live listing.
+  const missing = [
+    !profile.court && "court",
+    !profile.city && "city",
+    !profile.years && "years in practice",
+    !profile.bciNumber && "Bar Council enrolment number",
+    !profile.bio && "bio",
+  ].filter(Boolean) as string[];
+
+  const awaitingVerification = profile.status !== "VERIFIED";
 
   return (
     <main className="container container-wide section-tight">
@@ -154,21 +163,52 @@ export default async function LawyerDashboard() {
             </span>
           </p>
         </div>
-        <AvailabilityToggle initial={profile.online} />
+        <AvailabilityToggle
+          initial={profile.online}
+          verified={profile.status === "VERIFIED"}
+        />
       </div>
 
-      {incomplete && (
-        <div className="card mt-6 flex flex-wrap items-center justify-between gap-4 border-l-2 border-l-accent p-5">
-          <p className="text-sm text-slate">
-            Your profile is incomplete — add your court, city and bio so the
-            verification team can approve your listing.
-          </p>
-          <Link
-            href="/lawyer/profile"
-            className="btn-primary mono-label shrink-0 rounded-full px-4 py-2"
-          >
-            Complete profile
-          </Link>
+      {awaitingVerification && (
+        <div className="card mt-6 border-l-2 border-l-accent p-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="max-w-2xl">
+              <p className="mono-label text-accent">
+                {profile.status === "REJECTED"
+                  ? "Verification rejected"
+                  : "Pending verification"}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-slate">
+                {profile.status === "REJECTED"
+                  ? "Your enrolment could not be matched against the Bar Council register. Correct your details and we will review again."
+                  : "You are not visible to clients yet. LawNest checks your Bar Council enrolment before your listing goes live — that is what the verified badge means, so we do not skip it."}
+              </p>
+              {missing.length > 0 && (
+                <p className="mono-label mt-3 text-muted">
+                  Still needed · {missing.join(" · ")}
+                </p>
+              )}
+            </div>
+            <Link
+              href="/lawyer/profile"
+              className="btn-primary mono-label shrink-0 rounded-full px-4 py-2"
+            >
+              {missing.length > 0 ? "Complete profile" : "Edit profile"}
+            </Link>
+          </div>
+
+          <ol className="mt-5 grid gap-3 border-t border-rule pt-4 sm:grid-cols-3">
+            {[
+              ["01", "Complete your practice details"],
+              ["02", "LawNest verifies your enrolment"],
+              ["03", "Your listing goes live and clients can book"],
+            ].map(([n, label]) => (
+              <li key={n} className="flex gap-2.5">
+                <span className="mono-label text-accent">{n}</span>
+                <span className="text-sm text-slate">{label}</span>
+              </li>
+            ))}
+          </ol>
         </div>
       )}
 
@@ -190,7 +230,7 @@ export default async function LawyerDashboard() {
         <Kpi
           icon={Wallet}
           label="Pending payout"
-          value={formatRupees(pending)}
+          value={formatRupees(pendingPayout)}
           hint="settles weekly"
         />
         <Kpi
@@ -319,7 +359,7 @@ export default async function LawyerDashboard() {
             <div className="p-5">
               <p className="mono-label text-muted">Available balance</p>
               <p className="font-mono-num mt-1 text-3xl text-accent">
-                {formatRupees(pending)}
+                {formatRupees(pendingPayout)}
               </p>
 
               <dl className="mt-5 space-y-2.5 border-t border-rule pt-4">

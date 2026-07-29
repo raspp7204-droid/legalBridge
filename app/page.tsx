@@ -193,15 +193,10 @@ export default async function Home() {
             </p>
 
             <div className="mt-4 space-y-2.5">
-              {(featuredPromoted.length > 0
-                ? featuredPromoted.slice(0, 2)
-                : featured.slice(0, 2)
-              ).map((l) => (
-                <LawyerCardCompact
-                  key={l.id}
-                  lawyer={l}
-                  promoted={promotedIds.has(l.id)}
-                />
+              {/* Organic only — promoted advocates live in the Featured strip
+                  below, so nobody appears twice on this page. */}
+              {organicFeatured.slice(0, 2).map((l) => (
+                <LawyerCardCompact key={l.id} lawyer={l} />
               ))}
             </div>
 
@@ -344,7 +339,7 @@ export default async function Home() {
 
         {/* Promoted advocates appear once, in the strip above */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {organicFeatured.slice(0, 3).map((l) => (
+          {organicFeatured.slice(2, 5).map((l) => (
             <LawyerCard key={l.id} lawyer={l} />
           ))}
         </div>

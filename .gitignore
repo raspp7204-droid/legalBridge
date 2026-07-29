@@ -45,3 +45,6 @@ next-env.d.ts
 
 # local dev database
 .pgdata/
+
+# clerk configuration (can include secrets)
+/.clerk/

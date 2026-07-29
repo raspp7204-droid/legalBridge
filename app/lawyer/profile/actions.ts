@@ -7,6 +7,7 @@ import { requireLawyerProfile } from "@/lib/auth";
 export async function saveProfile(formData: FormData) {
   const profile = await requireLawyerProfile();
 
+  const name = String(formData.get("name") ?? "").trim();
   const bio = String(formData.get("bio") ?? "").trim();
   const city = String(formData.get("city") ?? "").trim();
   const court = String(formData.get("court") ?? "").trim();
@@ -19,6 +20,15 @@ export async function saveProfile(formData: FormData) {
     .map(String)
     .filter(Boolean);
   const categorySlugs = formData.getAll("categories").map(String);
+
+  // The roster reads "Adv. <name>"; an account created with email + password
+  // starts out named after the email prefix, so let them fix it here.
+  if (name) {
+    await db.user.update({
+      where: { id: profile.userId },
+      data: { name: /^adv\.?\s/i.test(name) ? name : `Adv. ${name}` },
+    });
+  }
 
   await db.lawyerProfile.update({
     where: { id: profile.id },

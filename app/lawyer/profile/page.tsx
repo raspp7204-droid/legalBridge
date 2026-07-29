@@ -60,6 +60,17 @@ export default async function LawyerProfilePage() {
         <div className="card p-5">
           <p className="mono-label text-muted">Practice details</p>
           <div className="mt-3 grid gap-4 sm:grid-cols-2">
+            <label className="block sm:col-span-2">
+              <span className="mono-label text-muted">
+                Display name — how clients see you
+              </span>
+              <input
+                name="name"
+                defaultValue={profile.user.name}
+                placeholder="Adv. Meera Nair"
+                className="mt-2 w-full rounded-lg border border-rule bg-surface-2 px-3 py-2.5 text-[0.95rem]"
+              />
+            </label>
             <label className="block">
               <span className="mono-label text-muted">Court</span>
               <input
