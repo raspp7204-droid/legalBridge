@@ -2,11 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { getLawyerProfile } from "@/lib/session";
+import { requireLawyerProfile } from "@/lib/session";
 
 export async function saveProfile(formData: FormData) {
-  const profile = await getLawyerProfile();
-  if (!profile) throw new Error("No advocate profile");
+  const profile = await requireLawyerProfile();
 
   const bio = String(formData.get("bio") ?? "").trim();
   const city = String(formData.get("city") ?? "").trim();

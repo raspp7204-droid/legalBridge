@@ -2,8 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { IndianRupee, CalendarDays, Inbox, ArrowRight } from "lucide-react";
 import { db } from "@/lib/db";
-import { getLawyerProfile } from "@/lib/session";
-import { EmptyState } from "@/components/empty-state";
+import { requireLawyerProfile } from "@/lib/session";
 import { AvailabilityToggle } from "@/components/availability-toggle";
 import { formatRupees } from "@/lib/money";
 import { formatSlotFull, formatSlotTime } from "@/lib/lawyers";
@@ -36,20 +35,7 @@ function Stat({
 }
 
 export default async function LawyerDashboard() {
-  const profile = await getLawyerProfile();
-
-  if (!profile) {
-    return (
-      <main className="container section">
-        <EmptyState
-          title="No advocate profile"
-          body="Run pnpm db:seed to create the demo advocate."
-          actionHref="/lawyers"
-          actionLabel="Browse advocates"
-        />
-      </main>
-    );
-  }
+  const profile = await requireLawyerProfile();
 
   const [bookings, earnings] = await Promise.all([
     db.booking.findMany({
@@ -81,8 +67,14 @@ export default async function LawyerDashboard() {
         <div>
           <p className="mono-label text-muted">Advocate dashboard</p>
           <h1 className="mt-3 text-[2.5rem] sm:text-[3rem]">
-            Good to see you, <span className="tone-accent">Meera</span>
+            Good to see you,{" "}
+            <span className="tone-accent">
+              {profile.user.name.replace(/^Adv\.\s*/, "").split(" ")[0]}
+            </span>
           </h1>
+          <p className="mono-label mt-3 text-muted">
+            {profile.court} · {profile.city}
+          </p>
         </div>
         <AvailabilityToggle initial={profile.online} />
       </div>

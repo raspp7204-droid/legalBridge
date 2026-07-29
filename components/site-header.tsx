@@ -1,16 +1,25 @@
 import Link from "next/link";
 import { Scale, Globe } from "lucide-react";
-import { getSessionRole } from "@/lib/session";
+import { getSession, getCurrentUser } from "@/lib/session";
 import { RoleSwitcher } from "@/components/role-switcher";
 
-const NAV = [
+const CLIENT_NAV = [
   { href: "/categories", label: "Legal matters" },
   { href: "/lawyers", label: "Advocates" },
   { href: "/me", label: "My consultations" },
 ];
 
+const LAWYER_NAV = [
+  { href: "/lawyer", label: "Dashboard" },
+  { href: "/lawyer/inbox", label: "Inbox" },
+  { href: "/lawyer/profile", label: "My profile" },
+];
+
 export async function SiteHeader() {
-  const role = await getSessionRole();
+  const session = await getSession();
+  const role = session?.role ?? null;
+  const user = role ? await getCurrentUser() : null;
+  const NAV = role === "LAWYER" ? LAWYER_NAV : CLIENT_NAV;
 
   return (
     <header className="sticky top-0 z-40 border-b border-rule bg-paper/90 backdrop-blur-md">
@@ -47,14 +56,31 @@ export async function SiteHeader() {
             <span className="mono-label">EN</span>
           </button>
 
-          <RoleSwitcher role={role} />
+          <RoleSwitcher role={role} name={user?.name ?? null} />
 
-          <Link
-            href="/lawyers"
-            className="btn-primary mono-label hidden rounded-full px-4 py-2 sm:inline-block"
-          >
-            Consult now
-          </Link>
+          {role === "LAWYER" ? (
+            <Link
+              href="/lawyer/inbox"
+              className="btn-primary mono-label hidden rounded-full px-4 py-2 sm:inline-block"
+            >
+              Open inbox
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/lawyer/login"
+                className="mono-label hidden rounded-full border border-rule px-3 py-2 text-slate transition-colors hover:border-accent/40 hover:text-ink lg:inline-block"
+              >
+                For advocates
+              </Link>
+              <Link
+                href="/lawyers"
+                className="btn-primary mono-label hidden rounded-full px-4 py-2 sm:inline-block"
+              >
+                Consult now
+              </Link>
+            </>
+          )}
         </div>
       </div>
 

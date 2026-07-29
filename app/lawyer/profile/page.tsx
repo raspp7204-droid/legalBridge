@@ -1,6 +1,5 @@
 import { db } from "@/lib/db";
-import { getLawyerProfile } from "@/lib/session";
-import { EmptyState } from "@/components/empty-state";
+import { requireLawyerProfile } from "@/lib/session";
 import { SaveButton } from "@/components/save-button";
 import { formatRupees } from "@/lib/money";
 import { saveProfile } from "./actions";
@@ -35,20 +34,7 @@ const CITIES = [
 ];
 
 export default async function LawyerProfilePage() {
-  const profile = await getLawyerProfile();
-
-  if (!profile) {
-    return (
-      <main className="container section">
-        <EmptyState
-          title="No advocate profile"
-          body="Run pnpm db:seed to create the demo advocate."
-          actionHref="/lawyer"
-          actionLabel="Back to dashboard"
-        />
-      </main>
-    );
-  }
+  const profile = await requireLawyerProfile();
 
   const [categories, mine] = await Promise.all([
     db.category.findMany({
@@ -65,7 +51,7 @@ export default async function LawyerProfilePage() {
 
   return (
     <main className="container container-narrow section-tight">
-      <p className="mono-label text-muted">Advocate</p>
+      <p className="mono-label text-muted">Advocate · {profile.user.name}</p>
       <h1 className="mt-3 text-[2.5rem] sm:text-[3rem]">
         Edit <span className="tone-accent">profile</span>
       </h1>
