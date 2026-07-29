@@ -132,7 +132,7 @@ export function ChatThread({
           />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[0.95rem]">{otherName}</p>
+          <p className="font-display truncate text-[0.95rem]">{otherName}</p>
           <p className="mono-label text-muted">
             {online ? (
               <span className="text-verified">● Online</span>
@@ -143,7 +143,7 @@ export function ChatThread({
         </div>
         <Link
           href={`/consult/${bookingId}/room`}
-          className="cta-brass mono-label flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2"
+          className="btn-primary mono-label flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2"
         >
           <Video className="size-4" strokeWidth={2.5} />
           <span className="hidden sm:inline">Join video</span>
@@ -166,8 +166,10 @@ export function ChatThread({
           pinnedToBottom.current =
             el.scrollHeight - el.scrollTop - el.clientHeight < 80;
         }}
-        className="flex-1 space-y-3 overflow-y-auto px-4 py-4"
+        className="flex-1 overflow-y-auto px-4 py-4"
       >
+        {/* Thread stays a readable 720px inside a wider pane */}
+        <div className="mx-auto w-full max-w-[720px] space-y-3">
         {messages.map((m) => {
           const mine =
             as === "LAWYER" ? m.senderRole === "LAWYER" : m.senderRole === "CLIENT";
@@ -189,7 +191,7 @@ export function ChatThread({
                 className={[
                   "max-w-[78%] rounded-2xl px-3.5 py-2",
                   mine
-                    ? "rounded-br-sm border border-brass/30 bg-brass/15"
+                    ? "rounded-br-sm border border-accent/25 bg-accent-bg"
                     : "rounded-bl-sm border border-rule bg-surface-2",
                 ].join(" ")}
               >
@@ -203,6 +205,7 @@ export function ChatThread({
             </div>
           );
         })}
+        </div>
       </div>
 
       {/* Composer */}
@@ -213,7 +216,7 @@ export function ChatThread({
         }}
         className="border-t border-rule bg-surface-2 px-3 py-3"
       >
-        <div className="flex items-end gap-2">
+        <div className="mx-auto flex w-full max-w-[720px] items-end gap-2">
           <textarea
             rows={1}
             value={input}
@@ -226,13 +229,13 @@ export function ChatThread({
             }}
             placeholder={`Message ${otherName.split(" ").slice(0, 2).join(" ")}…`}
             aria-label="Your message"
-            className="max-h-28 min-h-[2.75rem] flex-1 resize-none rounded-xl border border-rule bg-bg px-3.5 py-2.5 text-[0.95rem] leading-snug placeholder:text-muted"
+            className="max-h-28 min-h-[2.75rem] flex-1 resize-none rounded-xl border border-rule bg-surface px-3.5 py-2.5 text-[0.95rem] leading-snug placeholder:text-muted"
           />
           <button
             type="submit"
             disabled={!input.trim() || sending}
             aria-label="Send message"
-            className="cta-brass flex size-11 shrink-0 items-center justify-center rounded-full disabled:cursor-not-allowed disabled:opacity-40"
+            className="btn-primary flex size-11 shrink-0 items-center justify-center rounded-full disabled:cursor-not-allowed disabled:opacity-40"
           >
             <SendHorizonal className="size-4" strokeWidth={2.5} />
           </button>

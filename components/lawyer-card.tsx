@@ -5,6 +5,63 @@ import { VerifiedBadge } from "@/components/verified-badge";
 import { formatRupees } from "@/lib/money";
 import { formatSlotTime, type LawyerCardData } from "@/lib/lawyers";
 
+/**
+ * Compact row used inside the hero's "Advocates online now" panel — same data,
+ * one line of it, so two stack in the hero's right column without crowding.
+ */
+export function LawyerCardCompact({ lawyer }: { lawyer: LawyerCardData }) {
+  const nextSlot = lawyer.slots[0];
+
+  return (
+    <Link
+      href={`/lawyers/${lawyer.id}`}
+      className="card card-interactive flex items-center gap-3 p-3.5"
+    >
+      <span
+        className={`relative shrink-0 rounded-full p-[2px] ${
+          lawyer.online ? "bg-verified" : "bg-rule"
+        }`}
+      >
+        <Image
+          src={lawyer.user.avatar}
+          alt=""
+          width={44}
+          height={44}
+          className="size-11 rounded-full object-cover"
+        />
+      </span>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1.5">
+          <p className="font-display truncate text-[0.95rem] leading-tight">
+            {lawyer.user.name}
+          </p>
+          {lawyer.status === "VERIFIED" && <VerifiedBadge compact />}
+        </div>
+        <p className="mt-0.5 truncate text-xs text-slate">
+          {lawyer.years} yrs · {lawyer.court}
+        </p>
+        <p className="mono-label mt-1 text-muted">
+          {lawyer.online ? (
+            <span className="text-verified">● Online</span>
+          ) : nextSlot ? (
+            <>Next slot {formatSlotTime(nextSlot.startsAt)}</>
+          ) : (
+            <>By appointment</>
+          )}
+        </p>
+      </div>
+
+      <div className="shrink-0 text-right">
+        <p className="font-mono-num text-[0.95rem] text-accent">
+          {formatRupees(lawyer.fee)}
+        </p>
+        <p className="mono-label text-muted">30 min</p>
+      </div>
+    </Link>
+  );
+}
+
 export function LawyerCard({ lawyer }: { lawyer: LawyerCardData }) {
   const nextSlot = lawyer.slots[0];
 
@@ -67,7 +124,7 @@ export function LawyerCard({ lawyer }: { lawyer: LawyerCardData }) {
 
 
       {/* Row 4 — rating, consults, live state */}
-      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+      <div className="mt-3 mb-4 flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="flex items-center gap-1">
           <Star className="size-3.5 fill-star text-star" strokeWidth={2} />
           <span className="font-mono-num text-sm">
@@ -94,7 +151,7 @@ export function LawyerCard({ lawyer }: { lawyer: LawyerCardData }) {
       </div>
 
       {/* Row 5 — price + CTA */}
-      <div className="mt-4 flex items-center justify-between border-t border-rule pt-4">
+      <div className="mt-auto flex items-center justify-between border-t border-rule pt-4">
         <p className="font-mono-num text-lg text-accent">
           {formatRupees(lawyer.fee)}
           <span className="mono-label ml-1 text-muted">/ consult</span>

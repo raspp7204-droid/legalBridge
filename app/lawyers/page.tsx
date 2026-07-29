@@ -128,7 +128,7 @@ export default async function LawyersPage({
         <FilterSheet activeCount={activeFilterCount(sp)}>{rail}</FilterSheet>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[280px_1fr]">
+      <div className="mt-6 grid gap-7 lg:grid-cols-[264px_1fr]">
         <aside className="hidden lg:block">
           <div className="sticky top-24">{rail}</div>
         </aside>
@@ -142,7 +142,8 @@ export default async function LawyersPage({
               actionLabel="Clear filters"
             />
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
+            /* 3 up on desktop, 2 on tablet, 1 on mobile (RETHEME.md Task 3) */
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-5">
               {lawyers.map((l) => (
                 <LawyerCard key={l.id} lawyer={l} />
               ))}

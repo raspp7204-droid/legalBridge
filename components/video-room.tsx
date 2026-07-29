@@ -68,30 +68,32 @@ export function VideoRoom({
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-2">
+    <div className="space-y-6">
+      {/* Tiles stay dark — video reads better on dark, and they are the one
+          dark element allowed on the ivory page (RETHEME.md Task 3). */}
+      <div className="grid gap-5 min-[900px]:grid-cols-2">
         {/* Lawyer tile — static, "connected" */}
-        <div className="card relative flex aspect-video items-center justify-center overflow-hidden">
+        <div className="relative flex min-h-[360px] items-center justify-center overflow-hidden rounded-2xl border border-rule bg-video">
           <Image
             src={lawyerAvatar}
             alt=""
-            width={112}
-            height={112}
-            className="size-28 rounded-full object-cover"
+            width={128}
+            height={128}
+            className="size-32 rounded-full object-cover ring-2 ring-white/15"
           />
-          <div className="absolute inset-x-3 bottom-3 flex items-center justify-between">
-            <span className="mono-label rounded-full bg-bg/80 px-2.5 py-1">
+          <div className="absolute inset-x-4 bottom-4 flex items-center justify-between gap-2">
+            <span className="mono-label rounded-full bg-white/10 px-2.5 py-1 text-white backdrop-blur-sm">
               {lawyerName}
             </span>
-            <span className="flex items-center gap-1.5 rounded-full bg-bg/80 px-2.5 py-1">
-              <span className="size-2 rounded-full bg-verified" />
-              <span className="mono-label text-verified">Connected</span>
+            <span className="flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 backdrop-blur-sm">
+              <span className="animate-pulse-dot size-2 rounded-full bg-verified" />
+              <span className="mono-label text-white">Connected</span>
             </span>
           </div>
         </div>
 
         {/* Self tile */}
-        <div className="card relative flex aspect-video items-center justify-center overflow-hidden bg-black">
+        <div className="relative flex min-h-[360px] items-center justify-center overflow-hidden rounded-2xl border border-rule bg-video">
           <video
             ref={videoRef}
             autoPlay
@@ -100,14 +102,14 @@ export function VideoRoom({
             className={`size-full object-cover ${camOn ? "" : "invisible"}`}
           />
           {!camOn && (
-            <span className="mono-label absolute text-muted">Camera off</span>
+            <span className="mono-label absolute text-white/60">Camera off</span>
           )}
           {error && (
-            <p className="absolute px-6 text-center text-sm text-muted">
+            <p className="absolute px-6 text-center text-sm text-white/60">
               {error}
             </p>
           )}
-          <span className="mono-label absolute bottom-3 left-3 rounded-full bg-bg/80 px-2.5 py-1">
+          <span className="mono-label absolute bottom-4 left-4 rounded-full bg-white/10 px-2.5 py-1 text-white backdrop-blur-sm">
             You
           </span>
         </div>

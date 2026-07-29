@@ -34,8 +34,13 @@
   padding-inline: var(--gutter);
 }
 
-/* Width variants — set on the section (or main) that wraps a .container */
-.container-wide { --maxw: 1280px; }
+/* Width variants — set on the section (or main) that wraps a .container.
+   The wide variant also tightens the gutter: the listing needs ~1000px of
+   results area beside a 264px filter rail to fit three cards per row. */
+.container-wide {
+  --maxw: 1360px;
+  --gutter: clamp(20px, 3vw, 32px);
+}
 .container-narrow { --maxw: 980px; }
 .container-chat { --maxw: 1160px; }
 .container-room { --maxw: 1080px; }
@@ -78,33 +83,60 @@
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-html {
-  -webkit-text-size-adjust: 100%;
-  color-scheme: light;
+/* Element defaults live in @layer base so a Tailwind text-size or font-family
+   utility on an element still wins — an unlayered rule beats every utility. */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Display face: Fraunces at optical size 72 */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-variation-settings: "opsz" 72;
+    color: var(--ink);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  h1 { font-size: clamp(2.5rem, 4.6vw, 3.75rem); }
+  h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); }
+  h3 { font-size: 1.25rem; }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  ::selection {
+    background: var(--accent-bg);
+    color: var(--ink);
+  }
+
+  * {
+    scrollbar-color: var(--rule) transparent;
+  }
 }
 
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-size: 1rem;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
+@layer components {
 
-/* Display face: Fraunces at optical size 72 */
-h1, h2, h3, .font-display {
+.font-display {
   font-family: var(--font-display);
-  font-weight: 600;
   font-variation-settings: "opsz" 72;
-  color: var(--ink);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
-
-h1 { font-size: clamp(2.5rem, 5.2vw, 4.25rem); }
-h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); }
-h3 { font-size: 1.25rem; }
 
 /* Utility face: ₹ amounts, BCI numbers, ratings, timestamps, tier labels */
 .mono-label {
@@ -200,20 +232,8 @@ h3 { font-size: 1.25rem; }
   font-size: 0.75rem;
 }
 
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 3px;
 }
-
-::selection {
-  background: var(--accent-bg);
-  color: var(--ink);
-}
-
-* {
-  scrollbar-color: var(--rule) transparent;
-}
+/* end @layer components */
 
 @keyframes lb-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }

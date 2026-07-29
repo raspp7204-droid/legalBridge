@@ -11,7 +11,7 @@ import { db } from "@/lib/db";
 import { Starfield } from "@/components/starfield";
 import { LiveStrip } from "@/components/live-strip";
 import { CategoryTile } from "@/components/category-tile";
-import { LawyerCard } from "@/components/lawyer-card";
+import { LawyerCard, LawyerCardCompact } from "@/components/lawyer-card";
 import { lawyerCardSelect } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
@@ -80,7 +80,7 @@ export default async function Home() {
     db.lawyerProfile.findMany({
       where: { status: "VERIFIED", online: true },
       orderBy: [{ rating: "desc" }, { reviewCount: "desc" }],
-      take: 4,
+      take: 6,
       ...lawyerCardSelect,
     }),
     db.lawyerProfile.count({ where: { status: "VERIFIED", online: true } }),
@@ -91,47 +91,86 @@ export default async function Home() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <Starfield />
-        <div className="container section relative">
-          <div className="animate-rise">
-            <LiveStrip online={onlineCount} />
+        {/* Two-region hero: copy + CTAs left, live marketplace panel right.
+            Collapses to one column below 900px (RETHEME.md Task 3). */}
+        <div className="container section relative grid gap-12 min-[900px]:grid-cols-[1.05fr_0.95fr] min-[900px]:items-center">
+          <div className="min-[900px]:col-start-1 min-[900px]:row-start-1">
+            <div className="animate-rise">
+              <LiveStrip online={onlineCount} />
+            </div>
+
+            <h1 className="animate-rise mt-6">
+              Know what the law says,{" "}
+              <span className="tone-accent">before</span> you pay.
+            </h1>
+
+            <p
+              className="animate-rise mt-6 max-w-xl text-lg leading-relaxed text-slate"
+              style={{ animationDelay: "80ms" }}
+            >
+              Verified advocates across India at a fixed fee. Thirty minutes by
+              chat or video — and you see exactly how the fee splits before you
+              book.
+            </p>
+
+            <div
+              className="animate-rise mt-9 flex flex-wrap items-center gap-3"
+              style={{ animationDelay: "160ms" }}
+            >
+              <Link
+                href="/lawyers"
+                className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
+              >
+                Find an advocate
+                <ArrowRight className="size-4" strokeWidth={2.5} />
+              </Link>
+              <Link
+                href="/categories"
+                className="btn-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
+              >
+                Browse legal matters
+              </Link>
+            </div>
           </div>
 
-          <h1 className="animate-rise mt-6 max-w-4xl">
-            Know what the law says,{" "}
-            <span className="tone-accent">before</span> you pay.
-          </h1>
-
-          <p
-            className="animate-rise mt-6 max-w-xl text-lg leading-relaxed text-slate"
-            style={{ animationDelay: "80ms" }}
+          {/* Advocates online now — fills the right column */}
+          <aside
+            className="animate-rise card p-4 min-[900px]:col-start-2 min-[900px]:row-span-2 min-[900px]:row-start-1 min-[900px]:self-center sm:p-5"
+            style={{ animationDelay: "120ms" }}
           >
-            Verified advocates across India at a fixed fee. Thirty minutes by
-            chat or video — and you see exactly how the fee splits before you
-            book.
-          </p>
+            <div className="flex items-baseline justify-between gap-3">
+              <h2 className="text-[1.25rem]">Advocates online now</h2>
+              <Link
+                href="/lawyers?online=1"
+                className="mono-label shrink-0 text-accent hover:underline"
+              >
+                See all
+              </Link>
+            </div>
 
-          <div
-            className="animate-rise mt-9 flex flex-wrap items-center gap-3"
-            style={{ animationDelay: "160ms" }}
-          >
-            <Link
-              href="/lawyers"
-              className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
-            >
-              Find an advocate
-              <ArrowRight className="size-4" strokeWidth={2.5} />
-            </Link>
-            <Link
-              href="/categories"
-              className="btn-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
-            >
-              Browse legal matters
-            </Link>
-          </div>
+            <p className="mono-label mt-1.5 flex items-center gap-2 text-verified">
+              <span className="relative flex size-2">
+                <span className="animate-pulse-dot absolute inline-flex size-2 rounded-full bg-verified" />
+                <span className="relative inline-flex size-2 rounded-full bg-verified" />
+              </span>
+              {onlineCount} online · average reply under 5 min
+            </p>
+
+            <div className="mt-4 space-y-2.5">
+              {featured.slice(0, 2).map((l) => (
+                <LawyerCardCompact key={l.id} lawyer={l} />
+              ))}
+            </div>
+
+            <p className="mt-4 border-t border-rule pt-3 text-sm text-slate">
+              Every advocate here is enrolment-verified against the Bar Council
+              register before they can take a consultation.
+            </p>
+          </aside>
 
           {/* Price ladder */}
           <div
-            className="animate-rise mt-16 grid gap-3 sm:grid-cols-3"
+            className="animate-rise grid gap-3 sm:grid-cols-3 min-[900px]:col-start-1 min-[900px]:row-start-2"
             style={{ animationDelay: "240ms" }}
           >
             {LADDER.map((t) => (
@@ -143,10 +182,10 @@ export default async function Home() {
                 <p className="mt-2 text-sm text-slate">{t.note}</p>
               </div>
             ))}
+            <p className="mono-label text-muted sm:col-span-3">
+              Per 30-minute consultation · no hourly billing
+            </p>
           </div>
-          <p className="mono-label mt-4 text-muted">
-            Per 30-minute consultation · no hourly billing
-          </p>
         </div>
       </section>
 
@@ -214,8 +253,9 @@ export default async function Home() {
           </Link>
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {featured.map((l) => (
+        {/* The hero panel already shows the first two — don't repeat them */}
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {featured.slice(2).map((l) => (
             <LawyerCard key={l.id} lawyer={l} />
           ))}
         </div>
