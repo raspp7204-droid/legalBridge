@@ -25,8 +25,8 @@ function Stat({
 }) {
   return (
     <div className="card p-5">
-      <span className="flex size-9 items-center justify-center rounded-lg border border-brass/25 bg-brass/10">
-        <Icon className="size-4 text-brass" strokeWidth={2} />
+      <span className="flex size-9 items-center justify-center rounded-lg border border-rule bg-accent-bg">
+        <Icon className="size-4 text-accent" strokeWidth={2} />
       </span>
       <p className="mono-label mt-4 text-muted">{label}</p>
       <p className="font-mono-num mt-1 text-2xl">{value}</p>
@@ -113,7 +113,7 @@ export default async function LawyerDashboard() {
           <h2 className="text-xl">Today&apos;s bookings</h2>
           <Link
             href="/lawyer/inbox"
-            className="mono-label flex items-center gap-1 text-brass hover:underline"
+            className="mono-label flex items-center gap-1 text-accent hover:underline"
           >
             Open inbox
             <ArrowRight className="size-3.5" strokeWidth={2.5} />
@@ -150,7 +150,7 @@ export default async function LawyerDashboard() {
                 </div>
                 <Link
                   href={`/consult/${b.id}`}
-                  className="cta-brass mono-label shrink-0 rounded-full px-3.5 py-2"
+                  className="btn-primary mono-label shrink-0 rounded-full px-3.5 py-2"
                 >
                   Open
                 </Link>

@@ -18,12 +18,12 @@ export function FilterSheet({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full items-center justify-center gap-2 rounded-full border border-rule bg-surface px-4 py-2.5 text-sm text-text lg:hidden"
+        className="flex w-full items-center justify-center gap-2 rounded-full border border-rule bg-surface px-4 py-2.5 text-sm text-ink lg:hidden"
       >
         <SlidersHorizontal className="size-4" strokeWidth={2} />
         Filters
         {activeCount > 0 && (
-          <span className="mono-label rounded-full bg-brass px-2 py-0.5 text-[#14100A]">
+          <span className="mono-label rounded-full bg-accent px-2 py-0.5 text-white">
             {activeCount}
           </span>
         )}
@@ -35,9 +35,9 @@ export function FilterSheet({
             type="button"
             aria-label="Close filters"
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-black/70"
+            className="absolute inset-0 bg-ink/40"
           />
-          <div className="absolute inset-x-0 bottom-0 max-h-[82vh] overflow-y-auto rounded-t-2xl border-t border-rule bg-bg p-4">
+          <div className="absolute inset-x-0 bottom-0 max-h-[82vh] overflow-y-auto rounded-t-2xl border-t border-rule bg-paper p-4">
             <div className="mb-3 flex items-center justify-between">
               <p className="font-display text-lg">Filters</p>
               <button

@@ -53,7 +53,7 @@ export function AssistantWidget() {
         aria-expanded={open}
         aria-controls="lb-assistant-panel"
         aria-label={open ? "Close legal assistant" : "Open free legal assistant"}
-        className="fixed bottom-4 right-4 z-50 flex items-center gap-2 cta-brass rounded-full px-4 py-3 transition-transform hover:-translate-y-0.5 sm:bottom-6 sm:right-6"
+        className="fixed bottom-4 right-4 z-50 flex items-center gap-2 btn-primary rounded-full px-4 py-3 transition-transform hover:-translate-y-0.5 sm:bottom-6 sm:right-6"
       >
         {open ? (
           <X className="size-5" strokeWidth={2} />
@@ -71,13 +71,13 @@ export function AssistantWidget() {
           id="lb-assistant-panel"
           role="dialog"
           aria-label="LegalBridge assistant"
-          className="fixed inset-x-3 bottom-20 z-40 flex max-h-[min(78vh,640px)] flex-col overflow-hidden rounded-lg border border-rule bg-surface shadow-2xl sm:inset-x-auto sm:bottom-24 sm:right-6 sm:w-[400px]"
+          className="fixed inset-x-3 bottom-20 z-40 flex max-h-[min(78vh,640px)] flex-col overflow-hidden rounded-2xl border border-rule bg-surface shadow-[0_12px_40px_rgb(23_35_58/0.16)] sm:inset-x-auto sm:bottom-24 sm:right-6 sm:w-[400px]"
         >
-          {/* Brass rule — the one accent in this component */}
-          <div className="h-[3px] w-full bg-brass" aria-hidden="true" />
+          {/* Oxblood rule — the one accent in this component */}
+          <div className="h-[3px] w-full bg-accent" aria-hidden="true" />
 
           <header className="flex items-start gap-3 border-b border-rule bg-surface-2 px-4 py-3">
-            <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-sm border border-brass/40 bg-brass/15 text-brass">
+            <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-sm border border-accent/35 bg-accent-bg text-accent">
               <Scale className="size-4" strokeWidth={2} />
             </span>
             <div className="min-w-0">
@@ -97,7 +97,7 @@ export function AssistantWidget() {
           >
             {messages.length === 0 ? (
               <div className="space-y-4">
-                <p className="text-[0.95rem] leading-relaxed text-muted">
+                <p className="text-[0.95rem] leading-relaxed text-slate">
                   Describe your problem in your own words. I&apos;ll explain what
                   the law generally says and point you to the right kind of
                   advocate.
@@ -109,7 +109,7 @@ export function AssistantWidget() {
                       key={q}
                       type="button"
                       onClick={() => submit(q)}
-                      className="block w-full rounded-sm border border-rule bg-surface-2 px-3 py-2 text-left text-[0.9rem] leading-snug text-text transition-colors hover:border-brass/50"
+                      className="block w-full rounded-sm border border-rule bg-surface-2 px-3 py-2 text-left text-[0.9rem] leading-snug text-ink transition-colors hover:border-accent/40"
                     >
                       {q}
                     </button>
@@ -133,8 +133,8 @@ export function AssistantWidget() {
                         className={[
                           "max-w-[85%] whitespace-pre-wrap rounded-md px-3 py-2 text-[0.95rem] leading-relaxed",
                           mine
-                            ? "border border-brass/30 bg-brass/15 text-text"
-                            : "border border-rule bg-surface-2 text-text",
+                            ? "border border-accent/25 bg-accent-bg text-ink"
+                            : "border border-rule bg-surface-2 text-slate",
                         ].join(" ")}
                       >
                         {text || (
@@ -183,14 +183,14 @@ export function AssistantWidget() {
                 }}
                 placeholder="Describe your problem"
                 aria-label="Your question"
-                className="max-h-28 min-h-[2.5rem] flex-1 resize-none rounded-sm border border-rule bg-bg px-3 py-2 text-[0.95rem] leading-snug text-text placeholder:text-muted"
+                className="max-h-28 min-h-[2.5rem] flex-1 resize-none rounded-sm border border-rule bg-surface-2 px-3 py-2 text-[0.95rem] leading-snug text-ink placeholder:text-muted"
               />
               {busy ? (
                 <button
                   type="button"
                   onClick={() => stop()}
                   aria-label="Stop generating"
-                  className="flex size-10 shrink-0 items-center justify-center rounded-sm border border-rule bg-surface text-text"
+                  className="flex size-10 shrink-0 items-center justify-center rounded-sm border border-rule bg-surface text-ink"
                 >
                   <Square className="size-4" strokeWidth={2} />
                 </button>
@@ -199,7 +199,7 @@ export function AssistantWidget() {
                   type="submit"
                   disabled={!input.trim()}
                   aria-label="Send question"
-                  className="flex size-10 shrink-0 items-center justify-center cta-brass rounded-sm disabled:cursor-not-allowed disabled:opacity-40"
+                  className="flex size-10 shrink-0 items-center justify-center btn-primary rounded-sm disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <ArrowUp className="size-4" strokeWidth={2.5} />
                 </button>

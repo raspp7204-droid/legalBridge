@@ -58,12 +58,12 @@ export default async function VerificationQueue() {
                     {l.court} · {l.city} · {l.years} yrs
                   </p>
                   <p className="mono-label mt-2 text-muted">
-                    BCI <span className="text-text">{l.bciNumber}</span>
+                    BCI <span className="text-ink">{l.bciNumber}</span>
                   </p>
                 </div>
               </div>
 
-              <p className="mt-4 text-sm leading-relaxed text-text/85">
+              <p className="mt-4 text-sm leading-relaxed text-slate">
                 {l.bio}
               </p>
 
@@ -71,7 +71,7 @@ export default async function VerificationQueue() {
                 {l.categories.map((c) => (
                   <span
                     key={c.slug}
-                    className="rounded-md border border-rule bg-surface-2 px-2 py-1 text-xs text-text/85"
+                    className="rounded-md border border-rule bg-surface-2 px-2 py-1 text-xs text-slate"
                   >
                     {c.name}
                   </span>
@@ -86,7 +86,7 @@ export default async function VerificationQueue() {
                     className="flex items-center gap-2 rounded-lg border border-rule bg-surface-2 px-3 py-2.5"
                   >
                     <FileText className="size-4 shrink-0 text-muted" strokeWidth={2} />
-                    <span className="truncate text-xs text-text/85">{d}</span>
+                    <span className="truncate text-xs text-slate">{d}</span>
                   </div>
                 ))}
               </div>
@@ -105,7 +105,7 @@ export default async function VerificationQueue() {
                       id={`tier-${l.id}`}
                       name="tier"
                       defaultValue="MIDDLE"
-                      className="mt-2 w-full rounded-lg border border-rule bg-bg px-3 py-2.5 text-sm"
+                      className="mt-2 w-full rounded-lg border border-rule bg-surface-2 px-3 py-2.5 text-sm"
                     >
                       <option value="LOWER">LOWER · ₹399</option>
                       <option value="MIDDLE">MIDDLE · ₹549</option>
@@ -114,7 +114,7 @@ export default async function VerificationQueue() {
                   </div>
                   <button
                     type="submit"
-                    className="cta-brass mono-label flex h-[42px] shrink-0 items-center gap-1.5 self-end rounded-full px-5"
+                    className="btn-primary mono-label flex h-[42px] shrink-0 items-center gap-1.5 self-end rounded-full px-5"
                   >
                     <Check className="size-4" strokeWidth={2.5} />
                     Approve

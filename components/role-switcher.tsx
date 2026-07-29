@@ -48,7 +48,7 @@ export function RoleSwitcher({ role }: { role: SessionRole | null }) {
         aria-haspopup="menu"
         aria-expanded={open}
         disabled={pending}
-        className="flex items-center gap-2 rounded-full border border-rule bg-surface px-3 py-1.5 text-sm text-text transition-colors hover:border-brass/50 hover:bg-surface-2 disabled:opacity-60"
+        className="flex items-center gap-2 rounded-full border border-rule bg-surface px-3 py-1.5 text-sm text-ink transition-colors hover:border-accent/40 hover:bg-surface-2 disabled:opacity-60"
       >
         <UserRound className="size-4 text-muted" strokeWidth={2} />
         <span className="mono-label">
@@ -69,7 +69,7 @@ export function RoleSwitcher({ role }: { role: SessionRole | null }) {
               role="menuitem"
               type="button"
               onClick={() => choose(r)}
-              className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm text-text transition-colors hover:bg-surface-2"
+              className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm text-ink transition-colors hover:bg-surface-2"
             >
               {ROLE_LABELS[r]}
               {role === r && (
@@ -84,7 +84,7 @@ export function RoleSwitcher({ role }: { role: SessionRole | null }) {
                 role="menuitem"
                 type="button"
                 onClick={() => choose(null)}
-                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-muted transition-colors hover:bg-surface-2 hover:text-text"
+                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-muted transition-colors hover:bg-surface-2 hover:text-ink"
               >
                 <LogOut className="size-4" strokeWidth={2} />
                 Sign out

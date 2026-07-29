@@ -70,14 +70,6 @@
   --color-star: var(--star);
   --color-video: var(--video);
 
-  /* Compatibility aliases — the old class names now resolve to the new
-     palette so nothing renders dark mid-retheme. Removed in Task 4. */
-  --color-bg: var(--paper);
-  --color-text: var(--ink);
-  --color-brass: var(--accent);
-  --color-brass-dim: var(--accent-dim);
-  --color-live: var(--accent);
-
   --font-display: var(--font-fraunces), Georgia, serif;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
@@ -173,10 +165,8 @@
 }
 
 /* ---- Buttons ---- */
-/* Primary: solid oxblood pill. `.cta-brass` kept as an alias until the
-   Task 4 sweep renames every call site. */
-.btn-primary,
-.cta-brass {
+/* Primary: solid oxblood pill */
+.btn-primary {
   background: var(--accent);
   color: #FFFFFF;
   border: 1px solid var(--accent);
@@ -184,14 +174,12 @@
     transform 120ms ease;
 }
 
-.btn-primary:hover,
-.cta-brass:hover {
+.btn-primary:hover {
   background: var(--accent-dim);
   border-color: var(--accent-dim);
 }
 
-.btn-primary:active,
-.cta-brass:active {
+.btn-primary:active {
   background: var(--accent-dim);
   transform: translateY(1px);
 }

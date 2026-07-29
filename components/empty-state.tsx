@@ -22,7 +22,7 @@ export function EmptyState({
       {actionHref && actionLabel && (
         <Link
           href={actionHref}
-          className="cta-brass mono-label mt-6 rounded-full px-5 py-2.5"
+          className="btn-primary mono-label mt-6 rounded-full px-5 py-2.5"
         >
           {actionLabel}
         </Link>

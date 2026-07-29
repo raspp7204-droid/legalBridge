@@ -9,7 +9,7 @@ export const metadata = { title: "All advocates — LegalBridge" };
 
 const STATUS_STYLE = {
   VERIFIED: "border-verified/40 text-verified",
-  PENDING: "border-live/40 text-live",
+  PENDING: "border-accent/35 text-accent",
   REJECTED: "border-danger/40 text-danger",
 } as const;
 
@@ -49,7 +49,7 @@ export default async function AdminLawyers() {
                 <td className="px-4 py-3">
                   <Link
                     href={`/lawyers/${l.id}`}
-                    className="flex items-center gap-2.5 transition-colors hover:text-brass"
+                    className="flex items-center gap-2.5 transition-colors hover:text-accent"
                   >
                     <Image
                       src={l.user.avatar}
@@ -67,7 +67,7 @@ export default async function AdminLawyers() {
                   {l.bciNumber}
                 </td>
                 <td className="mono-label px-4 py-3">{l.tier}</td>
-                <td className="font-mono-num px-4 py-3 text-brass">
+                <td className="font-mono-num px-4 py-3 text-accent">
                   {formatRupees(l.fee)}
                 </td>
                 <td className="px-4 py-3">

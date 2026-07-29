@@ -81,7 +81,7 @@ export default async function LawyerProfilePage({
               <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
                 <span className="flex items-center gap-1.5">
                   <Star
-                    className="size-4 fill-brass text-brass"
+                    className="size-4 fill-star text-accent"
                     strokeWidth={2}
                   />
                   <span className="font-mono-num">
@@ -106,7 +106,7 @@ export default async function LawyerProfilePage({
 
           <section className="mt-9">
             <h2 className="text-xl">About</h2>
-            <p className="mt-3 max-w-2xl leading-relaxed text-text/85">
+            <p className="mt-3 max-w-2xl leading-relaxed text-slate">
               {lawyer.bio}
             </p>
           </section>
@@ -118,7 +118,7 @@ export default async function LawyerProfilePage({
                 <Link
                   key={c.slug}
                   href={`/lawyers?category=${c.slug}`}
-                  className="rounded-lg border border-rule bg-surface-2 px-3 py-1.5 text-sm text-text/85 transition-colors hover:border-brass/50"
+                  className="rounded-lg border border-rule bg-surface-2 px-3 py-1.5 text-sm text-slate transition-colors hover:border-accent/40"
                 >
                   {c.name}
                 </Link>
@@ -128,7 +128,7 @@ export default async function LawyerProfilePage({
 
           <section className="mt-8">
             <h2 className="text-xl">Languages</h2>
-            <p className="mt-3 flex items-center gap-2 text-text/85">
+            <p className="mt-3 flex items-center gap-2 text-slate">
               <Languages className="size-4 text-muted" strokeWidth={2} />
               {lawyer.languages.join(" · ")}
             </p>
@@ -137,7 +137,7 @@ export default async function LawyerProfilePage({
           <section className="mt-8">
             <h2 className="text-xl">Enrolment</h2>
             <p className="mono-label mt-3 text-muted">
-              Bar Council no. <span className="text-text">{lawyer.bciNumber}</span>
+              Bar Council no. <span className="text-ink">{lawyer.bciNumber}</span>
             </p>
           </section>
         </div>

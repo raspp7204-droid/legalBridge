@@ -80,7 +80,7 @@ export default async function LawyerProfilePage() {
             name="bio"
             rows={4}
             defaultValue={profile.bio}
-            className="mt-3 w-full resize-y rounded-lg border border-rule bg-bg px-3 py-2.5 text-[0.95rem] leading-relaxed"
+            className="mt-3 w-full resize-y rounded-lg border border-rule bg-surface-2 px-3 py-2.5 text-[0.95rem] leading-relaxed"
           />
         </div>
 
@@ -92,7 +92,7 @@ export default async function LawyerProfilePage() {
             id="city"
             name="city"
             defaultValue={profile.city}
-            className="mt-3 w-full rounded-lg border border-rule bg-bg px-3 py-2.5 text-[0.95rem]"
+            className="mt-3 w-full rounded-lg border border-rule bg-surface-2 px-3 py-2.5 text-[0.95rem]"
           >
             {CITIES.map((c) => (
               <option key={c} value={c}>
@@ -108,14 +108,14 @@ export default async function LawyerProfilePage() {
             {ALL_LANGUAGES.map((l) => (
               <label
                 key={l}
-                className="flex cursor-pointer items-center gap-2 rounded-lg border border-rule bg-surface-2 px-3 py-1.5 text-sm has-checked:border-brass has-checked:bg-brass/15"
+                className="flex cursor-pointer items-center gap-2 rounded-lg border border-rule bg-surface-2 px-3 py-1.5 text-sm has-checked:border-accent has-checked:bg-accent-bg"
               >
                 <input
                   type="checkbox"
                   name="languages"
                   value={l}
                   defaultChecked={profile.languages.includes(l)}
-                  className="accent-[var(--brass)]"
+                  className="accent-[var(--accent)]"
                 />
                 {l}
               </label>
@@ -129,14 +129,14 @@ export default async function LawyerProfilePage() {
             {categories.map((c) => (
               <label
                 key={c.slug}
-                className="flex cursor-pointer items-center gap-2 rounded-lg border border-rule bg-surface-2 px-3 py-1.5 text-sm has-checked:border-brass has-checked:bg-brass/15"
+                className="flex cursor-pointer items-center gap-2 rounded-lg border border-rule bg-surface-2 px-3 py-1.5 text-sm has-checked:border-accent has-checked:bg-accent-bg"
               >
                 <input
                   type="checkbox"
                   name="categories"
                   value={c.slug}
                   defaultChecked={myCats.has(c.slug)}
-                  className="accent-[var(--brass)]"
+                  className="accent-[var(--accent)]"
                 />
                 {c.name}
               </label>
@@ -147,10 +147,10 @@ export default async function LawyerProfilePage() {
         <div className="card p-5">
           <p className="mono-label text-muted">Fee &amp; tier</p>
           <div className="mt-3 flex items-baseline gap-3">
-            <span className="font-mono-num text-2xl text-brass">
+            <span className="font-mono-num text-2xl text-accent">
               {formatRupees(profile.fee)}
             </span>
-            <span className="mono-label rounded-full border border-brass/50 px-2 py-0.5 text-brass">
+            <span className="mono-label rounded-full border border-accent/40 px-2 py-0.5 text-accent">
               {profile.tier}
             </span>
           </div>

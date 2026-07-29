@@ -21,8 +21,8 @@ function Stat({
 }) {
   const inner = (
     <>
-      <span className="flex size-9 items-center justify-center rounded-lg border border-brass/25 bg-brass/10">
-        <Icon className="size-4 text-brass" strokeWidth={2} />
+      <span className="flex size-9 items-center justify-center rounded-lg border border-rule bg-accent-bg">
+        <Icon className="size-4 text-accent" strokeWidth={2} />
       </span>
       <p className="mono-label mt-4 text-muted">{label}</p>
       <p className="font-mono-num mt-1 text-3xl">{value}</p>
@@ -96,7 +96,7 @@ export default async function AdminPage() {
           <h2 className="text-xl">Recent bookings</h2>
           <Link
             href="/admin/bookings"
-            className="mono-label flex items-center gap-1 text-brass hover:underline"
+            className="mono-label flex items-center gap-1 text-accent hover:underline"
           >
             All bookings
             <ArrowRight className="size-3.5" strokeWidth={2.5} />
@@ -136,7 +136,7 @@ export default async function AdminPage() {
                     <td className="font-mono-num px-4 py-3 text-muted">
                       {formatSlotFull(b.slotAt)}
                     </td>
-                    <td className="font-mono-num px-4 py-3 text-right text-brass">
+                    <td className="font-mono-num px-4 py-3 text-right text-accent">
                       {formatRupees(b.amount)}
                     </td>
                   </tr>

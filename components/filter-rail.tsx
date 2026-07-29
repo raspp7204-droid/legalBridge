@@ -48,12 +48,12 @@ function Toggle({
     >
       <span
         className={`flex size-4 shrink-0 items-center justify-center rounded border ${
-          active ? "border-brass bg-brass text-[#14100A]" : "border-rule"
+          active ? "border-accent bg-accent text-white" : "border-rule"
         }`}
       >
         {active && <Check className="size-3" strokeWidth={3} />}
       </span>
-      <span className={active ? "text-text" : "text-text/80"}>{label}</span>
+      <span className={active ? "text-ink" : "text-slate"}>{label}</span>
       {hint && <span className="mono-label ml-auto text-muted">{hint}</span>}
     </Link>
   );
@@ -89,7 +89,7 @@ export function FilterRail({
           <Link
             href={BASE}
             scroll={false}
-            className="mono-label text-brass hover:underline"
+            className="mono-label text-accent hover:underline"
           >
             Clear {count}
           </Link>
@@ -172,14 +172,14 @@ export function FilterRail({
             >
               <span
                 className={`flex size-4 shrink-0 items-center justify-center rounded-full border ${
-                  sort === key ? "border-brass" : "border-rule"
+                  sort === key ? "border-accent" : "border-rule"
                 }`}
               >
                 {sort === key && (
-                  <span className="size-2 rounded-full bg-brass" />
+                  <span className="size-2 rounded-full bg-accent" />
                 )}
               </span>
-              <span className={sort === key ? "text-text" : "text-text/80"}>
+              <span className={sort === key ? "text-ink" : "text-slate"}>
                 {label}
               </span>
             </Link>

@@ -42,11 +42,11 @@ function BookingCard({ b, past }: { b: BookingRow; past: boolean }) {
       </div>
 
       <div className="flex items-center gap-3 sm:flex-col sm:items-end">
-        <p className="font-mono-num text-brass">{formatRupees(b.amount)}</p>
+        <p className="font-mono-num text-accent">{formatRupees(b.amount)}</p>
         <div className="flex gap-2">
           <Link
             href={`/consult/${b.id}`}
-            className="mono-label flex items-center gap-1.5 rounded-full border border-rule px-3 py-2 transition-colors hover:border-brass/50"
+            className="mono-label flex items-center gap-1.5 rounded-full border border-rule px-3 py-2 transition-colors hover:border-accent/40"
           >
             <MessageSquare className="size-3.5" strokeWidth={2} />
             Chat
@@ -54,7 +54,7 @@ function BookingCard({ b, past }: { b: BookingRow; past: boolean }) {
           {!past && (
             <Link
               href={`/consult/${b.id}/room`}
-              className="mono-label flex items-center gap-1.5 rounded-full border border-rule px-3 py-2 transition-colors hover:border-brass/50"
+              className="mono-label flex items-center gap-1.5 rounded-full border border-rule px-3 py-2 transition-colors hover:border-accent/40"
             >
               <Video className="size-3.5" strokeWidth={2} />
               Video

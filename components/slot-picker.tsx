@@ -60,7 +60,7 @@ export function SlotPicker({
       <div className="mt-4 space-y-4">
         {days.map(([day, daySlots]) => (
           <div key={day}>
-            <p className="mono-label text-text/70">{day}</p>
+            <p className="mono-label text-slate">{day}</p>
             <div className="mt-2 grid grid-cols-2 gap-2">
               {daySlots.map((s) => {
                 const active = selected === s.id;
@@ -76,8 +76,8 @@ export function SlotPicker({
                       s.booked
                         ? "cursor-not-allowed border-rule bg-surface-2/50 text-muted line-through"
                         : active
-                          ? "border-brass bg-brass/15 text-text"
-                          : "border-rule bg-surface-2 text-text hover:border-brass/50",
+                          ? "border-accent bg-accent-bg text-ink"
+                          : "border-rule bg-surface-2 text-ink hover:border-accent/40",
                     ].join(" ")}
                   >
                     {s.time}
@@ -93,7 +93,7 @@ export function SlotPicker({
         type="button"
         onClick={proceed}
         disabled={!selected || going}
-        className="cta-brass mt-5 flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-45"
+        className="btn-primary mt-5 flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-45"
       >
         {going ? (
           <>

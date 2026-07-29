@@ -63,7 +63,7 @@ export default async function AdminBookings() {
                   <td className="font-mono-num px-4 py-3 uppercase text-muted">
                     <Link
                       href={`/consult/${b.id}`}
-                      className="transition-colors hover:text-brass"
+                      className="transition-colors hover:text-accent"
                     >
                       {b.id.slice(-8)}
                     </Link>
@@ -73,7 +73,7 @@ export default async function AdminBookings() {
                   <td className="font-mono-num px-4 py-3 text-muted">
                     {formatSlotFull(b.slotAt)}
                   </td>
-                  <td className="font-mono-num px-4 py-3 text-brass">
+                  <td className="font-mono-num px-4 py-3 text-accent">
                     {formatRupees(b.amount)}
                   </td>
                   <td className="font-mono-num px-4 py-3 text-muted">
@@ -84,7 +84,7 @@ export default async function AdminBookings() {
                       className={`mono-label rounded-full border px-2 py-1 ${
                         b.paid
                           ? "border-verified/40 text-verified"
-                          : "border-live/40 text-live"
+                          : "border-accent/35 text-accent"
                       }`}
                     >
                       {b.paid ? "Paid" : "Unpaid"}

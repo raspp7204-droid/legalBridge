@@ -10,7 +10,7 @@ export function SaveButton({ label = "Save changes" }: { label?: string }) {
     <button
       type="submit"
       disabled={pending}
-      className="cta-brass flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 font-medium disabled:opacity-70"
+      className="btn-primary flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 font-medium disabled:opacity-70"
     >
       {pending ? (
         <>

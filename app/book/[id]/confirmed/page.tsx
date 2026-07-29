@@ -73,7 +73,7 @@ export default async function ConfirmedPage({
             </div>
             <div className="flex items-baseline justify-between gap-4">
               <dt className="mono-label text-muted">Paid</dt>
-              <dd className="font-mono-num text-sm text-brass">
+              <dd className="font-mono-num text-sm text-accent">
                 {formatRupees(booking.amount)}
               </dd>
             </div>
@@ -82,14 +82,14 @@ export default async function ConfirmedPage({
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href={`/consult/${booking.id}`}
-              className="cta-brass flex flex-1 items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium"
+              className="btn-primary flex flex-1 items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium"
             >
               <MessageSquare className="size-4" strokeWidth={2.5} />
               Open chat
             </Link>
             <Link
               href={`/consult/${booking.id}/room`}
-              className="flex flex-1 items-center justify-center gap-2 rounded-full border border-rule px-5 py-3 text-sm transition-colors hover:border-brass/50 hover:bg-surface-2"
+              className="flex flex-1 items-center justify-center gap-2 rounded-full border border-rule px-5 py-3 text-sm transition-colors hover:border-accent/40 hover:bg-surface-2"
             >
               <Video className="size-4" strokeWidth={2} />
               Join video room
@@ -100,7 +100,7 @@ export default async function ConfirmedPage({
 
       <p className="mono-label mt-6 text-center text-muted">
         A receipt is available under{" "}
-        <Link href="/me" className="text-brass hover:underline">
+        <Link href="/me" className="text-accent hover:underline">
           my consultations
         </Link>
       </p>

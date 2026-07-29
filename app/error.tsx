@@ -10,7 +10,8 @@ export default function Error({
   reset: () => void;
 }) {
   return (
-    <main className="mx-auto flex max-w-lg flex-col items-center px-4 py-24 text-center sm:px-6">
+    <main className="container section flex flex-col items-center text-center">
+      <div className="flex max-w-lg flex-col items-center">
       <span className="flex size-12 items-center justify-center rounded-full border border-danger/40 bg-danger/10">
         <TriangleAlert className="size-5 text-danger" strokeWidth={2} />
       </span>
@@ -23,17 +24,18 @@ export default function Error({
         <button
           type="button"
           onClick={reset}
-          className="cta-brass inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium"
+          className="btn-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium"
         >
           <RotateCw className="size-4" strokeWidth={2.5} />
           Try again
         </button>
         <Link
           href="/lawyers"
-          className="inline-flex items-center rounded-full border border-rule px-5 py-3 text-sm transition-colors hover:border-brass/50"
+          className="btn-secondary inline-flex items-center rounded-full px-5 py-3 text-sm font-medium"
         >
           Browse advocates
         </Link>
+      </div>
       </div>
     </main>
   );
