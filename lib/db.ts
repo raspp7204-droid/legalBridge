@@ -9,4 +9,6 @@ export const db =
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db;
+// Kept on the global in every environment so a serverless instance reuses one
+// pool across invocations (CHAT-AND-POLISH.md Task 2).
+globalForPrisma.prisma = db;

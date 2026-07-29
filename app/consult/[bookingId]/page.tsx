@@ -2,7 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CalendarDays, FileText, Timer } from "lucide-react";
 import { db } from "@/lib/db";
-import { getSessionRole } from "@/lib/session";
+import { getCurrentUser } from "@/lib/session";
 import { ChatThread } from "@/components/chat-thread";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatSlotFull } from "@/lib/lawyers";
@@ -25,7 +25,7 @@ export default async function ConsultPage({
 }) {
   const { bookingId } = await params;
 
-  const [booking, role] = await Promise.all([
+  const [booking, viewer] = await Promise.all([
     db.booking.findUnique({
       where: { id: bookingId },
       include: {
@@ -47,12 +47,16 @@ export default async function ConsultPage({
         },
       },
     }),
-    getSessionRole(),
+    getCurrentUser(),
   ]);
 
   if (!booking) notFound();
 
   const lawyer = booking.lawyer;
+
+  // Which side of the thread is this? Decided by identity, not by the role
+  // label — the advocate signs in as themselves at /lawyer/login (Task 2).
+  const as = viewer?.id === lawyer.userId ? "LAWYER" : "CLIENT";
 
   return (
     /* Two panes: the thread, and the consultation's details beside it.
@@ -60,7 +64,7 @@ export default async function ConsultPage({
     <main className="container container-chat grid gap-6 py-6 min-[900px]:grid-cols-[1fr_300px] sm:py-10">
       <ChatThread
         bookingId={booking.id}
-        as={role === "LAWYER" ? "LAWYER" : "CLIENT"}
+        as={as}
         initialMessages={booking.messages.map((m) => ({
           id: m.id,
           senderRole: m.senderRole,
@@ -78,15 +82,19 @@ export default async function ConsultPage({
       <aside className="space-y-4 min-[900px]:sticky min-[900px]:top-24 min-[900px]:self-start">
         {/* Advocate mini-profile */}
         <div className="card p-4">
-          <p className="mono-label text-muted">Your advocate</p>
+          <p className="mono-label text-muted">
+            {as === "LAWYER" ? "Your client" : "Your advocate"}
+          </p>
           <div className="mt-3 flex items-center gap-3">
             <span
               className={`shrink-0 rounded-full p-[2px] ${
-                lawyer.online ? "bg-verified" : "bg-rule"
+                as === "LAWYER" || lawyer.online ? "bg-verified" : "bg-rule"
               }`}
             >
               <Image
-                src={lawyer.user.avatar}
+                src={
+                  as === "LAWYER" ? booking.client.avatar : lawyer.user.avatar
+                }
                 alt=""
                 width={44}
                 height={44}
@@ -95,21 +103,31 @@ export default async function ConsultPage({
             </span>
             <div className="min-w-0">
               <p className="font-display truncate text-[0.95rem] leading-tight">
-                {lawyer.user.name}
+                {as === "LAWYER" ? booking.client.name : lawyer.user.name}
               </p>
               <div className="mt-1 flex items-center gap-1.5">
-                {lawyer.status === "VERIFIED" && <VerifiedBadge compact />}
-                <p className="truncate text-xs text-slate">
-                  {lawyer.years} yrs · {lawyer.court}
-                </p>
+                {as === "LAWYER" ? (
+                  <p className="truncate text-xs text-slate">
+                    Client · consultation paid
+                  </p>
+                ) : (
+                  <>
+                    {lawyer.status === "VERIFIED" && <VerifiedBadge compact />}
+                    <p className="truncate text-xs text-slate">
+                      {lawyer.years} yrs · {lawyer.court}
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </div>
 
           <div className="mt-4 flex items-baseline justify-between gap-3 border-t border-rule pt-3">
-            <span className="mono-label text-muted">Paid</span>
+            <span className="mono-label text-muted">
+              {as === "LAWYER" ? "You receive" : "Paid"}
+            </span>
             <span className="font-mono-num text-sm text-accent">
-              {formatRupees(booking.amount)}
+              {formatRupees(as === "LAWYER" ? booking.lawyerCut : booking.amount)}
             </span>
           </div>
 
