@@ -94,7 +94,7 @@ export default async function MePage() {
       </h1>
 
       {bookings.length === 0 ? (
-        <div className="mt-10">
+        <div className="document mt-10">
           <EmptyState
             title="No consultations yet"
             body="Once you book an advocate, your chats and video rooms live here."

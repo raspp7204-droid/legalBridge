@@ -1,6 +1,9 @@
 import { db } from "@/lib/db";
 import { CategoryTile } from "@/components/category-tile";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Starfield } from "@/components/starfield";
+import { Engraving } from "@/components/engraving";
 
 export const dynamic = "force-dynamic";
 
@@ -15,8 +18,9 @@ export default async function CategoriesPage() {
   });
 
   return (
-    <main className="relative">
+    <main className="relative overflow-hidden">
       <Starfield className="h-[420px]" />
+      <Engraving side="right" />
       <div className="container section relative">
         <p className="mono-label text-muted">Browse by matter</p>
         <h1 className="mt-3 max-w-3xl">
@@ -40,6 +44,26 @@ export default async function CategoriesPage() {
           ))}
         </div>
       </div>
+
+      {/* Closing band so the page ends on a section, not on empty paper */}
+      <section className="band-alt relative">
+        <div className="container section-tight flex flex-wrap items-center justify-between gap-6">
+          <div>
+            <h2 className="text-[1.75rem]">Not sure which one fits?</h2>
+            <p className="mt-3 max-w-lg text-slate">
+              Describe the problem in your own words to the free assistant, or
+              browse every verified advocate and filter by city and language.
+            </p>
+          </div>
+          <Link
+            href="/lawyers"
+            className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
+          >
+            See all advocates
+            <ArrowRight className="size-4" strokeWidth={2.5} />
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }

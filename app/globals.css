@@ -23,8 +23,25 @@
 
   /* Layout (RETHEME.md Task 2) — one container system, widened so the
      sides stop feeling empty. Pages that need more room set --maxw locally. */
-  --maxw: 1200px;
+  --maxw: 1240px;
   --gutter: clamp(20px, 5vw, 64px);
+}
+
+/* Full-bleed section bands (CHAT-AND-POLISH.md Task 3). The page is --paper;
+   every other section sits on a --surface-2 band that runs edge to edge while
+   its content stays inside .container. The alternation gives the page vertical
+   rhythm, so the eye stops reading the side gutters as empty. */
+.band-alt {
+  background: var(--surface-2);
+  border-block: 1px solid var(--rule);
+}
+
+/* Centered single-column pages (confirmed, empty states) — capped and wrapped
+   so being centred looks like a filed document, not marooned. */
+.document {
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
 }
 
 .container {
@@ -38,7 +55,7 @@
    The wide variant also tightens the gutter: the listing needs ~1000px of
    results area beside a 264px filter rail to fit three cards per row. */
 .container-wide {
-  --maxw: 1360px;
+  --maxw: 1320px;
   --gutter: clamp(20px, 3vw, 32px);
 }
 .container-narrow { --maxw: 980px; }

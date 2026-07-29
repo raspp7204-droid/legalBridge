@@ -27,7 +27,11 @@ export default async function ConfirmedPage({
   if (!booking) notFound();
 
   return (
-    <main className="container container-narrow section-tight">
+    /* Centred on purpose — capped at 720px and set on a band so the receipt
+       reads as a filed document (CHAT-AND-POLISH.md Task 3). */
+    <main className="band-alt">
+      <div className="container container-narrow section-tight">
+        <div className="document">
       <div className="card overflow-hidden">
         <div className="h-[3px] w-full bg-verified" aria-hidden="true" />
         <div className="p-6 sm:p-8">
@@ -104,6 +108,8 @@ export default async function ConfirmedPage({
           my consultations
         </Link>
       </p>
+        </div>
+      </div>
     </main>
   );
 }

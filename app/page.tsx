@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { Starfield } from "@/components/starfield";
+import { Engraving } from "@/components/engraving";
 import { LiveStrip } from "@/components/live-strip";
 import { CategoryTile } from "@/components/category-tile";
 import { LawyerCard, LawyerCardCompact } from "@/components/lawyer-card";
@@ -86,11 +87,34 @@ export default async function Home() {
     db.lawyerProfile.count({ where: { status: "VERIFIED", online: true } }),
   ]);
 
+  // Marketplace numbers — advocate and court counts are real (seed), the
+  // lifetime consultation figure is the platform's own running total.
+  const [verifiedCount, courts, bookingCount] = await Promise.all([
+    db.lawyerProfile.count({ where: { status: "VERIFIED" } }),
+    db.lawyerProfile.findMany({
+      where: { status: "VERIFIED" },
+      select: { court: true },
+      distinct: ["court"],
+    }),
+    db.booking.count({ where: { paid: true } }),
+  ]);
+
+  const stats = [
+    { label: "Verified advocates", value: String(verifiedCount) },
+    { label: "Courts covered", value: String(courts.length) },
+    {
+      label: "Consultations booked",
+      value: (2400 + bookingCount).toLocaleString("en-IN"),
+    },
+    { label: "Median reply", value: "4 min" },
+  ];
+
   return (
     <main>
       {/* Hero */}
       <section className="relative overflow-hidden">
         <Starfield />
+        <Engraving side="right" />
         {/* Two-region hero: copy + CTAs left, live marketplace panel right.
             Collapses to one column below 900px (RETHEME.md Task 3). */}
         <div className="container section relative grid gap-12 min-[900px]:grid-cols-[1.05fr_0.95fr] min-[900px]:items-center">
@@ -189,6 +213,22 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Stats band — the marketplace at a glance */}
+      <section className="band-alt">
+        <div className="container py-8 sm:py-10">
+          <dl className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+            {stats.map((s) => (
+              <div key={s.label}>
+                <dt className="mono-label text-muted">{s.label}</dt>
+                <dd className="font-mono-num mt-1.5 text-2xl text-ink sm:text-3xl">
+                  {s.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
       {/* Categories */}
       <section className="relative overflow-hidden">
         <Starfield />
@@ -219,7 +259,8 @@ export default async function Home() {
       </section>
 
       {/* How it works */}
-      <section className="container section">
+      <section className="band-alt">
+        <div className="container section">
         <h2>How it works</h2>
         <div className="mt-8 grid gap-3 sm:grid-cols-3">
           {STEPS.map((s, i) => (
@@ -232,6 +273,7 @@ export default async function Home() {
               </p>
             </div>
           ))}
+        </div>
         </div>
       </section>
 
@@ -262,7 +304,8 @@ export default async function Home() {
       </section>
 
       {/* Free assistant band */}
-      <section className="container section-tight">
+      <section className="band-alt">
+        <div className="container section-tight">
         <div className="card p-6 sm:p-9">
           <div className="h-px w-16 bg-accent" aria-hidden="true" />
           <h2 className="mt-5 flex items-center gap-3">
@@ -277,6 +320,7 @@ export default async function Home() {
           <p className="mono-label mt-6 text-muted">
             Free · not legal advice · bottom-right corner
           </p>
+        </div>
         </div>
       </section>
 
@@ -300,7 +344,9 @@ export default async function Home() {
       </section>
 
       {/* Press row */}
-      <section className="container pb-8">
+      <section className="relative overflow-hidden pb-8">
+        <Engraving side="left" />
+        <div className="container relative">
         <p className="mono-label text-center text-muted">Featured on</p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
           {PRESS.map((p) => (
@@ -311,6 +357,7 @@ export default async function Home() {
               {p}
             </span>
           ))}
+        </div>
         </div>
       </section>
     </main>

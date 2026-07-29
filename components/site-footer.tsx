@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Scale } from "lucide-react";
+import { Engraving } from "@/components/engraving";
 
 const COLUMNS = [
   {
@@ -16,22 +17,36 @@ const COLUMNS = [
     links: [
       { href: "/lawyers", label: "Find an advocate" },
       { href: "/me", label: "My consultations" },
+      { href: "/login", label: "Client sign-in" },
+      { href: "/categories", label: "How it works" },
     ],
   },
   {
     title: "For advocates",
     links: [
+      { href: "/lawyer/login", label: "Advocate sign-in" },
       { href: "/lawyer", label: "Advocate dashboard" },
-      { href: "/lawyer/profile", label: "Edit profile" },
+      { href: "/lawyer/inbox", label: "Consultation inbox" },
+      { href: "/lawyer/profile", label: "Edit my profile" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { href: "/admin", label: "Platform admin" },
+      { href: "/admin/verification", label: "Verification queue" },
+      { href: "/lawyers?online=1", label: "Advocates online" },
+      { href: "/categories", label: "All legal matters" },
     ],
   },
 ];
 
 export function SiteFooter() {
   return (
-    <footer className="mt-24 border-t border-rule bg-surface">
-      <div className="container py-14">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+    <footer className="relative mt-24 overflow-hidden border-t border-rule bg-surface">
+      <Engraving side="left" />
+      <div className="container relative py-14">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div>
             <div className="flex items-center gap-2">
               <span className="flex size-8 items-center justify-center rounded-lg border border-rule bg-surface-2">
