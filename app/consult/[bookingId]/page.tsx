@@ -40,7 +40,7 @@ export default async function ConsultPage({
   if (!booking) notFound();
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-10">
+    <main className="container container-chat py-6 sm:py-10">
       <ChatThread
         bookingId={booking.id}
         as={role === "LAWYER" ? "LAWYER" : "CLIENT"}

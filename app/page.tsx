@@ -91,7 +91,7 @@ export default async function Home() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <Starfield />
-        <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+        <div className="container section relative">
           <div className="animate-rise">
             <LiveStrip online={onlineCount} />
           </div>
@@ -153,7 +153,7 @@ export default async function Home() {
       {/* Categories */}
       <section className="relative overflow-hidden">
         <Starfield />
-        <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <div className="container section relative">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2>What do you need help with?</h2>
             <Link
@@ -180,7 +180,7 @@ export default async function Home() {
       </section>
 
       {/* How it works */}
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <section className="container section">
         <h2>How it works</h2>
         <div className="mt-8 grid gap-3 sm:grid-cols-3">
           {STEPS.map((s, i) => (
@@ -197,7 +197,7 @@ export default async function Home() {
       </section>
 
       {/* Featured advocates */}
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <section className="container section">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2>Online right now</h2>
@@ -222,7 +222,7 @@ export default async function Home() {
       </section>
 
       {/* Free assistant band */}
-      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <section className="container section-tight">
         <div className="card p-6 sm:p-9">
           <div className="h-px w-16 bg-accent" aria-hidden="true" />
           <h2 className="mt-5 flex items-center gap-3">
@@ -241,7 +241,7 @@ export default async function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <section className="container section">
         <h2>What clients say</h2>
         <div className="mt-8 grid gap-3 sm:grid-cols-3">
           {TESTIMONIALS.map((t) => (
@@ -260,7 +260,7 @@ export default async function Home() {
       </section>
 
       {/* Press row */}
-      <section className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
+      <section className="container pb-8">
         <p className="mono-label text-center text-muted">Featured on</p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
           {PRESS.map((p) => (

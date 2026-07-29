@@ -17,7 +17,7 @@ export default async function CategoriesPage() {
   return (
     <main className="relative">
       <Starfield className="h-[420px]" />
-      <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+      <div className="container section relative">
         <p className="mono-label text-muted">Browse by matter</p>
         <h1 className="mt-3 max-w-3xl">
           What is the <span className="tone-accent">problem</span>?

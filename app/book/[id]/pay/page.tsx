@@ -70,7 +70,7 @@ export default async function PayPage({
     `&tn=${encodeURIComponent(`LegalBridge-${booking.id}`)}`;
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-14">
+    <main className="container container-narrow section-tight">
       <p className="mono-label text-muted">Step 2 of 3 · payment</p>
       <h1 className="mt-3 text-[2rem] sm:text-[2.5rem]">
         Pay by <span className="tone-accent">UPI</span>

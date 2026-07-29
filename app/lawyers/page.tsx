@@ -106,7 +106,7 @@ export default async function LawyersPage({
     : null;
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+    <main className="container container-wide section-tight">
       <LiveStrip online={onlineCount} />
       <h1 className="mt-5 text-[2.5rem] sm:text-[3rem]">
         {activeCategory ? (

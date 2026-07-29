@@ -27,7 +27,7 @@ export default async function ConfirmedPage({
   if (!booking) notFound();
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-16">
+    <main className="container container-narrow section-tight">
       <div className="card overflow-hidden">
         <div className="h-[3px] w-full bg-verified" aria-hidden="true" />
         <div className="p-6 sm:p-8">

@@ -24,7 +24,7 @@ export default async function RoomPage({
   if (!booking) notFound();
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
+    <main className="container container-room section-tight">
       <p className="mono-label text-muted">
         Consultation · {formatSlotFull(booking.slotAt)}
       </p>

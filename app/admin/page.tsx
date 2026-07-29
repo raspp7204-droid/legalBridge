@@ -59,7 +59,7 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+    <main className="container section-tight">
       <p className="mono-label text-muted">Admin · Riva Sharma</p>
       <h1 className="mt-3 text-[2.5rem] sm:text-[3rem]">
         Platform <span className="tone-accent">overview</span>

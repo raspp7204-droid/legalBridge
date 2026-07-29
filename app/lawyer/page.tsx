@@ -40,7 +40,7 @@ export default async function LawyerDashboard() {
 
   if (!profile) {
     return (
-      <main className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+      <main className="container section">
         <EmptyState
           title="No advocate profile"
           body="Run pnpm db:seed to create the demo advocate."
@@ -76,7 +76,7 @@ export default async function LawyerDashboard() {
   );
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+    <main className="container section-tight">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="mono-label text-muted">Advocate dashboard</p>

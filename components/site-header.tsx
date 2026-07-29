@@ -14,7 +14,7 @@ export async function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-rule bg-paper/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
+      <div className="container flex h-16 items-center gap-4">
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <span className="flex size-8 items-center justify-center rounded-lg border border-rule bg-surface">
             <Scale className="size-4 text-accent" strokeWidth={2} />
@@ -59,7 +59,7 @@ export async function SiteHeader() {
       </div>
 
       {/* Mobile nav — the desktop links stay reachable under 768px */}
-      <nav className="flex items-center gap-1 overflow-x-auto border-t border-rule px-4 py-2 md:hidden">
+      <nav className="container flex items-center gap-1 overflow-x-auto border-t border-rule py-2 md:hidden">
         {NAV.map((item) => (
           <Link
             key={item.href}

@@ -25,7 +25,7 @@ export default async function LawyerInbox() {
     : [];
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
+    <main className="container section-tight">
       <p className="mono-label text-muted">Advocate</p>
       <h1 className="mt-3 text-[2.5rem] sm:text-[3rem]">
         <span className="tone-accent">Inbox</span>

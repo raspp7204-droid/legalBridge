@@ -39,7 +39,7 @@ export default async function LawyerProfilePage() {
 
   if (!profile) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <main className="container section">
         <EmptyState
           title="No advocate profile"
           body="Run pnpm db:seed to create the demo advocate."
@@ -64,7 +64,7 @@ export default async function LawyerProfilePage() {
   const myCats = new Set(mine?.categories.map((c) => c.slug) ?? []);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-14">
+    <main className="container container-narrow section-tight">
       <p className="mono-label text-muted">Advocate</p>
       <h1 className="mt-3 text-[2.5rem] sm:text-[3rem]">
         Edit <span className="tone-accent">profile</span>

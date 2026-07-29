@@ -38,7 +38,7 @@ export default async function LawyerProfilePage({
   }));
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+    <main className="container section-tight">
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
         {/* Left — profile */}
         <div>
