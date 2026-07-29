@@ -13,11 +13,11 @@ export async function SiteHeader() {
   const role = await getSessionRole();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-rule bg-bg/85 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-rule bg-paper/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Link href="/" className="flex shrink-0 items-center gap-2">
-          <span className="flex size-8 items-center justify-center rounded-lg border border-brass/40 bg-surface">
-            <Scale className="size-4 text-brass" strokeWidth={2} />
+          <span className="flex size-8 items-center justify-center rounded-lg border border-rule bg-surface">
+            <Scale className="size-4 text-accent" strokeWidth={2} />
           </span>
           <span className="font-display text-lg tracking-tight">
             Legal<span className="tone-accent">Bridge</span>
@@ -29,7 +29,7 @@ export async function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-md px-3 py-2 text-sm text-muted transition-colors hover:bg-surface hover:text-text"
+              className="rounded-md px-3 py-2 text-sm text-slate transition-colors hover:bg-surface hover:text-ink"
             >
               {item.label}
             </Link>
@@ -40,7 +40,7 @@ export async function SiteHeader() {
           {/* Language dropdown is visually present and does nothing (CLAUDE.md §3) */}
           <button
             type="button"
-            className="hidden items-center gap-1.5 rounded-full border border-rule px-3 py-1.5 text-muted transition-colors hover:border-brass/50 hover:text-text sm:flex"
+            className="hidden items-center gap-1.5 rounded-full border border-rule bg-surface px-3 py-1.5 text-slate transition-colors hover:border-accent/40 hover:text-ink sm:flex"
             aria-label="Change language"
           >
             <Globe className="size-4" strokeWidth={2} />
@@ -51,7 +51,7 @@ export async function SiteHeader() {
 
           <Link
             href="/lawyers"
-            className="cta-brass mono-label hidden rounded-full px-4 py-2 sm:inline-block"
+            className="btn-primary mono-label hidden rounded-full px-4 py-2 sm:inline-block"
           >
             Consult now
           </Link>
@@ -64,7 +64,7 @@ export async function SiteHeader() {
           <Link
             key={item.href}
             href={item.href}
-            className="whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-muted transition-colors hover:bg-surface hover:text-text"
+            className="whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-slate transition-colors hover:bg-surface hover:text-ink"
           >
             {item.label}
           </Link>

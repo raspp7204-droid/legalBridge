@@ -102,7 +102,7 @@ export default async function Home() {
           </h1>
 
           <p
-            className="animate-rise mt-6 max-w-xl text-lg leading-relaxed text-muted"
+            className="animate-rise mt-6 max-w-xl text-lg leading-relaxed text-slate"
             style={{ animationDelay: "80ms" }}
           >
             Verified advocates across India at a fixed fee. Thirty minutes by
@@ -116,14 +116,14 @@ export default async function Home() {
           >
             <Link
               href="/lawyers"
-              className="cta-brass inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
+              className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
             >
               Find an advocate
               <ArrowRight className="size-4" strokeWidth={2.5} />
             </Link>
             <Link
               href="/categories"
-              className="inline-flex items-center gap-2 rounded-full border border-rule px-6 py-3 text-sm transition-colors hover:border-brass/50 hover:bg-surface"
+              className="btn-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
             >
               Browse legal matters
             </Link>
@@ -137,10 +137,10 @@ export default async function Home() {
             {LADDER.map((t) => (
               <div key={t.tier} className="card p-5">
                 <p className="mono-label text-muted">{t.tier}</p>
-                <p className="font-mono-num mt-2 text-3xl text-brass">
+                <p className="font-mono-num mt-2 text-3xl text-accent">
                   ₹{t.fee}
                 </p>
-                <p className="mt-2 text-sm text-muted">{t.note}</p>
+                <p className="mt-2 text-sm text-slate">{t.note}</p>
               </div>
             ))}
           </div>
@@ -158,7 +158,7 @@ export default async function Home() {
             <h2>What do you need help with?</h2>
             <Link
               href="/categories"
-              className="mono-label flex items-center gap-1 text-brass hover:underline"
+              className="mono-label flex items-center gap-1 text-accent hover:underline"
             >
               All matters
               <ArrowRight className="size-3.5" strokeWidth={2.5} />
@@ -185,10 +185,10 @@ export default async function Home() {
         <div className="mt-8 grid gap-3 sm:grid-cols-3">
           {STEPS.map((s, i) => (
             <div key={s.title} className="card p-6">
-              <span className="mono-label text-brass">0{i + 1}</span>
-              <s.icon className="mt-4 size-6 text-brass" strokeWidth={2} />
+              <span className="mono-label text-accent">0{i + 1}</span>
+              <s.icon className="mt-4 size-6 text-accent" strokeWidth={2} />
               <h3 className="mt-4 text-lg">{s.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
+              <p className="mt-2 text-sm leading-relaxed text-slate">
                 {s.body}
               </p>
             </div>
@@ -201,13 +201,13 @@ export default async function Home() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2>Online right now</h2>
-            <p className="mt-2 text-muted">
+            <p className="mt-2 text-slate">
               Verified advocates available for a consultation today.
             </p>
           </div>
           <Link
             href="/lawyers?online=1"
-            className="mono-label flex items-center gap-1 text-brass hover:underline"
+            className="mono-label flex items-center gap-1 text-accent hover:underline"
           >
             See all online
             <ArrowRight className="size-3.5" strokeWidth={2.5} />
@@ -224,12 +224,12 @@ export default async function Home() {
       {/* Free assistant band */}
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <div className="card p-6 sm:p-9">
-          <div className="h-px w-16 bg-brass" aria-hidden="true" />
+          <div className="h-px w-16 bg-accent" aria-hidden="true" />
           <h2 className="mt-5 flex items-center gap-3">
-            <MessagesSquare className="size-6 text-brass" strokeWidth={2} />
+            <MessagesSquare className="size-6 text-accent" strokeWidth={2} />
             Ask a legal question, free
           </h2>
-          <p className="mt-4 max-w-2xl leading-relaxed text-muted">
+          <p className="mt-4 max-w-2xl leading-relaxed text-slate">
             Describe your problem in plain words. The assistant explains what the
             law generally says, points you to the right practice area, and tells
             you plainly when you need a real advocate.
@@ -246,8 +246,8 @@ export default async function Home() {
         <div className="mt-8 grid gap-3 sm:grid-cols-3">
           {TESTIMONIALS.map((t) => (
             <figure key={t.name} className="card flex flex-col p-6">
-              <Quote className="size-5 text-brass" strokeWidth={2} />
-              <blockquote className="mt-4 flex-1 leading-relaxed text-text/90">
+              <Quote className="size-5 text-accent" strokeWidth={2} />
+              <blockquote className="mt-4 flex-1 leading-relaxed text-slate">
                 {t.quote}
               </blockquote>
               <figcaption className="mt-5 border-t border-rule pt-4">

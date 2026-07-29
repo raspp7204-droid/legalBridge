@@ -1,32 +1,50 @@
 @import "tailwindcss";
 
-/* PLAN.md §2 — dark, legal, premium. Replaces the v1 light navy/paper theme. */
+/* RETHEME.md Task 1 — "Daylight Chambers": light, editorial, trust-first.
+   Warm ivory page, deep ink-navy text, one restrained oxblood accent,
+   sage green reserved for online/verified. */
 :root {
-  --bg:        #0D1017;   /* near-black, faint blue-ink */
-  --surface:   #151A22;   /* cards */
-  --surface-2: #1B222C;   /* hover / elevated */
-  --brass:     #D4A24E;   /* primary accent — aged brass/gold */
-  --brass-dim: #A87F35;   /* pressed / borders on brass */
-  --verified:  #34D399;   /* verified badge + online dot */
-  --live:      #F59E0B;   /* LIVE pulse */
-  --danger:    #E5484D;   /* few slots left / errors */
-  --text:      #F4F1EA;   /* warm white */
-  --muted:     #8B95A3;   /* secondary text */
-  --rule:      #242C37;   /* hairlines, card borders */
+  --paper:      #F4EFE4;   /* page background — warm ivory */
+  --surface:    #FFFFFF;   /* cards */
+  --surface-2:  #FBF8F1;   /* hover / elevated / subtle fills */
+  --ink:        #17233A;   /* headings + primary text — deep navy */
+  --slate:      #55606E;   /* secondary text on white */
+  --muted:      #6E6A5F;   /* tertiary / captions on ivory */
+  --accent:     #9E2B25;   /* oxblood — the ONE accent */
+  --accent-dim: #7F211C;   /* pressed / hover-darken */
+  --accent-bg:  #F3E7E5;   /* oxblood tint — chips, badges */
+  --verified:   #2C6E5B;   /* sage/forest green — online + verified only */
+  --rule:       #E4DDCE;   /* hairlines, card borders */
+  --danger:     #B23A31;   /* errors */
+  --star:       #C8962E;   /* rating stars ONLY */
+
+  /* Video tiles — the one dark element allowed on the light page (Task 3) */
+  --video: #14181F;
 }
 
 @theme inline {
-  --color-bg: var(--bg);
+  --color-paper: var(--paper);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
-  --color-brass: var(--brass);
-  --color-brass-dim: var(--brass-dim);
-  --color-verified: var(--verified);
-  --color-live: var(--live);
-  --color-danger: var(--danger);
-  --color-text: var(--text);
+  --color-ink: var(--ink);
+  --color-slate: var(--slate);
   --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-dim: var(--accent-dim);
+  --color-accent-bg: var(--accent-bg);
+  --color-verified: var(--verified);
   --color-rule: var(--rule);
+  --color-danger: var(--danger);
+  --color-star: var(--star);
+  --color-video: var(--video);
+
+  /* Compatibility aliases — the old class names now resolve to the new
+     palette so nothing renders dark mid-retheme. Removed in Task 4. */
+  --color-bg: var(--paper);
+  --color-text: var(--ink);
+  --color-brass: var(--accent);
+  --color-brass-dim: var(--accent-dim);
+  --color-live: var(--accent);
 
   --font-display: var(--font-fraunces), Georgia, serif;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -35,28 +53,29 @@
 
 html {
   -webkit-text-size-adjust: 100%;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Display face: Fraunces at optical size 72, weight 600 (PLAN.md §2) */
+/* Display face: Fraunces at optical size 72 */
 h1, h2, h3, .font-display {
   font-family: var(--font-display);
   font-weight: 600;
   font-variation-settings: "opsz" 72;
-  line-height: 1.02;
+  color: var(--ink);
+  line-height: 1.05;
   letter-spacing: -0.02em;
 }
 
-h1 { font-size: clamp(2.75rem, 6vw, 5rem); }
+h1 { font-size: clamp(2.5rem, 5.2vw, 4.25rem); }
 h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); }
 h3 { font-size: 1.25rem; }
 
@@ -73,56 +92,98 @@ h3 { font-size: 1.25rem; }
   font-variant-numeric: tabular-nums;
 }
 
-/* Two-tone hero trick — one word in brass */
+/* Two-tone hero trick — one word in oxblood */
 .tone-accent {
-  color: var(--brass);
+  color: var(--accent);
 }
 
-/* Cards: surface + hairline, lift to surface-2 with a brass edge on hover */
+/* ---- Cards ---- */
 .card {
   background: var(--surface);
   border: 1px solid var(--rule);
-  border-radius: 0.875rem;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
-  transition: transform 120ms ease, border-color 120ms ease, background-color 120ms ease;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgb(23 35 58 / 0.06);
+  transition: transform 140ms ease, border-color 140ms ease,
+    box-shadow 140ms ease, background-color 140ms ease;
 }
 
 .card-interactive:hover {
-  background: var(--surface-2);
-  border-color: color-mix(in oklab, var(--brass) 45%, transparent);
   transform: translateY(-2px);
+  border-color: #D8CFBC;
+  box-shadow: 0 4px 14px rgb(23 35 58 / 0.08);
 }
 
-/* Resting brass glow on the one primary CTA per view */
+/* ---- Buttons ---- */
+/* Primary: solid oxblood pill. `.cta-brass` kept as an alias until the
+   Task 4 sweep renames every call site. */
+.btn-primary,
 .cta-brass {
-  background: var(--brass);
-  color: #14100A;
-  box-shadow: 0 0 0 1px var(--brass-dim), 0 6px 20px -8px color-mix(in oklab, var(--brass) 70%, transparent);
-  transition: box-shadow 120ms ease, background-color 120ms ease, transform 120ms ease;
+  background: var(--accent);
+  color: #FFFFFF;
+  border: 1px solid var(--accent);
+  transition: background-color 120ms ease, border-color 120ms ease,
+    transform 120ms ease;
 }
 
+.btn-primary:hover,
 .cta-brass:hover {
-  background: color-mix(in oklab, var(--brass) 88%, white);
-  box-shadow: 0 0 0 1px var(--brass), 0 10px 30px -8px color-mix(in oklab, var(--brass) 85%, transparent);
+  background: var(--accent-dim);
+  border-color: var(--accent-dim);
 }
 
+.btn-primary:active,
 .cta-brass:active {
-  background: var(--brass-dim);
+  background: var(--accent-dim);
   transform: translateY(1px);
 }
 
+/* Secondary: transparent with an ink hairline */
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.btn-secondary:hover {
+  background: var(--surface-2);
+}
+
+/* ---- Chips ---- */
+/* Tier chip — mono uppercase, oxblood text on a thin oxblood hairline */
+.chip-tier {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent);
+  border-radius: 999px;
+  padding: 0.125rem 0.5rem;
+}
+
+/* Practice-area tag — quiet fill, slate text */
+.chip-tag {
+  background: var(--surface-2);
+  color: var(--slate);
+  border: 1px solid var(--rule);
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
 :focus-visible {
-  outline: 2px solid var(--brass);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 3px;
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--brass) 35%, transparent);
-  color: var(--text);
+  background: var(--accent-bg);
+  color: var(--ink);
 }
 
-/* Scrollbars follow the dark theme */
 * {
   scrollbar-color: var(--rule) transparent;
 }
@@ -135,11 +196,6 @@ h3 { font-size: 1.25rem; }
 @keyframes lb-rise {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: none; }
-}
-
-@keyframes lb-twinkle {
-  0%, 100% { opacity: 0.5; }
-  50%      { opacity: 0.85; }
 }
 
 .animate-pulse-dot { animation: lb-pulse 1.6s ease-in-out infinite; }

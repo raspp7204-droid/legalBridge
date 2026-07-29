@@ -31,19 +31,17 @@ export function LawyerCard({ lawyer }: { lawyer: LawyerCardData }) {
             <h3 className="truncate text-[1.0625rem] leading-snug">
               <Link
                 href={`/lawyers/${lawyer.id}`}
-                className="transition-colors hover:text-brass"
+                className="transition-colors hover:text-accent"
               >
                 {lawyer.user.name}
               </Link>
             </h3>
-            <span className="mono-label shrink-0 rounded-full border border-brass/50 px-2 py-0.5 text-brass">
-              {lawyer.tier}
-            </span>
+            <span className="chip-tier shrink-0">{lawyer.tier}</span>
           </div>
 
           <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
             {lawyer.status === "VERIFIED" && <VerifiedBadge compact />}
-            <p className="truncate text-sm text-muted">
+            <p className="truncate text-sm text-slate">
               {lawyer.years} yrs · {lawyer.court}
             </p>
           </div>
@@ -55,7 +53,7 @@ export function LawyerCard({ lawyer }: { lawyer: LawyerCardData }) {
         {lawyer.categories.map((c) => (
           <span
             key={c.slug}
-            className="rounded-md border border-rule bg-surface-2 px-2 py-1 text-xs text-text/85"
+            className="chip-tag"
           >
             {c.name}
           </span>
@@ -67,10 +65,11 @@ export function LawyerCard({ lawyer }: { lawyer: LawyerCardData }) {
         {lawyer.languages.join(" · ")}
       </p>
 
+
       {/* Row 4 — rating, consults, live state */}
       <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="flex items-center gap-1">
-          <Star className="size-3.5 fill-brass text-brass" strokeWidth={2} />
+          <Star className="size-3.5 fill-star text-star" strokeWidth={2} />
           <span className="font-mono-num text-sm">
             {lawyer.rating.toFixed(1)}
           </span>
@@ -96,13 +95,13 @@ export function LawyerCard({ lawyer }: { lawyer: LawyerCardData }) {
 
       {/* Row 5 — price + CTA */}
       <div className="mt-4 flex items-center justify-between border-t border-rule pt-4">
-        <p className="font-mono-num text-lg text-brass">
+        <p className="font-mono-num text-lg text-accent">
           {formatRupees(lawyer.fee)}
           <span className="mono-label ml-1 text-muted">/ consult</span>
         </p>
         <Link
           href={`/lawyers/${lawyer.id}`}
-          className="cta-brass inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium"
+          className="btn-primary inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium"
         >
           Consult
           <ArrowRight className="size-3.5" strokeWidth={2.5} />

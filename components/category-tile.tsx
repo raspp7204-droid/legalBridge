@@ -30,18 +30,18 @@ export function CategoryTile({
       className="card card-interactive group flex flex-col p-5"
     >
       <div className="flex items-start justify-between">
-        <span className="flex size-11 items-center justify-center rounded-xl border border-brass/25 bg-brass/10">
-          <Icon className="size-5 text-brass" strokeWidth={2} />
+        <span className="flex size-11 items-center justify-center rounded-xl border border-rule bg-accent-bg">
+          <Icon className="size-5 text-accent" strokeWidth={2} />
         </span>
         <ArrowUpRight
-          className="size-4 text-muted transition-colors group-hover:text-brass"
+          className="size-4 text-muted transition-colors group-hover:text-accent"
           strokeWidth={2}
         />
       </div>
 
       <h3 className="mt-4 text-[1.0625rem] leading-snug">{name}</h3>
       {blurb && (
-        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate">
           {blurb}
         </p>
       )}

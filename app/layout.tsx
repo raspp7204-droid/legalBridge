@@ -31,10 +31,13 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${fraunces.variable} ${inter.variable} ${GeistMono.variable} flex min-h-screen flex-col antialiased`}
-      >
+    // Font vars live on <html> so :root can resolve them — --font-display in
+    // globals.css references --font-fraunces and only sees :root scope.
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${inter.variable} ${GeistMono.variable}`}
+    >
+      <body className="flex min-h-screen flex-col antialiased">
         <SiteHeader />
         <div className="flex-1">{children}</div>
         <SiteFooter />
