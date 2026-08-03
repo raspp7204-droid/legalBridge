@@ -264,11 +264,13 @@
 /* Only while the announcement strip is on the page. */
 body.has-strip { --strip-h: 40px; }
 
-/* ---- The recruitment band ----
-   The one place on the site where a section owns a colour field instead of
-   sitting on paper (see the note at the top of this file — this is the
-   deliberate exception, not a leak). Everything below is scoped to
-   .offer-band, so no other surface inherits it. */
+/* ---- Dark promotional fields ----
+   The two places where a section owns a colour field instead of sitting on
+   paper (see the note at the top of this file — the deliberate exceptions,
+   not a leak): the announcement strip in --accent, and the recruitment band
+   in --ink. Everything below is scoped to .offer-band, so no other surface
+   inherits it, and it carries no background of its own — the element picks
+   bg-accent or bg-ink. */
 .offer-band {
   color: #FFFFFF;
 }
@@ -284,31 +286,31 @@ body.has-strip { --strip-h: 40px; }
   outline-color: #FFFFFF;
 }
 
-/* Solid ivory pill — the loud CTA */
-.btn-on-accent {
+/* Solid ivory pill — the loud CTA on the ink field */
+.btn-on-ink {
   background: #FFFFFF;
-  color: var(--accent);
+  color: var(--ink);
   border: 1px solid #FFFFFF;
   transition: background-color 120ms ease, transform 120ms ease;
 }
 
-.btn-on-accent:hover {
+.btn-on-ink:hover {
   background: var(--paper);
 }
 
-.btn-on-accent:active {
+.btn-on-ink:active {
   transform: translateY(1px);
 }
 
 /* Hairline pill for the second action */
-.btn-ghost-accent {
+.btn-ghost-light {
   background: transparent;
   color: #FFFFFF;
   border: 1px solid rgb(255 255 255 / 0.45);
   transition: background-color 120ms ease, border-color 120ms ease;
 }
 
-.btn-ghost-accent:hover {
+.btn-ghost-light:hover {
   background: rgb(255 255 255 / 0.12);
   border-color: #FFFFFF;
 }

@@ -10,13 +10,16 @@ import {
 } from "@/lib/offers";
 
 /**
- * The recruitment ad — the ONE solid colour field on the site.
+ * The recruitment ad — a solid --ink field, the same navy the headings are set
+ * in everywhere else.
  *
  * app/globals.css:30-33 says sections must not sit on coloured slabs, and that
  * rule is right for every other surface: the contrast on this site comes from
- * white cards on warm paper. This band breaks it deliberately, once, because
- * an ad that looks like a section does not get read as an ad. Do not
- * "consistency-fix" it, and do not add a second one.
+ * white cards on warm paper. This band breaks it deliberately because an ad
+ * that looks like a section does not get read as an ad. It was oxblood first
+ * and that was too loud for a full-page field — ink carries the same weight
+ * without shouting, and it is a colour the site already uses. Do not add a
+ * third dark field.
  *
  * blockLawyers() keeps signed-in advocates off the landing and the listing, so
  * the audience here is clients and signed-out visitors — the people who know
@@ -32,7 +35,7 @@ export function AdvocateOfferBand({
   const saving = commissionSaved();
 
   return (
-    <section className="offer-band bg-accent">
+    <section className="offer-band bg-ink">
       <div className={`container ${variant === "hero" ? "section" : "section-tight"}`}>
         <div className="flex flex-wrap items-start justify-between gap-x-10 gap-y-8">
           <div className="max-w-2xl">
@@ -71,14 +74,14 @@ export function AdvocateOfferBand({
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 href="/for-advocates"
-                className="btn-on-accent inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
+                className="btn-on-ink inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
               >
                 Claim your seat
                 <ArrowRight className="size-4" strokeWidth={2.5} />
               </Link>
               <Link
                 href="/lawyer/sign-up"
-                className="btn-ghost-accent inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
+                className="btn-ghost-light inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
               >
                 Join as an advocate
               </Link>
@@ -92,7 +95,7 @@ export function AdvocateOfferBand({
           {/* The maths, per tier — the same transparency argument the client
               side makes, pointed at the other half of the marketplace. */}
           <dl className="grid w-full max-w-sm gap-px overflow-hidden rounded-2xl border border-white/25 bg-white/25">
-            <div className="flex items-baseline justify-between gap-4 bg-accent px-4 py-3">
+            <div className="flex items-baseline justify-between gap-4 bg-ink px-4 py-3">
               <dt className="mono-label text-white/70">Per consultation</dt>
               <dd className="mono-label text-white/70">You keep</dd>
             </div>
@@ -101,7 +104,7 @@ export function AdvocateOfferBand({
               return (
                 <div
                   key={fee}
-                  className="flex items-baseline justify-between gap-4 bg-accent px-4 py-3"
+                  className="flex items-baseline justify-between gap-4 bg-ink px-4 py-3"
                 >
                   <dt className="font-mono-num text-sm text-white/80">
                     {formatRupees(fee)}
