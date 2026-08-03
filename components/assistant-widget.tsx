@@ -71,7 +71,7 @@ export function AssistantWidget() {
           id="lb-assistant-panel"
           role="dialog"
           aria-label="LawNest assistant"
-          className="fixed inset-x-3 bottom-20 z-40 flex max-h-[min(78vh,640px)] flex-col overflow-hidden rounded-2xl border border-rule bg-surface shadow-[0_12px_40px_rgb(23_35_58/0.16)] sm:inset-x-auto sm:bottom-24 sm:right-6 sm:w-[400px]"
+          className="fixed inset-x-3 bottom-20 z-40 flex max-h-[min(72dvh,640px)] flex-col overflow-hidden rounded-2xl border border-rule bg-surface shadow-[0_12px_40px_rgb(23_35_58/0.16)] sm:inset-x-auto sm:bottom-24 sm:right-6 sm:w-[400px]"
         >
           {/* Oxblood rule — the one accent in this component */}
           <div className="h-[3px] w-full bg-accent" aria-hidden="true" />

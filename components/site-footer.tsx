@@ -40,6 +40,7 @@ const COLUMNS = [
     links: [
       { href: "/lawyers", label: "Find an advocate" },
       { href: "/me", label: "My consultations" },
+      { href: "/rewards", label: "LawNest Rewards" },
       { href: "/sign-in", label: "Client sign-in" },
       { href: "/categories", label: "How it works" },
     ],

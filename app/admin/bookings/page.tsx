@@ -23,7 +23,7 @@ export default async function AdminBookings() {
   return (
     <main className="container container-wide section-tight">
       <p className="mono-label text-muted">Admin</p>
-      <h1 className="mt-3 text-[2.5rem] sm:text-[3rem]">
+      <h1 className="mt-3 text-[2rem] sm:text-[3rem]">
         All <span className="tone-accent">bookings</span>
       </h1>
 

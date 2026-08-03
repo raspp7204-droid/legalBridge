@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   Video,
@@ -11,6 +11,8 @@ import {
   CheckCheck,
   Volume2,
   VolumeX,
+  PhoneOff,
+  Lock,
 } from "lucide-react";
 import type { SessionRole } from "@/lib/roles";
 import { Avatar } from "@/components/avatar";
@@ -65,6 +67,8 @@ export function ChatThread({
   clientAvatar,
   online,
   slotLabel,
+  initialEndedAt,
+  endAction,
 }: {
   bookingId: string;
   as: SessionRole;
@@ -75,11 +79,16 @@ export function ChatThread({
   clientAvatar: string;
   online: boolean;
   slotLabel: string;
+  initialEndedAt: string | null;
+  endAction: (bookingId: string) => Promise<void>;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [pending, setPending] = useState<Pending[]>([]);
   const [input, setInput] = useState("");
   const [muted, setMuted] = useState(false);
+  const [endedAt, setEndedAt] = useState<string | null>(initialEndedAt);
+  const [confirmingEnd, setConfirmingEnd] = useState(false);
+  const [ending, startEnding] = useTransition();
   const scrollRef = useRef<HTMLDivElement>(null);
   const pinnedToBottom = useRef(true);
   const mutedRef = useRef(false);
@@ -119,16 +128,26 @@ export function ChatThread({
           headers: { "cache-control": "no-cache" },
         });
         if (!res.ok || !alive) return;
-        const data = (await res.json()) as { messages: ChatMessage[] };
+        const data = (await res.json()) as {
+          messages: ChatMessage[];
+          endedAt: string | null;
+        };
         if (!alive) return;
 
         const fresh = data.messages.filter((m) => !seen.current.has(m.id));
         for (const m of fresh) seen.current.add(m.id);
-        if (fresh.some((m) => m.senderRole !== myRole) && !mutedRef.current) {
+        // System lines don't chime — only a human on the other side does.
+        if (
+          fresh.some(
+            (m) => m.senderRole !== myRole && m.senderRole !== "ADMIN",
+          ) &&
+          !mutedRef.current
+        ) {
           playReceive();
         }
 
         setMessages((prev) => mergeById(prev, data.messages));
+        setEndedAt(data.endedAt);
       } catch {
         /* transient network blip — next tick retries */
       }
@@ -175,9 +194,17 @@ export function ChatThread({
     [bookingId],
   );
 
+  function endChat() {
+    startEnding(async () => {
+      await endAction(bookingId);
+      setEndedAt(new Date().toISOString());
+      setConfirmingEnd(false);
+    });
+  }
+
   function send() {
     const text = input.trim();
-    if (!text) return;
+    if (!text || endedAt) return;
     const tmpId = `tmp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     setPending((p) => [
       ...p,
@@ -194,6 +221,7 @@ export function ChatThread({
   const rows: {
     key: string;
     mine: boolean;
+    system: boolean;
     body: string;
     time: string | null;
     state: "sent" | "sending" | "failed";
@@ -201,7 +229,10 @@ export function ChatThread({
   }[] = [
     ...messages.map((m) => ({
       key: m.id,
+      // ADMIN is the platform speaking, not a party — rendered as a centred
+      // system line rather than a bubble on either side.
       mine: m.senderRole === myRole,
+      system: m.senderRole === "ADMIN",
       body: m.body,
       time: timeLabel(m.createdAt),
       state: "sent" as const,
@@ -209,6 +240,7 @@ export function ChatThread({
     ...pending.map((p) => ({
       key: p.tmpId,
       mine: true,
+      system: false,
       body: p.body,
       time: null,
       state: p.failed ? ("failed" as const) : ("sending" as const),
@@ -217,7 +249,7 @@ export function ChatThread({
   ];
 
   return (
-    <div className="card flex h-[calc(100vh-13rem)] min-h-[520px] flex-col overflow-hidden">
+    <div className="card flex h-[calc(100dvh-8.5rem)] min-h-0 flex-col overflow-hidden sm:h-[calc(100vh-13rem)] sm:min-h-[520px]">
       {/* Sticky header */}
       <header className="flex items-center gap-3 border-b border-rule bg-surface-2 px-4 py-3">
         <Avatar
@@ -254,23 +286,76 @@ export function ChatThread({
           </span>
         </button>
 
-        <Link
-          href={`/consult/${bookingId}/room`}
-          className="btn-primary mono-label flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2"
-        >
-          <Video className="size-4" strokeWidth={2.5} />
-          <span className="hidden sm:inline">Join video</span>
-        </Link>
+        {/* End chat — two-step confirm in place, no browser dialog */}
+        {!endedAt &&
+          (confirmingEnd ? (
+            <span className="flex shrink-0 items-center gap-1">
+              <button
+                type="button"
+                onClick={endChat}
+                disabled={ending}
+                className="mono-label flex items-center gap-1 rounded-full bg-danger px-3 py-2 text-white disabled:opacity-70"
+              >
+                {ending ? (
+                  <Loader2 className="size-3.5 animate-spin" strokeWidth={2.5} />
+                ) : (
+                  <PhoneOff className="size-3.5" strokeWidth={2.5} />
+                )}
+                End
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmingEnd(false)}
+                className="mono-label rounded-full border border-rule px-3 py-2 text-slate"
+              >
+                Cancel
+              </button>
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmingEnd(true)}
+              title="End this consultation"
+              className="mono-label flex shrink-0 items-center gap-1.5 rounded-full border border-rule bg-surface px-3 py-2 text-slate transition-colors hover:border-danger/50 hover:text-danger"
+            >
+              <PhoneOff className="size-3.5" strokeWidth={2.5} />
+              <span className="hidden sm:inline">End chat</span>
+            </button>
+          ))}
+
+        {endedAt ? (
+          <span className="mono-label flex shrink-0 items-center gap-1.5 rounded-full border border-rule bg-surface-2 px-3 py-2 text-muted">
+            <Lock className="size-3.5" strokeWidth={2.5} />
+            Ended
+          </span>
+        ) : (
+          <Link
+            href={`/consult/${bookingId}/room`}
+            className="btn-primary mono-label flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2"
+          >
+            <Video className="size-4" strokeWidth={2.5} />
+            <span className="hidden sm:inline">Join video</span>
+          </Link>
+        )}
       </header>
 
-      {/* Paid banner */}
-      <p className="flex items-center justify-center gap-1.5 border-b border-rule bg-verified/10 py-1.5">
-        <ShieldCheck className="size-3.5 text-verified" strokeWidth={2.5} />
-        <span className="mono-label text-verified">
-          This consultation is paid · 30 min · you are{" "}
-          {myRole === "LAWYER" ? "the advocate" : "the client"}
-        </span>
-      </p>
+      {/* Status banner */}
+      {endedAt ? (
+        <p className="flex items-center justify-center gap-1.5 border-b border-rule bg-surface-2 py-1.5">
+          <Lock className="size-3.5 text-muted" strokeWidth={2.5} />
+          <span className="mono-label text-muted">
+            Consultation ended {timeLabel(endedAt)} · read-only
+          </span>
+        </p>
+      ) : (
+        <p className="flex items-center justify-center gap-1.5 border-b border-rule bg-verified/10 py-1.5">
+          <ShieldCheck className="size-3.5 text-verified" strokeWidth={2.5} />
+          <span className="mono-label text-verified">
+            This consultation is paid · 30 min · you are{" "}
+            {myRole === "LAWYER" ? "the advocate" : "the client"}
+          </span>
+        </p>
+      )}
 
       {/* Transcript */}
       <div
@@ -290,7 +375,16 @@ export function ChatThread({
             </p>
           )}
 
-          {rows.map((r) => (
+          {rows.map((r) =>
+            r.system ? (
+              <div key={r.key} className="flex items-center gap-3 py-1">
+                <span className="h-px flex-1 bg-rule" aria-hidden="true" />
+                <span className="mono-label rounded-full border border-rule bg-surface-2 px-3 py-1.5 text-center text-muted">
+                  {r.body}
+                </span>
+                <span className="h-px flex-1 bg-rule" aria-hidden="true" />
+              </div>
+            ) : (
             <div
               key={r.key}
               className={`flex items-end gap-2 ${
@@ -361,11 +455,35 @@ export function ChatThread({
                 </div>
               </div>
             </div>
-          ))}
+            ),
+          )}
         </div>
       </div>
 
-      {/* Composer */}
+      {/* Composer — replaced by a lock banner once the consultation ends */}
+      {endedAt ? (
+        <div className="border-t border-rule bg-surface-2 px-4 py-5">
+          <div className="mx-auto flex w-full max-w-[720px] flex-col items-center gap-3 text-center">
+            <span className="flex size-9 items-center justify-center rounded-full border border-rule bg-surface text-muted">
+              <Lock className="size-4" strokeWidth={2} />
+            </span>
+            <div>
+              <p className="text-sm">This consultation has ended</p>
+              <p className="mono-label mt-1 text-muted">
+                Ended {timeLabel(endedAt)} · the transcript stays available
+              </p>
+            </div>
+            <Link
+              href={myRole === "LAWYER" ? "/lawyer/inbox" : "/me"}
+              className="mono-label rounded-full border border-rule bg-surface px-4 py-2 text-ink transition-colors hover:border-accent/40"
+            >
+              {myRole === "LAWYER"
+                ? "Back to inbox"
+                : "Back to my consultations"}
+            </Link>
+          </div>
+        </div>
+      ) : (
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -398,6 +516,7 @@ export function ChatThread({
           </button>
         </div>
       </form>
+      )}
     </div>
   );
 }

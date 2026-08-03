@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MessageSquare, Video } from "lucide-react";
+import { MessageSquare, Video, Gift, Lock } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireClient } from "@/lib/auth";
 import { EmptyState } from "@/components/empty-state";
 import { formatRupees } from "@/lib/money";
+import { formatPoints, REWARDS_TAGLINE } from "@/lib/rewards";
 import { formatSlotFull } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
@@ -39,6 +40,12 @@ function BookingCard({ b, past }: { b: BookingRow; past: boolean }) {
         <p className="mono-label mt-1 text-muted">
           {formatSlotFull(b.slotAt)} · {b.lawyer.court}
         </p>
+        {b.endedAt && (
+          <span className="mono-label mt-2 inline-flex items-center gap-1 rounded-full border border-rule bg-surface-2 px-2 py-1 text-muted">
+            <Lock className="size-3" strokeWidth={2.5} />
+            Ended
+          </span>
+        )}
       </div>
 
       <div className="flex items-center gap-3 sm:flex-col sm:items-end">
@@ -51,7 +58,7 @@ function BookingCard({ b, past }: { b: BookingRow; past: boolean }) {
             <MessageSquare className="size-3.5" strokeWidth={2} />
             Chat
           </Link>
-          {!past && (
+          {!past && !b.endedAt && (
             <Link
               href={`/consult/${b.id}/room`}
               className="mono-label flex items-center gap-1.5 rounded-full border border-rule px-3 py-2 transition-colors hover:border-accent/40"
@@ -92,9 +99,26 @@ export default async function MePage() {
         Signed in as {client.name}
         {client.clientCode ? ` · ${client.clientCode}` : ""}
       </p>
-      <h1 className="mt-3 text-[2.5rem] sm:text-[3rem]">
+      <h1 className="mt-3 text-[2rem] sm:text-[3rem]">
         My <span className="tone-accent">consultations</span>
       </h1>
+
+      <Link
+        href="/rewards"
+        className="card card-interactive mt-6 flex items-center gap-3 p-4 sm:inline-flex"
+      >
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent-bg text-accent">
+          <Gift className="size-4" strokeWidth={2.5} />
+        </span>
+        <span className="min-w-0">
+          <span className="font-mono-num block text-sm text-accent">
+            {formatPoints(client.points)} LawNest points
+          </span>
+          <span className="mono-label mt-0.5 block text-muted">
+            {REWARDS_TAGLINE}
+          </span>
+        </span>
+      </Link>
 
       {bookings.length === 0 ? (
         <div className="document mt-10">

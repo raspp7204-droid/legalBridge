@@ -6,39 +6,16 @@ import { formatRupees } from "@/lib/money";
 import { formatSlotTime, type LawyerCardData } from "@/lib/lawyers";
 
 /**
- * Paid placement is always labelled (LAUNCH.md Task 5). The tag is the point —
- * it is what keeps paid ranking honest and defensible.
- */
-export function PromotedTag() {
-  return (
-    <span
-      className="mono-label shrink-0 rounded-full border border-accent/40 bg-accent-bg px-2 py-0.5 text-accent"
-      title="This advocate has paid for placement."
-    >
-      Promoted
-    </span>
-  );
-}
-
-/**
  * Compact row used inside the hero's "Advocates online now" panel — same data,
  * one line of it, so two stack in the hero's right column without crowding.
  */
-export function LawyerCardCompact({
-  lawyer,
-  promoted = false,
-}: {
-  lawyer: LawyerCardData;
-  promoted?: boolean;
-}) {
+export function LawyerCardCompact({ lawyer }: { lawyer: LawyerCardData }) {
   const nextSlot = lawyer.slots[0];
 
   return (
     <Link
       href={`/lawyers/${lawyer.id}`}
-      className={`card card-interactive flex items-center gap-3 p-3.5 ${
-        promoted ? "border-t-2 border-t-accent" : ""
-      }`}
+      className="card card-interactive flex items-center gap-3 p-3.5"
     >
       <span
         className={`relative shrink-0 rounded-full p-[2px] ${
@@ -60,7 +37,6 @@ export function LawyerCardCompact({
             {lawyer.user.name}
           </p>
           {lawyer.status === "VERIFIED" && <VerifiedBadge compact />}
-          {promoted && <PromotedTag />}
         </div>
         <p className="mt-0.5 truncate text-xs text-slate">
           {lawyer.years} yrs · {lawyer.court}
@@ -86,20 +62,12 @@ export function LawyerCardCompact({
   );
 }
 
-export function LawyerCard({
-  lawyer,
-  promoted = false,
-}: {
-  lawyer: LawyerCardData;
-  promoted?: boolean;
-}) {
+export function LawyerCard({ lawyer }: { lawyer: LawyerCardData }) {
   const nextSlot = lawyer.slots[0];
 
   return (
     <article
-      className={`card card-interactive flex flex-col p-5 ${
-        promoted ? "border-t-2 border-t-accent bg-accent-bg/25" : ""
-      }`}
+      className="card card-interactive flex flex-col p-5"
     >
       {/* Row 1 — avatar, name, verified, tier chip */}
       <div className="flex items-start gap-3.5">
@@ -127,10 +95,7 @@ export function LawyerCard({
                 {lawyer.user.name}
               </Link>
             </h3>
-            <span className="flex shrink-0 items-center gap-1.5">
-              {promoted && <PromotedTag />}
-              <span className="chip-tier">{lawyer.tier}</span>
-            </span>
+            <span className="chip-tier shrink-0">{lawyer.tier}</span>
           </div>
 
           <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">

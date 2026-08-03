@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CheckCircle2, MessageSquare, Video } from "lucide-react";
+import { CheckCircle2, MessageSquare, Video, Gift } from "lucide-react";
 import { db } from "@/lib/db";
 import { formatRupees } from "@/lib/money";
+import { formatPoints } from "@/lib/rewards";
 import { formatSlotFull } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
@@ -75,13 +76,41 @@ export default async function ConfirmedPage({
                 {formatSlotFull(booking.slotAt)}
               </dd>
             </div>
+            {booking.discount > 0 && (
+              <div className="flex items-baseline justify-between gap-4">
+                <dt className="mono-label text-muted">Reward discount</dt>
+                <dd className="font-mono-num text-sm text-verified">
+                  − {formatRupees(booking.discount)} ·{" "}
+                  {formatPoints(booking.pointsSpent)} pts
+                </dd>
+              </div>
+            )}
             <div className="flex items-baseline justify-between gap-4">
               <dt className="mono-label text-muted">Paid</dt>
               <dd className="font-mono-num text-sm text-accent">
-                {formatRupees(booking.amount)}
+                {formatRupees(booking.amount - booking.discount)}
               </dd>
             </div>
           </dl>
+
+          {booking.pointsEarned > 0 && (
+            <div className="mt-6 flex items-center gap-3 rounded-xl border border-verified/30 bg-verified/10 p-4">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-verified/15 text-verified">
+                <Gift className="size-4" strokeWidth={2.5} />
+              </span>
+              <div className="min-w-0">
+                <p className="font-mono-num text-sm text-verified">
+                  + {formatPoints(booking.pointsEarned)} LawNest points
+                </p>
+                <p className="mono-label mt-0.5 text-muted">
+                  Credited now ·{" "}
+                  <Link href="/rewards" className="text-accent hover:underline">
+                    view rewards
+                  </Link>
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link

@@ -16,7 +16,12 @@ const NO_STORE = { "cache-control": "no-store, max-age=0" };
 async function authorize(bookingId: string) {
   const booking = await db.booking.findUnique({
     where: { id: bookingId },
-    select: { id: true, clientId: true, lawyer: { select: { userId: true } } },
+    select: {
+      id: true,
+      clientId: true,
+      endedAt: true,
+      lawyer: { select: { userId: true } },
+    },
   });
   if (!booking) return { error: "Booking not found.", status: 404 } as const;
 
@@ -64,7 +69,16 @@ export async function GET(
     select: { id: true, senderRole: true, body: true, createdAt: true },
   });
 
-  return Response.json({ messages, as: auth.role }, { headers: NO_STORE });
+  // endedAt rides along on every poll — that is what locks the *other*
+  // window within ~2s when one side ends the consultation.
+  return Response.json(
+    {
+      messages,
+      as: auth.role,
+      endedAt: auth.booking.endedAt?.toISOString() ?? null,
+    },
+    { headers: NO_STORE },
+  );
 }
 
 export async function POST(
@@ -102,6 +116,12 @@ export async function POST(
     return Response.json(
       { error: "Read-only for this session." },
       { status: 403, headers: NO_STORE },
+    );
+  }
+  if (auth.booking.endedAt) {
+    return Response.json(
+      { error: "This consultation has ended." },
+      { status: 409, headers: NO_STORE },
     );
   }
 

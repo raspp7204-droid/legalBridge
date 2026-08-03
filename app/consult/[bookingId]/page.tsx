@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CalendarDays, FileText, Timer } from "lucide-react";
+import { CalendarDays, FileText, Timer, Lock } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { ChatThread } from "@/components/chat-thread";
@@ -7,6 +7,7 @@ import { Avatar } from "@/components/avatar";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatSlotFull } from "@/lib/lawyers";
 import { formatRupees } from "@/lib/money";
+import { endConsultation } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -77,6 +78,8 @@ export default async function ConsultPage({
         clientAvatar={booking.client.avatar}
         online={lawyer.online}
         slotLabel={formatSlotFull(booking.slotAt)}
+        initialEndedAt={booking.endedAt?.toISOString() ?? null}
+        endAction={endConsultation}
       />
 
       <aside className="space-y-4 min-[900px]:sticky min-[900px]:top-24 min-[900px]:self-start">
@@ -142,17 +145,36 @@ export default async function ConsultPage({
             {formatSlotFull(booking.slotAt)}
           </p>
 
-          <div className="mt-4 flex items-baseline justify-between">
-            <span className="mono-label flex items-center gap-1.5 text-muted">
-              <Timer className="size-3.5" strokeWidth={2.5} />
-              Time left
-            </span>
-            <span className="font-mono-num text-lg text-ink">28:41</span>
-          </div>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-2">
-            <div className="h-full w-[5%] rounded-full bg-verified" />
-          </div>
-          <p className="mono-label mt-2 text-muted">of 30 minutes</p>
+          {booking.endedAt ? (
+            <>
+              <div className="mt-4 flex items-baseline justify-between">
+                <span className="mono-label flex items-center gap-1.5 text-muted">
+                  <Lock className="size-3.5" strokeWidth={2.5} />
+                  Status
+                </span>
+                <span className="mono-label text-muted">Ended</span>
+              </div>
+              <p className="mono-label mt-2 text-muted">
+                Closed by the{" "}
+                {booking.endedBy === "LAWYER" ? "advocate" : "client"} ·{" "}
+                {formatSlotFull(booking.endedAt)}
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="mt-4 flex items-baseline justify-between">
+                <span className="mono-label flex items-center gap-1.5 text-muted">
+                  <Timer className="size-3.5" strokeWidth={2.5} />
+                  Time left
+                </span>
+                <span className="font-mono-num text-lg text-ink">28:41</span>
+              </div>
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-2">
+                <div className="h-full w-[5%] rounded-full bg-verified" />
+              </div>
+              <p className="mono-label mt-2 text-muted">of 30 minutes</p>
+            </>
+          )}
         </div>
 
         {/* Shared documents */}

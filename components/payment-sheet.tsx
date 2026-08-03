@@ -10,8 +10,11 @@ import {
   MessageSquareText,
   Clock,
   Video,
+  Gift,
+  Check,
 } from "lucide-react";
 import { formatRupees } from "@/lib/money";
+import { formatPoints, pointsToRupees } from "@/lib/rewards";
 
 const NEXT_STEPS = [
   {
@@ -37,8 +40,11 @@ export function PaymentSheet({
   amount,
   lawyerCut,
   platformCut,
-  upiLink,
   vpa,
+  payeeName,
+  points,
+  redeemable,
+  pointsEarned,
   confirmAction,
 }: {
   bookingId: string;
@@ -49,19 +55,39 @@ export function PaymentSheet({
   amount: number;
   lawyerCut: number;
   platformCut: number;
-  upiLink: string;
   vpa: string;
-  confirmAction: (bookingId: string, slotId: string | null) => Promise<void>;
+  payeeName: string;
+  points: number;
+  redeemable: number;
+  pointsEarned: number;
+  confirmAction: (
+    bookingId: string,
+    slotId: string | null,
+    redeem: boolean,
+  ) => Promise<void>;
 }) {
   const [verifying, setVerifying] = useState(false);
+  const [redeem, setRedeem] = useState(false);
   const [, startTransition] = useTransition();
+
+  const canRedeem = redeemable > 0;
+  const spent = redeem && canRedeem ? redeemable : 0;
+  const discount = pointsToRupees(spent);
+  const payable = amount - discount;
+
+  // Rebuilt from the toggle so the QR always charges what the summary says.
+  const upiLink =
+    `upi://pay?pa=${encodeURIComponent(vpa)}` +
+    `&pn=${encodeURIComponent(payeeName)}` +
+    `&am=${payable}&cu=INR` +
+    `&tn=${encodeURIComponent(`LawNest-${bookingId}`)}`;
 
   function confirm() {
     setVerifying(true);
     // 1.5s "Verifying payment…" so it reads as a real settlement wait
     setTimeout(() => {
       startTransition(async () => {
-        await confirmAction(bookingId, slotId);
+        await confirmAction(bookingId, slotId, redeem && canRedeem);
       });
     }, 1500);
   }
@@ -77,8 +103,14 @@ export function PaymentSheet({
         <div className="border-b border-rule p-5 sm:p-6">
           <p className="mono-label text-muted">Pay to LawNest</p>
           <p className="font-mono-num mt-1 text-4xl text-accent">
-            {formatRupees(amount)}
+            {formatRupees(payable)}
           </p>
+          {discount > 0 && (
+            <p className="mono-label mt-1 text-muted">
+              <s>{formatRupees(amount)}</s> · {formatPoints(spent)} points
+              applied
+            </p>
+          )}
           <div className="mt-4 flex items-center gap-3">
             <Image
               src={lawyerAvatar}
@@ -107,7 +139,7 @@ export function PaymentSheet({
           </div>
 
           <p className="mt-4 text-sm leading-relaxed text-slate">
-            Scan with any UPI app to pay {formatRupees(amount)}.
+            Scan with any UPI app to pay {formatRupees(payable)}.
           </p>
           <p className="mono-label mt-1 text-muted">Paying to {vpa}</p>
 
@@ -170,12 +202,68 @@ export function PaymentSheet({
               </dd>
             </div>
           </dl>
+
+          {/* LawNest Rewards — only offered once there's a usable balance */}
+          {canRedeem && (
+            <button
+              type="button"
+              role="switch"
+              aria-checked={redeem}
+              onClick={() => setRedeem((r) => !r)}
+              className={`mt-4 flex w-full items-start gap-3 rounded-xl border p-3 text-left transition-colors ${
+                redeem
+                  ? "border-accent/40 bg-accent-bg"
+                  : "border-rule bg-surface-2 hover:border-accent/30"
+              }`}
+            >
+              <span
+                className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md border ${
+                  redeem
+                    ? "border-accent bg-accent text-white"
+                    : "border-rule bg-surface"
+                }`}
+                aria-hidden="true"
+              >
+                {redeem && <Check className="size-3.5" strokeWidth={3} />}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-baseline justify-between gap-3">
+                  <span className="flex items-center gap-1.5 text-sm">
+                    <Gift className="size-3.5 text-accent" strokeWidth={2.5} />
+                    Use {formatPoints(redeemable)} points
+                  </span>
+                  <span className="font-mono-num text-sm text-accent">
+                    − {formatRupees(pointsToRupees(redeemable))}
+                  </span>
+                </span>
+                <span className="mono-label mt-1 block text-muted">
+                  Balance {formatPoints(points)} · {formatPoints(points - spent + pointsEarned)}{" "}
+                  after this booking
+                </span>
+              </span>
+            </button>
+          )}
+
+          {discount > 0 && (
+            <div className="mt-4 flex items-baseline justify-between">
+              <span className="text-sm text-slate">Reward discount</span>
+              <span className="font-mono-num text-sm text-verified">
+                − {formatRupees(discount)}
+              </span>
+            </div>
+          )}
+
           <div className="mt-4 flex items-baseline justify-between border-t border-rule pt-4">
             <span className="mono-label text-ink">Total payable</span>
             <span className="font-mono-num text-lg text-accent">
-              {formatRupees(amount)}
+              {formatRupees(payable)}
             </span>
           </div>
+
+          <p className="mono-label mt-3 flex items-center gap-1.5 text-verified">
+            <Gift className="size-3.5" strokeWidth={2.5} />
+            You earn {formatPoints(pointsEarned)} points on this consultation
+          </p>
         </div>
 
         <div className="card p-5 sm:p-6">

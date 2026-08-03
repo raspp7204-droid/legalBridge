@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Lock } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireLawyerProfile } from "@/lib/auth";
 import { EmptyState } from "@/components/empty-state";
@@ -29,7 +29,7 @@ export default async function LawyerInbox() {
   return (
     <main className="container section-tight">
       <p className="mono-label text-muted">Advocate · {profile.user.name}</p>
-      <h1 className="mt-3 text-[2.5rem] sm:text-[3rem]">
+      <h1 className="mt-3 text-[2rem] sm:text-[3rem]">
         <span className="tone-accent">Inbox</span>
       </h1>
       <p className="mt-3 text-slate">
@@ -66,14 +66,22 @@ export default async function LawyerInbox() {
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="truncate">{t.client.name}</p>
+                    <p className="flex min-w-0 items-center gap-2">
+                      <span className="truncate">{t.client.name}</span>
+                      {t.endedAt && (
+                        <span className="mono-label flex shrink-0 items-center gap-1 rounded-full border border-rule bg-surface-2 px-2 py-0.5 text-muted">
+                          <Lock className="size-3" strokeWidth={2.5} />
+                          Ended
+                        </span>
+                      )}
+                    </p>
                     <span className="mono-label shrink-0 text-muted">
                       {formatSlotFull(t.slotAt)}
                     </span>
                   </div>
                   <p
                     className={`mt-1 truncate text-sm ${
-                      empty ? "text-verified" : "text-muted"
+                      empty && !t.endedAt ? "text-verified" : "text-muted"
                     }`}
                   >
                     {empty

@@ -26,8 +26,8 @@ const SECTIONS = [
     body: "Advocates give us their enrolment number and practice details so we can verify them with the State Bar Council record. Verified profile details — name, court, city, practice areas, fee — are public on the platform.",
   },
   {
-    title: "Paid placement",
-    body: "Some advocates pay for placement above organic results. Those listings always carry a PROMOTED label, and paid placement never adds an advocate who does not match your filters.",
+    title: "How advocates are ranked",
+    body: "No advocate can pay to rank higher. Results are ordered by the sort you pick — rating, fee or years of experience — and by who is available, and nothing else.",
   },
   {
     title: "Deleting your data",

@@ -266,3 +266,28 @@
   }
   .animate-rise { opacity: 1; transform: none; }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Phones only (≤640px). Everything in here is scoped by the
+   media query, so the laptop layout is untouched by design.
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* No page may scroll sideways. `clip`, not `hidden` — `hidden` would turn
+     <html> into a scroll container and break the sticky header. */
+  html { overflow-x: clip; }
+
+  /* Section rhythm is too generous at phone width; tighten the floor. */
+  .section       { padding-block: clamp(32px, 6vh, 56px); }
+  .section-tight { padding-block: clamp(24px, 4vh, 40px); }
+
+  /* Display type: the 2.5rem floor eats a third of the fold at 375px. */
+  h1 { font-size: clamp(2rem, 8vw, 2.5rem); }
+  h2 { font-size: clamp(1.5rem, 6vw, 1.875rem); }
+
+  /* Thumb-sized targets on the two pill styles used for actions. */
+  .btn-primary,
+  .btn-secondary { min-height: 44px; }
+
+  /* Anything explicitly set wider than the viewport scrolls in its own box. */
+  table { font-size: 0.875rem; }
+}

@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireClient } from "@/lib/auth";
 import { splitFee } from "@/lib/money";
+import { maxRedeemable, pointsFor } from "@/lib/rewards";
 import { formatSlotFull } from "@/lib/lawyers";
 import { PaymentSheet } from "@/components/payment-sheet";
 import { confirmPayment } from "./actions";
@@ -63,11 +64,10 @@ export default async function PayPage({
 
   const vpa = process.env.NEXT_PUBLIC_UPI_VPA ?? "founder@okhdfcbank";
   const payeeName = process.env.NEXT_PUBLIC_UPI_NAME ?? "LawNest";
-  const upiLink =
-    `upi://pay?pa=${encodeURIComponent(vpa)}` +
-    `&pn=${encodeURIComponent(payeeName)}` +
-    `&am=${split.amount}&cu=INR` +
-    `&tn=${encodeURIComponent(`LawNest-${booking.id}`)}`;
+
+  // Rewards. The sheet re-derives the payable amount (and therefore the UPI
+  // intent) from the toggle, but the server re-computes it again on confirm.
+  const redeemable = maxRedeemable(client.points, split.amount);
 
   return (
     <main className="container container-narrow section-tight">
@@ -86,8 +86,11 @@ export default async function PayPage({
           amount={split.amount}
           lawyerCut={split.lawyerCut}
           platformCut={split.platformCut}
-          upiLink={upiLink}
           vpa={vpa}
+          payeeName={payeeName}
+          points={client.points}
+          redeemable={redeemable}
+          pointsEarned={pointsFor(split.amount)}
           confirmAction={confirmPayment}
         />
       </div>

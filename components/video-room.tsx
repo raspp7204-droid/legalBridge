@@ -73,7 +73,7 @@ export function VideoRoom({
           dark element allowed on the ivory page (RETHEME.md Task 3). */}
       <div className="grid gap-5 min-[900px]:grid-cols-2">
         {/* Lawyer tile — static, "connected" */}
-        <div className="relative flex min-h-[360px] items-center justify-center overflow-hidden rounded-2xl border border-rule bg-video">
+        <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-rule bg-video min-[900px]:aspect-auto min-[900px]:min-h-[360px]">
           <Image
             src={lawyerAvatar}
             alt=""
@@ -93,7 +93,7 @@ export function VideoRoom({
         </div>
 
         {/* Self tile */}
-        <div className="relative flex min-h-[360px] items-center justify-center overflow-hidden rounded-2xl border border-rule bg-video">
+        <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-rule bg-video min-[900px]:aspect-auto min-[900px]:min-h-[360px]">
           <video
             ref={videoRef}
             autoPlay
