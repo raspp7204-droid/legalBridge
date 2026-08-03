@@ -3,6 +3,8 @@ import { Scale, Globe } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { getDbUser } from "@/lib/auth";
+import { MobileMenu } from "@/components/mobile-menu";
+import { PointsPill } from "@/components/points-pill";
 
 const CLIENT_NAV = [
   { href: "/categories", label: "Legal matters" },
@@ -90,6 +92,12 @@ export async function SiteHeader() {
 
           {signedIn && (
             <>
+            {role === "CLIENT" && (
+              <PointsPill
+                points={user?.points ?? 0}
+                className="hidden sm:inline-flex"
+              />
+            )}
             {user?.clientCode && (
               <Link
                 href="/account"
@@ -102,10 +110,21 @@ export async function SiteHeader() {
             <span className="mono-label hidden max-w-[9rem] truncate text-ink lg:inline-block">
               {user?.name.replace(/^Adv\.\s*/, "") ?? ""}
             </span>
+            {/* fallback shows while Clerk boots — and stays if it never
+                does, so the header is never a dead end. */}
             <UserButton
               appearance={{ elements: { avatarBox: "size-9" } }}
               userProfileUrl="/account"
               userProfileMode="navigation"
+              fallback={
+                <a
+                  href="/sign-out"
+                  title="Sign out"
+                  className="mono-label hidden rounded-full border border-rule px-3 py-2 text-slate transition-colors hover:border-accent/40 hover:text-ink sm:inline-block"
+                >
+                  Sign out
+                </a>
+              }
             />
             {role === "LAWYER" ? (
               <Link
@@ -124,21 +143,20 @@ export async function SiteHeader() {
               ) : null}
             </>
           )}
+
+          {/* Under 768px everything above collapses into one sheet, so the
+              header stays a single 64px row and advocate sign-in is one tap
+              from the top of any page. */}
+          <MobileMenu
+            nav={NAV}
+            signedIn={signedIn}
+            role={role}
+            name={user?.name ?? null}
+            clientCode={user?.clientCode ?? null}
+            points={role === "CLIENT" ? (user?.points ?? 0) : null}
+          />
         </div>
       </div>
-
-      {/* Mobile nav — the desktop links stay reachable under 768px */}
-      <nav className="container flex items-center gap-1 overflow-x-auto border-t border-rule py-2 md:hidden">
-        {NAV.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-slate transition-colors hover:bg-surface hover:text-ink"
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
     </header>
   );
 }

@@ -44,7 +44,7 @@ export default async function AdminPromotions() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="mono-label text-muted">Admin · revenue</p>
-          <h1 className="mt-3 text-[2.5rem] sm:text-[3rem]">
+          <h1 className="mt-3 text-[2rem] sm:text-[3rem]">
             Paid <span className="tone-accent">placements</span>
           </h1>
           <p className="mt-3 max-w-2xl text-slate">

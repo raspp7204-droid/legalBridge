@@ -45,7 +45,7 @@ export function AuthShell({
   children: React.ReactNode;
 }) {
   return (
-    <main className="band-alt relative overflow-hidden">
+    <main className="relative overflow-hidden">
       <Engraving side="left" />
       <div className="container section-tight relative">
         <div className="grid items-start gap-12 min-[900px]:grid-cols-[1fr_440px]">

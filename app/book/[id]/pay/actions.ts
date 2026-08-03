@@ -2,9 +2,10 @@
 
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { maxRedeemable, pointsFor, pointsToRupees } from "@/lib/rewards";
 
 /**
- * Marks the booking paid and books the slot.
+ * Marks the booking paid, books the slot, and settles LawNest Rewards.
  *
  * NOTE FOR THE FOUNDER: the QR on this page is a real, payable UPI intent —
  * it opens GPay/PhonePe/Paytm with the correct payee and amount. What it does
@@ -12,15 +13,65 @@ import { db } from "@/lib/db";
  * mocked part. For real payments post-demo, swap this for Razorpay UPI
  * Collect plus a webhook that flips `paid` when the callback lands.
  */
-export async function confirmPayment(bookingId: string, slotId: string | null) {
-  const booking = await db.booking.findUnique({ where: { id: bookingId } });
+export async function confirmPayment(
+  bookingId: string,
+  slotId: string | null,
+  redeem = false,
+) {
+  const booking = await db.booking.findUnique({
+    where: { id: bookingId },
+    include: { lawyer: { include: { user: { select: { name: true } } } } },
+  });
   if (!booking) throw new Error("Booking not found");
 
+  // The unpaid → paid transition is the idempotency key: a refresh or a
+  // double submit can never credit points twice.
   if (!booking.paid) {
-    await db.booking.update({
-      where: { id: bookingId },
-      data: { paid: true },
+    const client = await db.user.findUnique({
+      where: { id: booking.clientId },
+      select: { points: true },
     });
+
+    // Recomputed server-side — the client's toggle is a request, not a figure.
+    const spent = redeem
+      ? maxRedeemable(client?.points ?? 0, booking.amount)
+      : 0;
+    const discount = pointsToRupees(spent);
+    const earned = pointsFor(booking.amount);
+    const reason = `Consultation with ${booking.lawyer.user.name}`;
+
+    await db.$transaction([
+      db.booking.update({
+        where: { id: bookingId },
+        data: { paid: true, discount, pointsSpent: spent, pointsEarned: earned },
+      }),
+      db.user.update({
+        where: { id: booking.clientId },
+        data: { points: { increment: earned - spent } },
+      }),
+      db.rewardLedger.create({
+        data: {
+          userId: booking.clientId,
+          kind: "EARN",
+          points: earned,
+          reason,
+          bookingId,
+        },
+      }),
+      ...(spent > 0
+        ? [
+            db.rewardLedger.create({
+              data: {
+                userId: booking.clientId,
+                kind: "REDEEM" as const,
+                points: -spent,
+                reason: `Redeemed against ${reason.toLowerCase()}`,
+                bookingId,
+              },
+            }),
+          ]
+        : []),
+    ]);
   }
 
   if (slotId) {

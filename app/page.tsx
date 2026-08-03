@@ -14,8 +14,9 @@ import { Engraving } from "@/components/engraving";
 import { LiveStrip } from "@/components/live-strip";
 import { CategoryTile } from "@/components/category-tile";
 import { LawyerCard, LawyerCardCompact } from "@/components/lawyer-card";
+import { RewardsBand } from "@/components/rewards-band";
 import { lawyerCardSelect } from "@/lib/lawyers";
-import { activePromoWhere, PROMO_ORDER } from "@/lib/promotions";
+import { formatRupees, TIER_FEE } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ const STEPS = [
   },
   {
     icon: MessageSquareText,
-    title: "Chat or video",
+    title: "Chat with your advocate",
     body: "The consultation opens the moment payment lands. Talk it through, then decide.",
   },
 ];
@@ -86,42 +87,46 @@ export default async function Home() {
       where: { status: "VERIFIED", online: true },
       orderBy: [{ rating: "desc" }, { reviewCount: "desc" }],
       take: 6,
-      ...lawyerCardSelect,
+      ...lawyerCardSelect(),
     }),
     db.lawyerProfile.count({ where: { status: "VERIFIED", online: true } }),
   ]);
 
-  // Featured strip — up to 3 currently-promoted advocates, labelled
-  // PROMOTED, never duplicated in the organic row below (LAUNCH.md Task 5).
-  const featuredPromoted = await db.lawyerProfile.findMany({
-    where: { status: "VERIFIED", ...activePromoWhere() },
-    orderBy: PROMO_ORDER,
-    take: 3,
-    ...lawyerCardSelect,
-  });
-  const promotedIds = new Set(featuredPromoted.map((l) => l.id));
-  const organicFeatured = featured.filter((l) => !promotedIds.has(l.id));
-
-  // Marketplace numbers — advocate and court counts are real (seed), the
-  // lifetime consultation figure is the platform's own running total.
-  const [verifiedCount, courts, bookingCount] = await Promise.all([
+  // Marketplace numbers — advocate, court and city counts are all live.
+  const [verifiedCount, courts, cities] = await Promise.all([
     db.lawyerProfile.count({ where: { status: "VERIFIED" } }),
     db.lawyerProfile.findMany({
       where: { status: "VERIFIED" },
       select: { court: true },
       distinct: ["court"],
     }),
-    db.booking.count({ where: { paid: true } }),
+    db.lawyerProfile.findMany({
+      where: { status: "VERIFIED" },
+      select: { city: true },
+      distinct: ["city"],
+    }),
   ]);
 
+  /* The market, then the platform. The first two are public sector figures
+     and are labelled as such under the grid; the last two are live counts
+     out of the database. */
   const stats = [
-    { label: "Verified advocates", value: String(verifiedCount) },
-    { label: "Courts covered", value: String(courts.length) },
     {
-      label: "Consultations booked",
-      value: (2400 + bookingCount).toLocaleString("en-IN"),
+      value: "5 Cr+",
+      body: "cases pending across Indian courts — most people never speak to an advocate at all",
     },
-    { label: "Median reply", value: "4 min" },
+    {
+      value: "15 lakh+",
+      body: "advocates enrolled with State Bar Councils, and no honest way to price one",
+    },
+    {
+      value: String(verifiedCount),
+      body: `advocates enrolment-verified on LawNest, across ${courts.length} courts in ${cities.length} cities`,
+    },
+    {
+      value: formatRupees(TIER_FEE.LOWER),
+      body: "the fixed floor for 30 minutes — no hourly billing, no surprise fee",
+    },
   ];
 
   return (
@@ -147,9 +152,9 @@ export default async function Home() {
               className="animate-rise mt-6 max-w-xl text-lg leading-relaxed text-slate"
               style={{ animationDelay: "80ms" }}
             >
-              Verified advocates across India at a fixed fee. Thirty minutes by
-              chat or video — and you see exactly how the fee splits before you
-              book.
+              Verified advocates across India at a fixed fee. Thirty minutes of
+              real chat with an advocate who practises your matter — and you see
+              exactly how the fee splits before you book.
             </p>
 
             <div
@@ -196,9 +201,9 @@ export default async function Home() {
             </p>
 
             <div className="mt-4 space-y-2.5">
-              {/* Organic only — promoted advocates live in the Featured strip
-                  below, so nobody appears twice on this page. */}
-              {organicFeatured.slice(0, 2).map((l) => (
+              {/* The next three appear in "Online right now" below, so
+                  nobody shows up twice on this page. */}
+              {featured.slice(0, 2).map((l) => (
                 <LawyerCardCompact key={l.id} lawyer={l} />
               ))}
             </div>
@@ -230,20 +235,28 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Stats band — the marketplace at a glance */}
-      <section className="band-alt">
-        <div className="container py-8 sm:py-10">
-          <dl className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+      {/* Why this exists — the market first, then what we've built on it */}
+      <section className="container section-tight">
+          <p className="mono-label text-muted">Why this matters</p>
+          <h2 className="mt-4 max-w-2xl">
+            Legal help in India is{" "}
+            <span className="tone-accent">unpriced</span>, not unavailable
+          </h2>
+
+          <dl className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {stats.map((s) => (
-              <div key={s.label}>
-                <dt className="mono-label text-muted">{s.label}</dt>
-                <dd className="font-mono-num mt-1.5 text-2xl text-ink sm:text-3xl">
-                  {s.value}
+              <div key={s.value} className="card p-5">
+                <dt className="font-display text-3xl text-ink">{s.value}</dt>
+                <dd className="mt-3 text-sm leading-relaxed text-slate">
+                  {s.body}
                 </dd>
               </div>
             ))}
           </dl>
-        </div>
+
+          <p className="mono-label mt-5 text-muted">
+            Sector figures · National Judicial Data Grid, Bar Council of India
+          </p>
       </section>
 
       {/* Categories */}
@@ -276,8 +289,7 @@ export default async function Home() {
       </section>
 
       {/* How it works */}
-      <section className="band-alt">
-        <div className="container section">
+      <section className="container section">
         <h2>How it works</h2>
         <div className="mt-8 grid gap-3 sm:grid-cols-3">
           {STEPS.map((s, i) => (
@@ -291,38 +303,12 @@ export default async function Home() {
             </div>
           ))}
         </div>
-        </div>
       </section>
 
-      {/* Featured advocates — paid placement, always labelled */}
-      {featuredPromoted.length > 0 && (
-        <section className="container section-tight">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2>Featured advocates</h2>
-              <p className="mt-2 text-slate">
-                These advocates have paid for placement. They are verified like
-                everyone else on LawNest.
-              </p>
-            </div>
-            <Link
-              href="/lawyers"
-              className="mono-label flex items-center gap-1 text-accent hover:underline"
-            >
-              All advocates
-              <ArrowRight className="size-3.5" strokeWidth={2.5} />
-            </Link>
-          </div>
+      {/* Rewards — the loyalty loop, advertised before you have to book */}
+      <RewardsBand />
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredPromoted.map((l) => (
-              <LawyerCard key={l.id} lawyer={l} promoted />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Online now — organic */}
+      {/* Online now — ranked on rating and availability, never on payment */}
       <section className="container section">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -340,17 +326,15 @@ export default async function Home() {
           </Link>
         </div>
 
-        {/* Promoted advocates appear once, in the strip above */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {organicFeatured.slice(2, 5).map((l) => (
+          {featured.slice(2, 5).map((l) => (
             <LawyerCard key={l.id} lawyer={l} />
           ))}
         </div>
       </section>
 
       {/* Free assistant band */}
-      <section className="band-alt">
-        <div className="container section-tight">
+      <section className="container section-tight">
         <div className="card p-6 sm:p-9">
           <div className="h-px w-16 bg-accent" aria-hidden="true" />
           <h2 className="mt-5 flex items-center gap-3">
@@ -365,7 +349,6 @@ export default async function Home() {
           <p className="mono-label mt-6 text-muted">
             Free · not legal advice · bottom-right corner
           </p>
-        </div>
         </div>
       </section>
 

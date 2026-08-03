@@ -18,8 +18,6 @@
   --danger:     #B23A31;   /* errors */
   --star:       #C8962E;   /* rating stars ONLY */
 
-  /* Video tiles — the one dark element allowed on the light page (Task 3) */
-  --video: #14181F;
 
   /* Layout (RETHEME.md Task 2) — one container system, widened so the
      sides stop feeling empty. Pages that need more room set --maxw locally. */
@@ -27,14 +25,10 @@
   --gutter: clamp(20px, 5vw, 64px);
 }
 
-/* Full-bleed section bands (CHAT-AND-POLISH.md Task 3). The page is --paper;
-   every other section sits on a --surface-2 band that runs edge to edge while
-   its content stays inside .container. The alternation gives the page vertical
-   rhythm, so the eye stops reading the side gutters as empty. */
-.band-alt {
-  background: var(--surface-2);
-  border-block: 1px solid var(--rule);
-}
+/* One continuous page. Sections used to alternate onto a --surface-2 band,
+   which read as stripes rather than rhythm — the page looked chopped into
+   coloured slabs. Rhythm now comes from .section spacing alone, and all the
+   contrast on the page comes from white .card surfaces on warm --paper. */
 
 /* Centered single-column pages (confirmed, empty states) — capped and wrapped
    so being centred looks like a filed document, not marooned. */
@@ -60,7 +54,6 @@
 }
 .container-narrow { --maxw: 980px; }
 .container-chat { --maxw: 1160px; }
-.container-room { --maxw: 1080px; }
 
 /* Section vertical rhythm */
 .section {
@@ -85,7 +78,6 @@
   --color-rule: var(--rule);
   --color-danger: var(--danger);
   --color-star: var(--star);
-  --color-video: var(--video);
 
   --font-display: var(--font-fraunces), Georgia, serif;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -265,4 +257,29 @@
     scroll-behavior: auto !important;
   }
   .animate-rise { opacity: 1; transform: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Phones only (≤640px). Everything in here is scoped by the
+   media query, so the laptop layout is untouched by design.
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* No page may scroll sideways. `clip`, not `hidden` — `hidden` would turn
+     <html> into a scroll container and break the sticky header. */
+  html { overflow-x: clip; }
+
+  /* Section rhythm is too generous at phone width; tighten the floor. */
+  .section       { padding-block: clamp(32px, 6vh, 56px); }
+  .section-tight { padding-block: clamp(24px, 4vh, 40px); }
+
+  /* Display type: the 2.5rem floor eats a third of the fold at 375px. */
+  h1 { font-size: clamp(2rem, 8vw, 2.5rem); }
+  h2 { font-size: clamp(1.5rem, 6vw, 1.875rem); }
+
+  /* Thumb-sized targets on the two pill styles used for actions. */
+  .btn-primary,
+  .btn-secondary { min-height: 44px; }
+
+  /* Anything explicitly set wider than the viewport scrolls in its own box. */
+  table { font-size: 0.875rem; }
 }

@@ -31,12 +31,19 @@ enum Status {
   REJECTED
 }
 
-// Paid placement tiers (LAUNCH.md Task 5)
+// Paid placement tiers (LAUNCH.md Task 5) — admin console only, no longer
+// surfaced to clients.
 enum PromoTier {
   NONE
   BASIC
   FEATURED
   SPOTLIGHT
+}
+
+// LawNest Rewards — 5% back on every paid consultation, 100 points = ₹100 off.
+enum RewardKind {
+  EARN
+  REDEEM
 }
 
 model User {
@@ -54,8 +61,12 @@ model User {
 
   createdAt DateTime @default(now())
 
+  // Rewards balance — kept in step with RewardLedger inside one transaction.
+  points Int @default(0)
+
   lawyer   LawyerProfile?
   bookings Booking[]
+  rewards  RewardLedger[]
 }
 
 model Category {
@@ -101,6 +112,8 @@ model Slot {
   lawyer   LawyerProfile @relation(fields: [lawyerId], references: [id])
   startsAt DateTime
   booked   Boolean       @default(false)
+
+  @@index([lawyerId, startsAt])
 }
 
 model Booking {
@@ -115,14 +128,44 @@ model Booking {
   platformCut Int
   paid        Boolean       @default(false)
   createdAt   DateTime      @default(now())
-  messages    Message[]
+
+  // Rewards. The discount comes out of the platform's share of the economics
+  // — amount / lawyerCut / platformCut stay whatever the fee card promised.
+  discount     Int @default(0) // rupees knocked off what the client pays
+  pointsEarned Int @default(0)
+  pointsSpent  Int @default(0)
+
+  // Either side can close the consultation; the thread then goes read-only.
+  endedAt DateTime?
+  endedBy Role?
+
+  messages Message[]
+
+  @@index([clientId, slotAt])
+  @@index([lawyerId, slotAt])
 }
 
 model Message {
   id         String   @id @default(cuid())
   bookingId  String
   booking    Booking  @relation(fields: [bookingId], references: [id])
-  senderRole Role
+  senderRole Role // ADMIN = system line (e.g. "consultation ended")
   body       String
   createdAt  DateTime @default(now())
+
+  // The chat poll reads this every 2s — by far the hottest query we run.
+  @@index([bookingId, createdAt])
+}
+
+model RewardLedger {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  kind      RewardKind
+  points    Int // positive on EARN, negative on REDEEM
+  reason    String
+  bookingId String?
+  createdAt DateTime   @default(now())
+
+  @@index([userId, createdAt])
 }

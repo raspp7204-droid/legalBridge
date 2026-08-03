@@ -2,7 +2,9 @@ import { notFound, redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireClient } from "@/lib/auth";
 import { splitFee } from "@/lib/money";
-import { formatSlotFull } from "@/lib/lawyers";
+import { maxRedeemable, pointsFor } from "@/lib/rewards";
+import { formatSlotFull, relativeSlotLabel } from "@/lib/lawyers";
+import { nextInstantStart } from "@/lib/slots";
 import { PaymentSheet } from "@/components/payment-sheet";
 import { confirmPayment } from "./actions";
 
@@ -15,12 +17,13 @@ export default async function PayPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ slot?: string }>;
+  searchParams: Promise<{ slot?: string; instant?: string }>;
 }) {
-  const [{ id: lawyerId }, { slot: slotId }] = await Promise.all([
+  const [{ id: lawyerId }, { slot: slotId, instant }] = await Promise.all([
     params,
     searchParams,
   ]);
+  const wantsInstant = instant === "1";
 
   const [lawyer, client] = await Promise.all([
     db.lawyerProfile.findUnique({
@@ -35,7 +38,16 @@ export default async function PayPage({
   const slot = slotId
     ? await db.slot.findUnique({ where: { id: slotId } })
     : null;
-  const slotAt = slot?.startsAt ?? new Date(Date.now() + 2 * 60 * 60 * 1000);
+
+  /* Instant consultations have no Slot row — they start at the next 5-minute
+     boundary. That bucket is what makes a refresh idempotent: an unrounded
+     "now" would differ on every render and the reuse lookup below, which
+     matches slotAt exactly, would mint a fresh booking each time. */
+  const slotAt =
+    slot?.startsAt ??
+    (wantsInstant
+      ? nextInstantStart()
+      : new Date(Date.now() + 2 * 60 * 60 * 1000));
 
   // Reuse an existing unpaid booking so a refresh doesn't duplicate (§5).
   const existing = await db.booking.findFirst({
@@ -63,15 +75,17 @@ export default async function PayPage({
 
   const vpa = process.env.NEXT_PUBLIC_UPI_VPA ?? "founder@okhdfcbank";
   const payeeName = process.env.NEXT_PUBLIC_UPI_NAME ?? "LawNest";
-  const upiLink =
-    `upi://pay?pa=${encodeURIComponent(vpa)}` +
-    `&pn=${encodeURIComponent(payeeName)}` +
-    `&am=${split.amount}&cu=INR` +
-    `&tn=${encodeURIComponent(`LawNest-${booking.id}`)}`;
+
+  // Rewards. The sheet re-derives the payable amount (and therefore the UPI
+  // intent) from the toggle, but the server re-computes it again on confirm.
+  const redeemable = maxRedeemable(client.points, split.amount);
 
   return (
     <main className="container container-narrow section-tight">
-      <p className="mono-label text-muted">Step 2 of 3 · payment</p>
+      <p className="mono-label text-muted">
+        Step 2 of 3 · payment
+        {wantsInstant && !slot ? " · instant consultation" : ""}
+      </p>
       <h1 className="mt-3 text-[2rem] sm:text-[2.5rem]">
         Pay by <span className="tone-accent">UPI</span>
       </h1>
@@ -82,12 +96,19 @@ export default async function PayPage({
           slotId={slot?.id ?? null}
           lawyerName={lawyer.user.name}
           lawyerAvatar={lawyer.user.avatar}
-          slotLabel={formatSlotFull(slotAt)}
+          slotLabel={
+            wantsInstant && !slot
+              ? `Starts ${relativeSlotLabel(slotAt)} · in a few minutes`
+              : formatSlotFull(slotAt)
+          }
           amount={split.amount}
           lawyerCut={split.lawyerCut}
           platformCut={split.platformCut}
-          upiLink={upiLink}
           vpa={vpa}
+          payeeName={payeeName}
+          points={client.points}
+          redeemable={redeemable}
+          pointsEarned={pointsFor(split.amount)}
           confirmAction={confirmPayment}
         />
       </div>

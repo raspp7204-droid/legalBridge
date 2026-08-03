@@ -10,17 +10,18 @@ export const fetchCache = "force-no-store";
 const NO_STORE = { "cache-control": "no-store, max-age=0" };
 
 /**
- * Who is asking, and are they part of this booking? The sender is derived
- * from the Clerk session, never from the request body (LAUNCH.md Task 2).
+ * Decide what this caller may do with the booking we already loaded.
+ * The sender is derived from the Clerk session, never from the request body
+ * (LAUNCH.md Task 2).
+ *
+ * This takes the booking rather than fetching it, because the poll runs every
+ * two seconds against a database in another continent — every avoidable round
+ * trip is ~300ms on the wire before any work happens.
  */
-async function authorize(bookingId: string) {
-  const booking = await db.booking.findUnique({
-    where: { id: bookingId },
-    select: { id: true, clientId: true, lawyer: { select: { userId: true } } },
-  });
-  if (!booking) return { error: "Booking not found.", status: 404 } as const;
-
-  const user = await getDbUser();
+function authorize(
+  booking: { clientId: string; lawyer: { userId: string } },
+  user: { id: string; role: string } | null,
+) {
   if (!user) return { error: "Sign in required.", status: 401 } as const;
 
   // Participation decides first: an admin who booked a consultation is that
@@ -31,25 +32,58 @@ async function authorize(bookingId: string) {
   if (!isClient && !isLawyer) {
     if (user.role === "ADMIN") {
       // Admin can read any thread for oversight, but never writes into it.
-      return { booking, role: "ADMIN" as const, canWrite: false } as const;
+      return { role: "ADMIN" as const, canWrite: false } as const;
     }
     return { error: "Not your consultation.", status: 403 } as const;
   }
 
   return {
-    booking,
     role: isLawyer ? ("LAWYER" as const) : ("CLIENT" as const),
     canWrite: true,
   } as const;
 }
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ bookingId: string }> },
 ) {
   const { bookingId } = await params;
 
-  const auth = await authorize(bookingId);
+  /* `since` makes the poll incremental: the client sends the timestamp of the
+     newest message it holds and we return only from there. gte, not gt, so a
+     message written in the same millisecond as the last one is never skipped
+     — the client dedupes by id anyway. */
+  const sinceParam = new URL(req.url).searchParams.get("since");
+  const since = sinceParam ? new Date(sinceParam) : null;
+  const validSince = since && !Number.isNaN(since.getTime()) ? since : null;
+
+  /* One round trip for the booking and its messages, in parallel with the
+     one for the user. This used to be three sequential queries. */
+  const [booking, user] = await Promise.all([
+    db.booking.findUnique({
+      where: { id: bookingId },
+      select: {
+        clientId: true,
+        endedAt: true,
+        lawyer: { select: { userId: true } },
+        messages: {
+          where: validSince ? { createdAt: { gte: validSince } } : undefined,
+          orderBy: { createdAt: "asc" },
+          select: { id: true, senderRole: true, body: true, createdAt: true },
+        },
+      },
+    }),
+    getDbUser(),
+  ]);
+
+  if (!booking) {
+    return Response.json(
+      { error: "Booking not found." },
+      { status: 404, headers: NO_STORE },
+    );
+  }
+
+  const auth = authorize(booking, user);
   if ("error" in auth) {
     return Response.json(
       { error: auth.error },
@@ -57,14 +91,18 @@ export async function GET(
     );
   }
 
-  // Empty threads return [] — never a 404.
-  const messages = await db.message.findMany({
-    where: { bookingId },
-    orderBy: { createdAt: "asc" },
-    select: { id: true, senderRole: true, body: true, createdAt: true },
-  });
-
-  return Response.json({ messages, as: auth.role }, { headers: NO_STORE });
+  // endedAt rides along on every poll — that is what locks the *other*
+  // window within ~2s when one side ends the consultation.
+  return Response.json(
+    {
+      messages: booking.messages,
+      as: auth.role,
+      endedAt: booking.endedAt?.toISOString() ?? null,
+      // Tells the client this was a delta, not the whole thread.
+      partial: !!validSince,
+    },
+    { headers: NO_STORE },
+  );
 }
 
 export async function POST(
@@ -91,7 +129,26 @@ export async function POST(
     );
   }
 
-  const auth = await authorize(bookingId);
+  const [booking, user] = await Promise.all([
+    db.booking.findUnique({
+      where: { id: bookingId },
+      select: {
+        clientId: true,
+        endedAt: true,
+        lawyer: { select: { userId: true } },
+      },
+    }),
+    getDbUser(),
+  ]);
+
+  if (!booking) {
+    return Response.json(
+      { error: "Booking not found." },
+      { status: 404, headers: NO_STORE },
+    );
+  }
+
+  const auth = authorize(booking, user);
   if ("error" in auth) {
     return Response.json(
       { error: auth.error },
@@ -102,6 +159,12 @@ export async function POST(
     return Response.json(
       { error: "Read-only for this session." },
       { status: 403, headers: NO_STORE },
+    );
+  }
+  if (booking.endedAt) {
+    return Response.json(
+      { error: "This consultation has ended." },
+      { status: 409, headers: NO_STORE },
     );
   }
 

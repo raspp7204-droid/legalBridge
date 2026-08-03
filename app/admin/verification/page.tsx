@@ -25,7 +25,7 @@ export default async function VerificationQueue() {
   return (
     <main className="container section-tight">
       <p className="mono-label text-muted">Admin</p>
-      <h1 className="mt-3 text-[2.5rem] sm:text-[3rem]">
+      <h1 className="mt-3 text-[2rem] sm:text-[3rem]">
         Verification <span className="tone-accent">queue</span>
       </h1>
       <p className="mt-3 text-muted">

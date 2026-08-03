@@ -22,7 +22,7 @@ export default async function AccountPage() {
   ]);
 
   return (
-    <main className="band-alt">
+    <main>
       <div className="container container-narrow section-tight">
         <div className="document">
           <p className="mono-label text-muted">Account</p>
@@ -68,7 +68,7 @@ export default async function AccountPage() {
                 </p>
               </div>
 
-              <dl className="mt-6 grid grid-cols-2 gap-4 border-t border-rule pt-6">
+              <dl className="mt-6 grid grid-cols-1 gap-4 border-t border-rule pt-6 sm:grid-cols-2">
                 <div>
                   <dt className="mono-label text-muted">Consultations</dt>
                   <dd className="font-mono-num mt-1 text-xl">{count}</dd>

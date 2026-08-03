@@ -52,7 +52,7 @@ export default async function LawyerProfilePage() {
   return (
     <main className="container container-narrow section-tight">
       <p className="mono-label text-muted">Advocate · {profile.user.name}</p>
-      <h1 className="mt-3 text-[2.5rem] sm:text-[3rem]">
+      <h1 className="mt-3 text-[2rem] sm:text-[3rem]">
         Edit <span className="tone-accent">profile</span>
       </h1>
 

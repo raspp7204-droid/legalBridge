@@ -35,7 +35,7 @@ export function FeeBreakdown({ fee }: { fee: number }) {
 
         <div className="my-4 h-px bg-rule" />
 
-        <p className="mono-label text-muted">30 min · chat + video · UPI</p>
+        <p className="mono-label text-muted">30 min · chat · UPI</p>
       </div>
     </div>
   );
