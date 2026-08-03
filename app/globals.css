@@ -15,14 +15,25 @@
   --accent-bg:  #F3E7E5;   /* oxblood tint — chips, badges */
   --verified:   #2C6E5B;   /* sage/forest green — online + verified only */
   --rule:       #E4DDCE;   /* hairlines, card borders */
+  --paper-deep: #EBE3D2;   /* --paper, a few shades down — the ad band only */
   --danger:     #B23A31;   /* errors */
   --star:       #C8962E;   /* rating stars ONLY */
 
 
   /* Layout (RETHEME.md Task 2) — one container system, widened so the
-     sides stop feeling empty. Pages that need more room set --maxw locally. */
-  --maxw: 1240px;
-  --gutter: clamp(20px, 5vw, 64px);
+     sides stop feeling empty. Pages that need more room set --maxw locally.
+     1440 rather than 1240: on a 16:9 laptop the old cap left a hand's width
+     of empty paper down both edges. */
+  --maxw: 1440px;
+  --gutter: clamp(20px, 4vw, 56px);
+
+  /* The sticky header row, and the announcement strip above it. The strip is
+     not sticky — it scrolls away and the header takes over — but while it is
+     on screen it pushes the hero down, so the hero's full-height calc has to
+     know about it. Set on <body> by the layout, which is the only thing that
+     knows whether the strip rendered. */
+  --header-h: 64px;
+  --strip-h: 0px;
 }
 
 /* One continuous page. Sections used to alternate onto a --surface-2 band,
@@ -49,11 +60,11 @@
    The wide variant also tightens the gutter: the listing needs ~1000px of
    results area beside a 264px filter rail to fit three cards per row. */
 .container-wide {
-  --maxw: 1320px;
-  --gutter: clamp(20px, 3vw, 32px);
+  --maxw: 1600px;
+  --gutter: clamp(20px, 3vw, 40px);
 }
-.container-narrow { --maxw: 980px; }
-.container-chat { --maxw: 1160px; }
+.container-narrow { --maxw: 1080px; }
+.container-chat { --maxw: 1320px; }
 
 /* Section vertical rhythm */
 .section {
@@ -66,6 +77,7 @@
 
 @theme inline {
   --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-ink: var(--ink);
@@ -227,6 +239,64 @@
   border-radius: 0.375rem;
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
+}
+
+/* Category chip in the hero — a matter you can tap straight into. White pill
+   on the ivory field, oxblood hairline on hover. */
+.chip-matter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--slate);
+  padding: 0.375rem 0.8125rem;
+  font-size: 0.8125rem;
+  transition: border-color 120ms ease, color 120ms ease,
+    background-color 120ms ease;
+}
+
+.chip-matter:hover {
+  border-color: color-mix(in oklab, var(--accent) 45%, transparent);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* Only while the announcement strip is on the page. */
+body.has-strip { --strip-h: 40px; }
+
+/* ---- The announcement strip ----
+   The one place that sits on a solid --accent field (see the note at the top
+   of this file — the deliberate exception, not a leak). Scoped to
+   .offer-band, so no other surface inherits it. The recruitment band used to
+   share this and no longer does: it is --paper-deep with ordinary ink type. */
+.offer-band {
+  color: #FFFFFF;
+}
+
+.offer-band h1,
+.offer-band h2,
+.offer-band h3 {
+  color: #FFFFFF;
+}
+
+/* The global focus ring is oxblood, which is invisible on oxblood. */
+.offer-band :focus-visible {
+  outline-color: #FFFFFF;
+}
+
+/* Tertiary pill — quiet third action beside the two real ones */
+.btn-quiet {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.btn-quiet:hover {
+  border-color: color-mix(in oklab, var(--accent) 45%, transparent);
+  background: var(--surface-2);
 }
 
 }

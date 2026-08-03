@@ -16,6 +16,11 @@ import { db } from "@/lib/db";
 import { requireLawyerProfile } from "@/lib/auth";
 import { AvailabilityToggle } from "@/components/availability-toggle";
 import { EarningsChart } from "@/components/earnings-chart";
+import {
+  SearchDemandChart,
+  OnlineSwitchChart,
+} from "@/components/market-charts";
+import { searchDemandSeries, onlineSwitchSeries, trend } from "@/lib/demand";
 import { formatRupees } from "@/lib/money";
 import { formatSlotFull, formatSlotTime, formatSlotDay } from "@/lib/lawyers";
 
@@ -125,7 +130,7 @@ export default async function LawyerDashboard() {
   const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const thirtyDaysAgo = new Date(Date.now() - 29 * 24 * 60 * 60 * 1000);
 
-  const [bookings, totals, monthTotals, lastMonthTotals, slotStats] =
+  const [bookings, totals, monthTotals, lastMonthTotals, slotStats, matterCount] =
     await Promise.all([
     db.booking.findMany({
       where: { lawyerId: profile.id, paid: true },
@@ -163,6 +168,8 @@ export default async function LawyerDashboard() {
       where: { lawyerId: profile.id, startsAt: { gte: startOfDay } },
       _count: true,
     }),
+    // How wide the practice is — drives the modelled search volume below.
+    db.category.count({ where: { lawyers: { some: { id: profile.id } } } }),
   ]);
 
   const today = bookings.filter(
@@ -248,6 +255,27 @@ export default async function LawyerDashboard() {
     .map(([name, r]) => ({ name, ...r }))
     .sort((a, b) => b.earned - a.earned);
   const mixTotal = matterMix.reduce((s, m) => s + m.earned, 0);
+
+  /* ---- Market demand (lib/demand.ts) ----
+     Modelled from the practice's shape, not measured — nothing in the schema
+     records searches. Both cards say so under the chart. */
+  const demand = searchDemandSeries({
+    seed: profile.id,
+    matters: matterCount,
+    years: profile.years,
+  });
+  const switching = onlineSwitchSeries({
+    seed: profile.id,
+    city: profile.city || "India",
+  });
+
+  const searchesThisWeek = demand[demand.length - 1].searches;
+  const searchTrend = trend(demand.map((d) => d.searches));
+  const searchTotal = demand.reduce((s, d) => s + d.searches, 0);
+
+  const switchedThisMonth = switching[switching.length - 1];
+  const switchTrend = trend(switching.map((d) => d.clients));
+  const shareStart = switching[0].share;
 
   // What still stands between this advocate and a live listing.
   const missing = [
@@ -394,6 +422,99 @@ export default async function LawyerDashboard() {
           value={`${responseRate}%`}
           hint="threads you replied in"
         />
+      </div>
+
+      {/* Market — demand around this practice, not this advocate's own takings */}
+      <div className="mt-8 flex flex-wrap items-baseline justify-between gap-3">
+        <p className="mono-label text-muted">Market demand</p>
+        <p className="mono-label text-muted">
+          Modelled for {profile.city || "India"} · indicative
+        </p>
+      </div>
+
+      <div className="mt-3 grid gap-6 lg:grid-cols-2">
+        <section className="card p-5">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <h2 className="text-xl">Clients searching for an advocate</h2>
+            <p className="mono-label text-muted">last 12 weeks</p>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-baseline gap-3">
+            <p className="font-mono-num text-2xl text-accent">
+              {searchesThisWeek.toLocaleString("en-IN")}
+            </p>
+            <p className="mono-label text-muted">searches this week</p>
+            {searchTrend !== null && (
+              <span
+                className={`mono-label flex items-center gap-0.5 ${
+                  searchTrend >= 0 ? "text-verified" : "text-danger"
+                }`}
+              >
+                {searchTrend >= 0 ? (
+                  <TrendingUp className="size-3" strokeWidth={2.5} />
+                ) : (
+                  <TrendingDown className="size-3" strokeWidth={2.5} />
+                )}
+                {Math.abs(searchTrend)}%
+              </span>
+            )}
+          </div>
+
+          <div className="mt-4">
+            <SearchDemandChart data={demand} />
+          </div>
+
+          <p className="mt-4 border-t border-rule pt-3 text-sm leading-relaxed text-slate">
+            {searchTotal.toLocaleString("en-IN")} searches across your{" "}
+            {matterCount === 1 ? "practice area" : `${matterCount} practice areas`}{" "}
+            in the last quarter. Open more slots and you rank higher for clients
+            filtering by availability.
+          </p>
+          <p className="mono-label mt-2 text-muted">
+            Indicative demand · modelled from practice areas and seniority
+          </p>
+        </section>
+
+        <section className="card p-5">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <h2 className="text-xl">Clients moving to online legal help</h2>
+            <p className="mono-label text-muted">last 12 months</p>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-baseline gap-3">
+            <p className="font-mono-num text-2xl text-ink">
+              {switchedThisMonth.clients.toLocaleString("en-IN")}
+            </p>
+            <p className="mono-label text-muted">this month</p>
+            {switchTrend !== null && (
+              <span
+                className={`mono-label flex items-center gap-0.5 ${
+                  switchTrend >= 0 ? "text-verified" : "text-danger"
+                }`}
+              >
+                {switchTrend >= 0 ? (
+                  <TrendingUp className="size-3" strokeWidth={2.5} />
+                ) : (
+                  <TrendingDown className="size-3" strokeWidth={2.5} />
+                )}
+                {Math.abs(switchTrend)}%
+              </span>
+            )}
+          </div>
+
+          <div className="mt-4">
+            <OnlineSwitchChart data={switching} />
+          </div>
+
+          <p className="mt-4 border-t border-rule pt-3 text-sm leading-relaxed text-slate">
+            {switchedThisMonth.share}% of people in {profile.city || "India"} now
+            take a legal problem online first, up from {shareStart}% a year ago —
+            that is the queue your listing sits in front of.
+          </p>
+          <p className="mono-label mt-2 text-muted">
+            Indicative adoption · modelled for {profile.city || "India"}
+          </p>
+        </section>
       </div>
 
       {/* Two columns: the business on the left, the day on the right */}

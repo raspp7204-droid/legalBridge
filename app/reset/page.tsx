@@ -24,11 +24,32 @@ function isClerkKey(key: string) {
   return CLERK_PREFIXES.some((p) => k.startsWith(p)) || k.includes("clerk");
 }
 
+/**
+ * Where to land afterwards. Read off window.location inside the effect rather
+ * than with useSearchParams, which would need a Suspense boundary here for no
+ * benefit. Relative single-slash paths only — never send anyone to another
+ * origin because a query string asked.
+ */
+function destination() {
+  try {
+    // "/" itself, or "/path" — but not "//host" or "/\host", which browsers
+    // treat as protocol-relative and would leave the site.
+    const to = new URLSearchParams(window.location.search).get("to");
+    if (to && /^\/($|[^/\\])/.test(to)) return to;
+  } catch {
+    /* fall through to the default */
+  }
+  return "/sign-in";
+}
+
 export default function ResetPage() {
   const [done, setDone] = useState(false);
+  const [to, setTo] = useState("/sign-in");
 
   useEffect(() => {
     const wiped: string[] = [];
+    const target = destination();
+    setTo(target);
 
     try {
       for (const store of [window.localStorage, window.sessionStorage]) {
@@ -56,9 +77,11 @@ export default function ResetPage() {
     }
 
     setDone(true);
-    // replace(), not push(): the reset page must not sit in history where a
-    // back button would re-run it.
-    const t = setTimeout(() => window.location.replace("/sign-in"), 600);
+    /* replace(), not push(): the reset page must not sit in history where a
+       back button would re-run it. A full location change, not router.push —
+       this has to drop the React router cache, or the header would paint the
+       signed-out page with the previous user's name still in it. */
+    const t = setTimeout(() => window.location.replace(target), 600);
     return () => clearTimeout(t);
   }, []);
 
@@ -66,23 +89,35 @@ export default function ResetPage() {
     <main className="container container-narrow section">
       <div className="document">
         <div className="card p-8 text-center">
-          <p className="mono-label text-muted">Session reset</p>
+          <p className="mono-label text-muted">
+            {to === "/sign-in" ? "Session reset" : "Signing out"}
+          </p>
           <h1 className="mt-4 text-[1.75rem]">
-            Clearing your <span className="tone-accent">sign-in state</span>
+            {to === "/sign-in" ? (
+              <>
+                Clearing your <span className="tone-accent">sign-in state</span>
+              </>
+            ) : (
+              <>
+                You are <span className="tone-accent">signed out</span>
+              </>
+            )}
           </h1>
           <p className="mt-4 leading-relaxed text-slate">
             {done
-              ? "Done — taking you to sign in."
+              ? to === "/sign-in"
+                ? "Done — taking you to sign in."
+                : "Done — taking you back to LawNest."
               : "Removing stored session data…"}
           </p>
           <p className="mono-label mt-6 text-muted">
             If this page does not move on,{" "}
             {/* Plain <a>, not <Link>: a soft client navigation would keep the
                 same JS context alive, and the whole point is to reboot ClerkJS
-                from an empty store. */}
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-            <a href="/sign-in" className="text-accent underline">
-              go to sign in
+                from an empty store. (The no-html-link-for-pages disable this
+                used to carry is unnecessary now the href is a variable.) */}
+            <a href={to} className="text-accent underline">
+              {to === "/sign-in" ? "go to sign in" : "continue to LawNest"}
             </a>
           </p>
         </div>

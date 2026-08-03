@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  Check,
   MessagesSquare,
   Search,
   CreditCard,
@@ -11,10 +12,15 @@ import { db } from "@/lib/db";
 import { blockLawyers } from "@/lib/auth";
 import { Starfield } from "@/components/starfield";
 import { Engraving } from "@/components/engraving";
-import { LiveStrip } from "@/components/live-strip";
+import { HeroBackdrop } from "@/components/hero-backdrop";
+import { AskAiButton } from "@/components/ask-ai-button";
 import { CategoryTile } from "@/components/category-tile";
 import { LawyerCard, LawyerCardCompact } from "@/components/lawyer-card";
 import { RewardsBand } from "@/components/rewards-band";
+import { WelcomeOfferBand } from "@/components/welcome-offer-card";
+import { AdvocateOfferBand } from "@/components/advocate-offer-band";
+import { welcomeEligible } from "@/lib/offer-state";
+import { seatsLeft } from "@/lib/offers";
 import { lawyerCardSelect } from "@/lib/lawyers";
 import { formatRupees, TIER_FEE } from "@/lib/money";
 
@@ -24,6 +30,16 @@ const LADDER = [
   { tier: "LOWER", fee: 399, note: "2–5 yrs · district courts" },
   { tier: "MIDDLE", fee: 549, note: "6–12 yrs · sessions & high court" },
   { tier: "HIGH", fee: 799, note: "13+ yrs · senior counsel" },
+];
+
+/* The tickmark strip along the foot of the hero — five promises, each one
+   something the visitor can check on the very next page. */
+const PROMISES = [
+  "Bar Council verified",
+  "Fixed fee, no hourly billing",
+  "Fee split shown before you pay",
+  "Chat + video consultation",
+  "Rewards on every booking",
 ];
 
 const STEPS = [
@@ -92,6 +108,8 @@ export default async function Home() {
     db.lawyerProfile.count({ where: { status: "VERIFIED", online: true } }),
   ]);
 
+  const offerEligible = await welcomeEligible();
+
   // Marketplace numbers — advocate, court and city counts are all live.
   const [verifiedCount, courts, cities] = await Promise.all([
     db.lawyerProfile.count({ where: { status: "VERIFIED" } }),
@@ -131,118 +149,151 @@ export default async function Home() {
 
   return (
     <main>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <Starfield />
-        <Engraving side="right" />
-        {/* Two-region hero: copy + CTAs left, live marketplace panel right.
-            Collapses to one column below 900px (RETHEME.md Task 3). */}
-        <div className="container section relative grid gap-12 min-[900px]:grid-cols-[1.05fr_0.95fr] min-[900px]:items-center">
-          <div className="min-[900px]:col-start-1 min-[900px]:row-start-1">
-            <div className="animate-rise">
-              <LiveStrip online={onlineCount} />
-            </div>
+      {/* Hero — a laptop screen's worth: the promise, the eight matters as
+          chips, three ways in, the live advocate panel, and a tickmark strip
+          of what you get, ruled off along the foot. */}
+      <section className="relative isolate overflow-hidden">
+        <HeroBackdrop />
 
-            <h1 className="animate-rise mt-6">
-              Know what the law says,{" "}
-              <span className="tone-accent">before</span> you pay.
-            </h1>
-
-            <p
-              className="animate-rise mt-6 max-w-xl text-lg leading-relaxed text-slate"
-              style={{ animationDelay: "80ms" }}
-            >
-              Verified advocates across India at a fixed fee. Thirty minutes of
-              real chat with an advocate who practises your matter — and you see
-              exactly how the fee splits before you book.
-            </p>
-
-            <div
-              className="animate-rise mt-9 flex flex-wrap items-center gap-3"
-              style={{ animationDelay: "160ms" }}
-            >
-              <Link
-                href="/lawyers"
-                className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
-              >
-                Find an advocate
-                <ArrowRight className="size-4" strokeWidth={2.5} />
-              </Link>
-              <Link
-                href="/categories"
-                className="btn-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
-              >
-                Browse legal matters
-              </Link>
-            </div>
-          </div>
-
-          {/* Advocates online now — fills the right column */}
-          <aside
-            className="animate-rise card p-4 min-[900px]:col-start-2 min-[900px]:row-span-2 min-[900px]:row-start-1 min-[900px]:self-center sm:p-5"
-            style={{ animationDelay: "120ms" }}
-          >
-            <div className="flex items-baseline justify-between gap-3">
-              <h2 className="text-[1.25rem]">Advocates online now</h2>
-              <Link
-                href="/lawyers?online=1"
-                className="mono-label shrink-0 text-accent hover:underline"
-              >
-                See all
-              </Link>
-            </div>
-
-            <p className="mono-label mt-1.5 flex items-center gap-2 text-verified">
-              <span className="relative flex size-2">
-                <span className="animate-pulse-dot absolute inline-flex size-2 rounded-full bg-verified" />
-                <span className="relative inline-flex size-2 rounded-full bg-verified" />
-              </span>
-              {onlineCount} online · average reply under 5 min
-            </p>
-
-            <div className="mt-4 space-y-2.5">
-              {/* The next three appear in "Online right now" below, so
-                  nobody shows up twice on this page. */}
-              {featured.slice(0, 2).map((l) => (
-                <LawyerCardCompact key={l.id} lawyer={l} />
-              ))}
-            </div>
-
-            <p className="mt-4 border-t border-rule pt-3 text-sm text-slate">
-              Every advocate here is enrolment-verified against the Bar Council
-              register before they can take a consultation.
-            </p>
-          </aside>
-
-          {/* Price ladder */}
-          <div
-            className="animate-rise grid gap-3 sm:grid-cols-3 min-[900px]:col-start-1 min-[900px]:row-start-2"
-            style={{ animationDelay: "240ms" }}
-          >
-            {LADDER.map((t) => (
-              <div key={t.tier} className="card p-5">
-                <p className="mono-label text-muted">{t.tier}</p>
-                <p className="font-mono-num mt-2 text-3xl text-accent">
-                  ₹{t.fee}
-                </p>
-                <p className="mt-2 text-sm text-slate">{t.note}</p>
+        <div className="container relative flex flex-col justify-center pt-10 pb-10 sm:pt-14 lg:min-h-[calc(100vh-var(--header-h)-var(--strip-h))] lg:pt-12 lg:pb-10">
+          {/* 1.25/0.75 rather than an even split: the copy column has to hold
+              three CTAs on one row before the panel needs the space. */}
+          <div className="grid gap-10 lg:grid-cols-[1.25fr_0.75fr] lg:items-center lg:gap-14">
+            {/* Copy */}
+            <div>
+              <div className="animate-rise inline-flex items-center gap-2.5">
+                <span className="relative flex size-2">
+                  <span className="animate-pulse-dot absolute inline-flex size-2 rounded-full bg-accent" />
+                  <span className="relative inline-flex size-2 rounded-full bg-accent" />
+                </span>
+                <span className="mono-label text-accent">
+                  Live now · {onlineCount} advocates online
+                </span>
               </div>
-            ))}
-            <p className="mono-label text-muted sm:col-span-3">
-              Per 30-minute consultation · no hourly billing
-            </p>
+
+              <h1 className="animate-rise mt-5 max-w-[15ch] text-balance">
+                Know what the law says,{" "}
+                <span className="tone-accent">before</span> you pay.
+              </h1>
+
+              <p
+                className="animate-rise mt-6 max-w-xl text-lg leading-relaxed text-slate"
+                style={{ animationDelay: "80ms" }}
+              >
+                Verified advocates across India at a fixed fee. Thirty minutes of
+                real chat with an advocate who practises your matter — and you
+                see exactly how the fee splits before you book.
+              </p>
+
+              {/* The eight matters, as chips — the fastest route into the
+                  listing without making the visitor read a grid first. */}
+              <div
+                className="animate-rise mt-7 flex flex-wrap gap-2"
+                style={{ animationDelay: "120ms" }}
+              >
+                {categories.map((c, i) => (
+                  <Link
+                    key={c.id}
+                    href={`/lawyers?category=${c.slug}`}
+                    /* Eight chips cost five rows at 375px and push the CTAs
+                       under the fold — the last two hide on phones, where the
+                       category grid is a short scroll away anyway. */
+                    className={`chip-matter ${i >= 6 ? "max-sm:hidden" : ""}`}
+                  >
+                    {c.name}
+                  </Link>
+                ))}
+              </div>
+
+              <div
+                className="animate-rise mt-8 flex flex-wrap items-center gap-3"
+                style={{ animationDelay: "160ms" }}
+              >
+                <Link
+                  href="/lawyers"
+                  className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
+                >
+                  Find an advocate
+                  <ArrowRight className="size-4" strokeWidth={2.5} />
+                </Link>
+                <Link
+                  href="/categories"
+                  className="btn-secondary inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
+                >
+                  Explore the platform
+                </Link>
+                {/* Opens the floating assistant in place — no navigation, so
+                    the demo can ask a question without leaving the landing. */}
+                <AskAiButton className="btn-quiet inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium" />
+              </div>
+            </div>
+
+            {/* Advocates online now */}
+            <aside
+              className="animate-rise card p-4 sm:p-5"
+              style={{ animationDelay: "200ms" }}
+            >
+              <div className="flex items-baseline justify-between gap-3">
+                <h2 className="text-[1.25rem]">Advocates online now</h2>
+                <Link
+                  href="/lawyers?online=1"
+                  className="mono-label shrink-0 text-accent hover:underline"
+                >
+                  See all
+                </Link>
+              </div>
+
+              <p className="mono-label mt-1.5 flex items-center gap-2 text-verified">
+                <span className="relative flex size-2">
+                  <span className="animate-pulse-dot absolute inline-flex size-2 rounded-full bg-verified" />
+                  <span className="relative inline-flex size-2 rounded-full bg-verified" />
+                </span>
+                {onlineCount} online · average reply under 5 min
+              </p>
+
+              <div className="mt-4 space-y-2.5">
+                {/* The next three appear in "Online right now" below, so
+                    nobody shows up twice on this page. */}
+                {featured.slice(0, 2).map((l) => (
+                  <LawyerCardCompact key={l.id} lawyer={l} />
+                ))}
+              </div>
+
+              <p className="mt-4 border-t border-rule pt-3 text-sm leading-relaxed text-slate">
+                Every advocate here is enrolment-verified against the Bar Council
+                register before they can take a consultation.
+              </p>
+            </aside>
           </div>
+
+          {/* What you get, ruled off along the foot of the hero */}
+          <ul
+            className="animate-rise mt-11 flex flex-wrap gap-x-7 gap-y-3 border-t border-rule pt-6 lg:mt-12"
+            style={{ animationDelay: "260ms" }}
+          >
+            {PROMISES.map((p) => (
+              <li key={p} className="flex items-center gap-2 text-sm text-slate">
+                <Check className="size-4 shrink-0 text-accent" strokeWidth={2.5} />
+                {p}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
-      {/* Why this exists — the market first, then what we've built on it */}
-      <section className="container section-tight">
+      {/* The claim, priced. The ladder used to sit in the hero; it earns more
+          room here, directly under the market numbers that set it up. */}
+      <section
+        id="pricing"
+        className="relative scroll-mt-[calc(var(--header-h)+var(--strip-h))] overflow-hidden"
+      >
+        <Engraving side="right" />
+        <div className="container section-tight relative">
           <p className="mono-label text-muted">Why this matters</p>
           <h2 className="mt-4 max-w-2xl">
             Legal help in India is{" "}
             <span className="tone-accent">unpriced</span>, not unavailable
           </h2>
-
           <dl className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {stats.map((s) => (
               <div key={s.value} className="card p-5">
@@ -257,6 +308,31 @@ export default async function Home() {
           <p className="mono-label mt-5 text-muted">
             Sector figures · National Judicial Data Grid, Bar Council of India
           </p>
+
+          <p className="mt-12 max-w-2xl leading-relaxed text-slate">
+            So we priced it. Three tiers, one fixed fee each — what you pay
+            depends on how senior an advocate you want, never on how urgent your
+            problem sounds on the phone.
+          </p>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            {LADDER.map((t) => (
+              <div key={t.tier} className="card overflow-hidden">
+                <div className="h-[3px] w-full bg-accent" aria-hidden="true" />
+                <div className="p-5 sm:p-6">
+                  <p className="mono-label text-muted">{t.tier}</p>
+                  <p className="font-mono-num mt-2 text-3xl text-accent">
+                    ₹{t.fee}
+                  </p>
+                  <p className="mt-2 text-sm text-slate">{t.note}</p>
+                </div>
+              </div>
+            ))}
+            <p className="mono-label text-muted sm:col-span-3">
+              Per 30-minute consultation · no hourly billing
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Categories */}
@@ -305,7 +381,9 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Rewards — the loyalty loop, advertised before you have to book */}
+      {/* The launch offer, then the loyalty loop it feeds: half off to get
+          you here, points to bring you back. Hidden once it has been used. */}
+      {offerEligible && <WelcomeOfferBand />}
       <RewardsBand />
 
       {/* Online now — ranked on rating and availability, never on payment */}
@@ -370,6 +448,11 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {/* Recruitment. After the client social proof, where it cannot compete
+          with the booking funnel above it, and where it gives the page a hard
+          stop before the press logos. */}
+      <AdvocateOfferBand seats={seatsLeft(verifiedCount)} />
 
       {/* Press row */}
       <section className="relative overflow-hidden pb-8">

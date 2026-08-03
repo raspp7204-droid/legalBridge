@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { maxRedeemable, pointsFor, pointsToRupees } from "@/lib/rewards";
+import { isFirstConsultation, welcomeDiscount } from "@/lib/offers";
 
 /**
  * Marks the booking paid, books the slot, and settles LawNest Rewards.
@@ -32,11 +33,24 @@ export async function confirmPayment(
       select: { points: true },
     });
 
+    /* Launch offer, re-derived here rather than trusted from the page: the
+       only thing that earns it is having never paid for a consultation
+       before. Counting excludes this booking, which is still unpaid. */
+    const priorPaid = await db.booking.count({
+      where: { clientId: booking.clientId, paid: true, id: { not: bookingId } },
+    });
+    const welcome = isFirstConsultation(priorPaid)
+      ? welcomeDiscount(booking.amount)
+      : 0;
+
     // Recomputed server-side — the client's toggle is a request, not a figure.
     const spent = redeem
-      ? maxRedeemable(client?.points ?? 0, booking.amount)
+      ? maxRedeemable(client?.points ?? 0, booking.amount - welcome)
       : 0;
-    const discount = pointsToRupees(spent);
+    /* Booking.discount stays what it has always been: total rupees off. The
+       welcome half is recoverable anywhere as discount - pointsToRupees(
+       pointsSpent), so no column had to be added. */
+    const discount = welcome + pointsToRupees(spent);
     const earned = pointsFor(booking.amount);
     const reason = `Consultation with ${booking.lawyer.user.name}`;
 

@@ -13,11 +13,13 @@ function Stat({
   icon: Icon,
   label,
   value,
+  hint,
   href,
 }: {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   label: string;
   value: string;
+  hint?: string;
   href?: string;
 }) {
   const inner = (
@@ -27,6 +29,7 @@ function Stat({
       </span>
       <p className="mono-label mt-4 text-muted">{label}</p>
       <p className="font-mono-num mt-1 text-3xl">{value}</p>
+      {hint && <p className="mono-label mt-1.5 text-muted">{hint}</p>}
     </>
   );
 
@@ -47,7 +50,9 @@ export default async function AdminPage() {
     db.booking.count({ where: { paid: true } }),
     db.booking.aggregate({
       where: { paid: true },
-      _sum: { platformCut: true },
+      // discount is what campaigns and rewards took off the client's side —
+      // the platform absorbs it, so gross commission alone overstates.
+      _sum: { platformCut: true, discount: true },
     }),
     db.booking.findMany({
       where: { paid: true },
@@ -59,6 +64,14 @@ export default async function AdminPage() {
       },
     }),
   ]);
+
+  /* Commission taken, less what the launch offer and rewards redemptions cost
+     the platform. The advocate's cut is never touched, so every rupee of
+     discount comes out of this number — reporting the gross would have the
+     tile climb while the bank balance fell. */
+  const gross = revenue._sum.platformCut ?? 0;
+  const absorbed = revenue._sum.discount ?? 0;
+  const netRevenue = gross - absorbed;
 
   return (
     <main className="container section-tight">
@@ -89,7 +102,12 @@ export default async function AdminPage() {
         <Stat
           icon={IndianRupee}
           label="Platform revenue"
-          value={formatRupees(revenue._sum.platformCut ?? 0)}
+          value={formatRupees(netRevenue)}
+          hint={
+            absorbed > 0
+              ? `${formatRupees(gross)} commission − ${formatRupees(absorbed)} absorbed`
+              : "commission on paid bookings"
+          }
         />
       </div>
 
