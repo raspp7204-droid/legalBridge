@@ -96,6 +96,20 @@ NEXT_PUBLIC_UPI_NAME=
      account, or the button will appear and then fail at Google's screen.
 6. Deploy. `postinstall` runs `prisma generate`, so the build has a client.
 
+### Demo-day shortcut: skip step 5
+
+Step 5 is a Google Cloud project, an OAuth client and a consent screen —
+maybe twenty minutes, and it fails closed if the app is still in *Testing*.
+For a pitch that never takes a real account, put the **development** Clerk
+keys (`pk_test_…` / `sk_test_…`, the pair already in your local `.env`) into
+Vercel's Production environment instead of the `pk_live_…` pair, and redeploy.
+
+Google sign-in then works immediately, because a development instance uses
+Clerk's shared Google credentials. The cost is a small "Development mode"
+line under the sign-in box, and dev instances are not for real users — fine
+for a demo, not for launch. To go live properly, swap the live keys back in
+and do step 5.
+
 Live checks: client sign-up with the email code → book → pay → chat;
 advocate sign-in → `/lawyer/inbox` → reply; messages both ways. If chat looks
 frozen in production it is always one of: route handler not `force-dynamic`,
