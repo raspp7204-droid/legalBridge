@@ -11,9 +11,11 @@ import {
   Clock,
   Gift,
   Check,
+  PartyPopper,
 } from "lucide-react";
 import { formatRupees } from "@/lib/money";
 import { formatPoints, pointsToRupees } from "@/lib/rewards";
+import { WELCOME_RATE } from "@/lib/offers";
 
 const NEXT_STEPS = [
   {
@@ -42,6 +44,7 @@ export function PaymentSheet({
   vpa,
   payeeName,
   points,
+  welcome,
   redeemable,
   pointsEarned,
   confirmAction,
@@ -57,6 +60,8 @@ export function PaymentSheet({
   vpa: string;
   payeeName: string;
   points: number;
+  /** Launch-offer rupees off a first consultation; 0 for everyone else. */
+  welcome: number;
   redeemable: number;
   pointsEarned: number;
   confirmAction: (
@@ -72,7 +77,8 @@ export function PaymentSheet({
   const canRedeem = redeemable > 0;
   const spent = redeem && canRedeem ? redeemable : 0;
   const discount = pointsToRupees(spent);
-  const payable = amount - discount;
+  // The welcome offer comes off first; points redeem against the remainder.
+  const payable = amount - welcome - discount;
 
   // Rebuilt from the toggle so the QR always charges what the summary says.
   const upiLink =
@@ -201,6 +207,20 @@ export function PaymentSheet({
               </dd>
             </div>
           </dl>
+
+          {/* Launch offer. Sits above the rewards toggle because it is applied
+              first, and because it is the reason a first-timer got this far. */}
+          {welcome > 0 && (
+            <div className="mt-4 flex items-baseline justify-between gap-3 rounded-xl border border-verified/30 bg-verified/10 px-3 py-2.5">
+              <span className="flex items-center gap-1.5 text-sm text-ink">
+                <PartyPopper className="size-3.5 text-verified" strokeWidth={2.5} />
+                First consultation · {Math.round(WELCOME_RATE * 100)}% off
+              </span>
+              <span className="font-mono-num shrink-0 text-sm text-verified">
+                − {formatRupees(welcome)}
+              </span>
+            </div>
+          )}
 
           {/* LawNest Rewards — only offered once there's a usable balance */}
           {canRedeem && (

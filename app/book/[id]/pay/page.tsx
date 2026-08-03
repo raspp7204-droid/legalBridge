@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { requireClient } from "@/lib/auth";
 import { splitFee } from "@/lib/money";
 import { maxRedeemable, pointsFor } from "@/lib/rewards";
+import { isFirstConsultation, welcomeDiscount } from "@/lib/offers";
 import { formatSlotFull, relativeSlotLabel } from "@/lib/lawyers";
 import { nextInstantStart } from "@/lib/slots";
 import { PaymentSheet } from "@/components/payment-sheet";
@@ -76,9 +77,20 @@ export default async function PayPage({
   const vpa = process.env.NEXT_PUBLIC_UPI_VPA ?? "founder@okhdfcbank";
   const payeeName = process.env.NEXT_PUBLIC_UPI_NAME ?? "LawNest";
 
+  /* Launch offer — 40% off a client's very first consultation. Eligibility is
+     re-checked in confirmPayment; this figure is only what the sheet shows. */
+  const paidBookings = await db.booking.count({
+    where: { clientId: client.id, paid: true },
+  });
+  const welcome = isFirstConsultation(paidBookings)
+    ? welcomeDiscount(split.amount)
+    : 0;
+
   // Rewards. The sheet re-derives the payable amount (and therefore the UPI
   // intent) from the toggle, but the server re-computes it again on confirm.
-  const redeemable = maxRedeemable(client.points, split.amount);
+  // Points redeem against what the welcome offer leaves, so the two can stack
+  // without the total ever going negative.
+  const redeemable = maxRedeemable(client.points, split.amount - welcome);
 
   return (
     <main className="container container-narrow section-tight">
@@ -107,6 +119,7 @@ export default async function PayPage({
           vpa={vpa}
           payeeName={payeeName}
           points={client.points}
+          welcome={welcome}
           redeemable={redeemable}
           pointsEarned={pointsFor(split.amount)}
           confirmAction={confirmPayment}

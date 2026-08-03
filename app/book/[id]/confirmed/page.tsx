@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { CheckCircle2, MessageSquare, Gift } from "lucide-react";
 import { db } from "@/lib/db";
 import { formatRupees } from "@/lib/money";
-import { formatPoints } from "@/lib/rewards";
+import { formatPoints, pointsToRupees } from "@/lib/rewards";
 import { formatSlotFull } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +26,9 @@ export default async function ConfirmedPage({
   });
 
   if (!booking) notFound();
+
+  const rewardOff = pointsToRupees(booking.pointsSpent);
+  const welcomeOff = booking.discount - rewardOff;
 
   return (
     /* Centred on purpose — capped at 720px and set on a band so the receipt
@@ -76,11 +79,21 @@ export default async function ConfirmedPage({
                 {formatSlotFull(booking.slotAt)}
               </dd>
             </div>
-            {booking.discount > 0 && (
+            {/* discount is the total off; the points half is stored separately,
+                so the launch offer is whatever is left over. */}
+            {welcomeOff > 0 && (
+              <div className="flex items-baseline justify-between gap-4">
+                <dt className="mono-label text-muted">First consultation</dt>
+                <dd className="font-mono-num text-sm text-verified">
+                  − {formatRupees(welcomeOff)}
+                </dd>
+              </div>
+            )}
+            {rewardOff > 0 && (
               <div className="flex items-baseline justify-between gap-4">
                 <dt className="mono-label text-muted">Reward discount</dt>
                 <dd className="font-mono-num text-sm text-verified">
-                  − {formatRupees(booking.discount)} ·{" "}
+                  − {formatRupees(rewardOff)} ·{" "}
                   {formatPoints(booking.pointsSpent)} pts
                 </dd>
               </div>
