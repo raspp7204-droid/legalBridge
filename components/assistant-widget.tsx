@@ -5,6 +5,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { MessageSquareText, X, ArrowUp, Square, Scale } from "lucide-react";
 import { STARTER_QUESTIONS } from "@/lib/assistant";
+import { Markdown } from "@/components/markdown";
 
 export function AssistantWidget() {
   const [open, setOpen] = useState(false);
@@ -131,13 +132,21 @@ export function AssistantWidget() {
                     >
                       <div
                         className={[
-                          "max-w-[85%] whitespace-pre-wrap rounded-md px-3 py-2 text-[0.95rem] leading-relaxed",
+                          "max-w-[85%] rounded-md px-3 py-2 text-[0.95rem] leading-relaxed",
                           mine
-                            ? "border border-accent/25 bg-accent-bg text-ink"
+                            ? "whitespace-pre-wrap border border-accent/25 bg-accent-bg text-ink"
                             : "border border-rule bg-surface-2 text-slate",
                         ].join(" ")}
                       >
-                        {text || (
+                        {/* The user's own text stays literal; the assistant's
+                            is markdown, so lists and bold render properly. */}
+                        {text ? (
+                          mine ? (
+                            text
+                          ) : (
+                            <Markdown>{text}</Markdown>
+                          )
+                        ) : (
                           <span className="mono-label text-muted">Thinking…</span>
                         )}
                       </div>
