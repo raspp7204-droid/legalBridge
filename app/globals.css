@@ -20,9 +20,11 @@
 
 
   /* Layout (RETHEME.md Task 2) — one container system, widened so the
-     sides stop feeling empty. Pages that need more room set --maxw locally. */
-  --maxw: 1240px;
-  --gutter: clamp(20px, 5vw, 64px);
+     sides stop feeling empty. Pages that need more room set --maxw locally.
+     1440 rather than 1240: on a 16:9 laptop the old cap left a hand's width
+     of empty paper down both edges. */
+  --maxw: 1440px;
+  --gutter: clamp(20px, 4vw, 56px);
 }
 
 /* One continuous page. Sections used to alternate onto a --surface-2 band,
@@ -49,11 +51,11 @@
    The wide variant also tightens the gutter: the listing needs ~1000px of
    results area beside a 264px filter rail to fit three cards per row. */
 .container-wide {
-  --maxw: 1320px;
-  --gutter: clamp(20px, 3vw, 32px);
+  --maxw: 1600px;
+  --gutter: clamp(20px, 3vw, 40px);
 }
-.container-narrow { --maxw: 980px; }
-.container-chat { --maxw: 1160px; }
+.container-narrow { --maxw: 1080px; }
+.container-chat { --maxw: 1320px; }
 
 /* Section vertical rhythm */
 .section {
