@@ -112,6 +112,8 @@ model Slot {
   lawyer   LawyerProfile @relation(fields: [lawyerId], references: [id])
   startsAt DateTime
   booked   Boolean       @default(false)
+
+  @@index([lawyerId, startsAt])
 }
 
 model Booking {
@@ -138,6 +140,9 @@ model Booking {
   endedBy Role?
 
   messages Message[]
+
+  @@index([clientId, slotAt])
+  @@index([lawyerId, slotAt])
 }
 
 model Message {
@@ -147,6 +152,9 @@ model Message {
   senderRole Role // ADMIN = system line (e.g. "consultation ended")
   body       String
   createdAt  DateTime @default(now())
+
+  // The chat poll reads this every 2s — by far the hottest query we run.
+  @@index([bookingId, createdAt])
 }
 
 model RewardLedger {

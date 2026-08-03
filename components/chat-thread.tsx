@@ -187,6 +187,12 @@ export function ChatThread({
   const mutedRef = useRef(false);
   // Ids we've already rendered — anything new from the other side chimes.
   const seen = useRef(new Set(initialMessages.map((m) => m.id)));
+  // Newest createdAt we hold; the poll asks the server for anything from here.
+  const lastAt = useRef<string | null>(
+    initialMessages.length
+      ? initialMessages[initialMessages.length - 1].createdAt
+      : null,
+  );
 
   const myRole: "CLIENT" | "LAWYER" = as === "LAWYER" ? "LAWYER" : "CLIENT";
 
@@ -210,13 +216,28 @@ export function ChatThread({
     });
   }
 
-  // Poll every 2000ms with no-store — relative URL so it works on Vercel too
-  // (LAUNCH.md Task 2).
+  /* Poll for new messages.
+   *
+   * setTimeout chained after each response, not setInterval: the database is
+   * in another region, so a poll can take longer than the interval. On an
+   * interval the requests overlap and queue up behind each other, and the
+   * thread gets slower the longer it stays open. Chaining guarantees exactly
+   * one request in flight.
+   *
+   * `since` makes each poll a delta rather than a re-download of the whole
+   * thread, and a hidden tab backs off to 10s — a demo laptop with the chat
+   * open in a background window shouldn't keep hammering Neon. */
   useEffect(() => {
     let alive = true;
+    let timer: ReturnType<typeof setTimeout>;
+
     const tick = async () => {
       try {
-        const res = await fetch(`/api/chat/${bookingId}`, {
+        const since = lastAt.current;
+        const url = since
+          ? `/api/chat/${bookingId}?since=${encodeURIComponent(since)}`
+          : `/api/chat/${bookingId}`;
+        const res = await fetch(url, {
           cache: "no-store",
           headers: { "cache-control": "no-cache" },
         });
@@ -224,6 +245,7 @@ export function ChatThread({
         const data = (await res.json()) as {
           messages: ChatMessage[];
           endedAt: string | null;
+          partial?: boolean;
         };
         if (!alive) return;
 
@@ -239,17 +261,33 @@ export function ChatThread({
           playReceive();
         }
 
-        setMessages((prev) => mergeById(prev, data.messages));
+        for (const m of data.messages) {
+          if (!lastAt.current || m.createdAt > lastAt.current) {
+            lastAt.current = m.createdAt;
+          }
+        }
+
+        // A delta merges into what we hold; a full read still merges, because
+        // mergeById is a union either way.
+        if (data.messages.length) {
+          setMessages((prev) => mergeById(prev, data.messages));
+        }
         setEndedAt(data.endedAt);
       } catch {
         /* transient network blip — next tick retries */
+      } finally {
+        if (alive) {
+          const quiet =
+            typeof document !== "undefined" && document.hidden ? 10000 : 2000;
+          timer = setTimeout(tick, quiet);
+        }
       }
     };
+
     void tick();
-    const timer = setInterval(tick, 2000);
     return () => {
       alive = false;
-      clearInterval(timer);
+      clearTimeout(timer);
     };
   }, [bookingId, myRole]);
 
@@ -275,6 +313,9 @@ export function ChatThread({
         if (!res.ok) throw new Error(String(res.status));
         const data = (await res.json()) as { message: ChatMessage };
         seen.current.add(data.message.id);
+        if (!lastAt.current || data.message.createdAt > lastAt.current) {
+          lastAt.current = data.message.createdAt;
+        }
         setMessages((prev) => mergeById(prev, [data.message]));
         setPending((p) => p.filter((x) => x.tmpId !== tmpId));
         if (!mutedRef.current) playSend();
