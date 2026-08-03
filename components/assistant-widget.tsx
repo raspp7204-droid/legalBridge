@@ -6,6 +6,27 @@ import { DefaultChatTransport } from "ai";
 import { MessageSquareText, X, ArrowUp, Square, Scale } from "lucide-react";
 import { STARTER_QUESTIONS } from "@/lib/assistant";
 import { Markdown } from "@/components/markdown";
+import { AssistantAdvocateCard } from "@/components/assistant-advocate-card";
+import type { AdvocateSearchResult } from "@/lib/lawyer-search";
+
+/**
+ * The searchAdvocates tool arrives on the message as a `tool-<name>` part.
+ * Parts were previously filtered to `text` only, so these were dropped on the
+ * floor — this is what puts real advocates back on screen.
+ */
+type AdvocateLookupPart = {
+  type: "tool-searchAdvocates";
+  state: string;
+  output?: AdvocateSearchResult;
+};
+
+/** `UIMessagePart` types tool parts by name, which our union can't satisfy,
+ *  so pick them out by discriminant and assert the shape we send back. */
+function advocateLookups(parts: { type: string }[]): AdvocateLookupPart[] {
+  return parts.flatMap((p) =>
+    p.type === "tool-searchAdvocates" ? [p as AdvocateLookupPart] : [],
+  );
+}
 
 export function AssistantWidget() {
   const [open, setOpen] = useState(false);
@@ -120,36 +141,66 @@ export function AssistantWidget() {
             ) : (
               <ul className="space-y-4">
                 {messages.map((m) => {
+                  const mine = m.role === "user";
+                  // Blank line between blocks: the model emits one text part
+                  // before the tool call and another after, and joining them
+                  // bare runs the two sentences together.
                   const text = m.parts
                     .filter((p) => p.type === "text")
-                    .map((p) => p.text)
-                    .join("");
-                  const mine = m.role === "user";
+                    .map((p) => p.text.trim())
+                    .filter(Boolean)
+                    .join("\n\n");
+                  // The tool's results are rendered as real advocate cards
+                  // under the answer, not left to the model to describe.
+                  const lookups = advocateLookups(m.parts);
+                  const searching = lookups.some(
+                    (p) => p.state !== "output-available",
+                  );
+                  const found = lookups.flatMap(
+                    (p) => p.output?.advocates ?? [],
+                  );
+
                   return (
-                    <li
-                      key={m.id}
-                      className={mine ? "flex justify-end" : "flex justify-start"}
-                    >
+                    <li key={m.id} className="space-y-2">
                       <div
-                        className={[
-                          "max-w-[85%] rounded-md px-3 py-2 text-[0.95rem] leading-relaxed",
-                          mine
-                            ? "whitespace-pre-wrap border border-accent/25 bg-accent-bg text-ink"
-                            : "border border-rule bg-surface-2 text-slate",
-                        ].join(" ")}
+                        className={
+                          mine ? "flex justify-end" : "flex justify-start"
+                        }
                       >
-                        {/* The user's own text stays literal; the assistant's
-                            is markdown, so lists and bold render properly. */}
-                        {text ? (
-                          mine ? (
-                            text
+                        <div
+                          className={[
+                            "max-w-[85%] rounded-md px-3 py-2 text-[0.95rem] leading-relaxed",
+                            mine
+                              ? "whitespace-pre-wrap border border-accent/25 bg-accent-bg text-ink"
+                              : "border border-rule bg-surface-2 text-slate",
+                          ].join(" ")}
+                        >
+                          {/* The user's own text stays literal; the assistant's
+                              is markdown, so lists and bold render properly. */}
+                          {text ? (
+                            mine ? (
+                              text
+                            ) : (
+                              <Markdown>{text}</Markdown>
+                            )
                           ) : (
-                            <Markdown>{text}</Markdown>
-                          )
-                        ) : (
-                          <span className="mono-label text-muted">Thinking…</span>
-                        )}
+                            <span className="mono-label text-muted">
+                              {searching ? "Finding advocates…" : "Thinking…"}
+                            </span>
+                          )}
+                        </div>
                       </div>
+
+                      {found.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="mono-label text-muted">
+                            Matched advocates
+                          </p>
+                          {found.map((a) => (
+                            <AssistantAdvocateCard key={a.id} a={a} />
+                          ))}
+                        </div>
+                      )}
                     </li>
                   );
                 })}
