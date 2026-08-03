@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   MessageSquareText,
   Clock,
-  Video,
   Gift,
   Check,
 } from "lucide-react";
@@ -26,8 +25,8 @@ const NEXT_STEPS = [
     body: "You get a 30-minute session with the advocate, at the slot you picked.",
   },
   {
-    icon: Video,
-    body: "Switch to the video room any time during the consultation.",
+    icon: Gift,
+    body: "You earn LawNest points on this consultation — 100 points takes ₹100 off the next one.",
   },
 ];
 

@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import {
-  Video,
   SendHorizonal,
   ShieldCheck,
   Loader2,
@@ -323,19 +322,11 @@ export function ChatThread({
             </button>
           ))}
 
-        {endedAt ? (
+        {endedAt && (
           <span className="mono-label flex shrink-0 items-center gap-1.5 rounded-full border border-rule bg-surface-2 px-3 py-2 text-muted">
             <Lock className="size-3.5" strokeWidth={2.5} />
             Ended
           </span>
-        ) : (
-          <Link
-            href={`/consult/${bookingId}/room`}
-            className="btn-primary mono-label flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2"
-          >
-            <Video className="size-4" strokeWidth={2.5} />
-            <span className="hidden sm:inline">Join video</span>
-          </Link>
         )}
       </header>
 

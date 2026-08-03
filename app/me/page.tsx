@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MessageSquare, Video, Gift, Lock } from "lucide-react";
+import { MessageSquare, Gift, Lock } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireClient } from "@/lib/auth";
 import { EmptyState } from "@/components/empty-state";
@@ -50,24 +50,13 @@ function BookingCard({ b, past }: { b: BookingRow; past: boolean }) {
 
       <div className="flex items-center gap-3 sm:flex-col sm:items-end">
         <p className="font-mono-num text-accent">{formatRupees(b.amount)}</p>
-        <div className="flex gap-2">
-          <Link
-            href={`/consult/${b.id}`}
-            className="mono-label flex items-center gap-1.5 rounded-full border border-rule px-3 py-2 transition-colors hover:border-accent/40"
-          >
-            <MessageSquare className="size-3.5" strokeWidth={2} />
-            Chat
-          </Link>
-          {!past && !b.endedAt && (
-            <Link
-              href={`/consult/${b.id}/room`}
-              className="mono-label flex items-center gap-1.5 rounded-full border border-rule px-3 py-2 transition-colors hover:border-accent/40"
-            >
-              <Video className="size-3.5" strokeWidth={2} />
-              Video
-            </Link>
-          )}
-        </div>
+        <Link
+          href={`/consult/${b.id}`}
+          className="mono-label flex items-center gap-1.5 rounded-full border border-rule px-3 py-2 transition-colors hover:border-accent/40"
+        >
+          <MessageSquare className="size-3.5" strokeWidth={2} />
+          {b.endedAt || past ? "Read thread" : "Open chat"}
+        </Link>
       </div>
     </article>
   );
@@ -124,7 +113,7 @@ export default async function MePage() {
         <div className="document mt-10">
           <EmptyState
             title="No consultations yet"
-            body="Once you book an advocate, your chats and video rooms live here."
+            body="Once you book an advocate, your consultations and their chat threads live here."
             actionHref="/lawyers"
             actionLabel="Find an advocate"
           />

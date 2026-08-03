@@ -18,8 +18,6 @@
   --danger:     #B23A31;   /* errors */
   --star:       #C8962E;   /* rating stars ONLY */
 
-  /* Video tiles — the one dark element allowed on the light page (Task 3) */
-  --video: #14181F;
 
   /* Layout (RETHEME.md Task 2) — one container system, widened so the
      sides stop feeling empty. Pages that need more room set --maxw locally. */
@@ -60,7 +58,6 @@
 }
 .container-narrow { --maxw: 980px; }
 .container-chat { --maxw: 1160px; }
-.container-room { --maxw: 1080px; }
 
 /* Section vertical rhythm */
 .section {
@@ -85,7 +82,6 @@
   --color-rule: var(--rule);
   --color-danger: var(--danger);
   --color-star: var(--star);
-  --color-video: var(--video);
 
   --font-display: var(--font-fraunces), Georgia, serif;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;

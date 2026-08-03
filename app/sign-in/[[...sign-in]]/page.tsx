@@ -9,7 +9,7 @@ export default function ClientSignInPage() {
       eyebrow="For clients"
       title="Sign in to"
       accent="LawNest"
-      blurb="Your consultations, chats and video rooms live behind this sign-in. Same email, same one-time code."
+      blurb="Your consultations and their chat threads live behind this sign-in. Same email, same one-time code."
       points={[
         "Open any consultation you have paid for, from any device.",
         "Chat with your advocate — the thread is private to the two of you.",

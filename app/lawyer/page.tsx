@@ -9,7 +9,6 @@ import {
   Wallet,
   ArrowRight,
   MessageSquare,
-  Video,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireLawyerProfile } from "@/lib/auth";
@@ -461,20 +460,13 @@ export default async function LawyerDashboard() {
                         </p>
                       </div>
                     </div>
-                    <div className="mt-3 flex gap-2">
+                    <div className="mt-3">
                       <Link
                         href={`/consult/${b.id}`}
-                        className="mono-label flex flex-1 items-center justify-center gap-1.5 rounded-full border border-rule bg-surface px-3 py-2 transition-colors hover:border-accent/40"
+                        className="mono-label flex w-full items-center justify-center gap-1.5 rounded-full border border-rule bg-surface px-3 py-2 transition-colors hover:border-accent/40"
                       >
                         <MessageSquare className="size-3.5" strokeWidth={2} />
                         Open chat
-                      </Link>
-                      <Link
-                        href={`/consult/${b.id}/room`}
-                        className="mono-label flex flex-1 items-center justify-center gap-1.5 rounded-full border border-rule bg-surface px-3 py-2 transition-colors hover:border-accent/40"
-                      >
-                        <Video className="size-3.5" strokeWidth={2} />
-                        Join video
                       </Link>
                     </div>
                   </div>

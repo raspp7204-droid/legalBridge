@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CheckCircle2, MessageSquare, Video, Gift } from "lucide-react";
+import { CheckCircle2, MessageSquare, Gift } from "lucide-react";
 import { db } from "@/lib/db";
 import { formatRupees } from "@/lib/money";
 import { formatPoints } from "@/lib/rewards";
@@ -121,11 +121,10 @@ export default async function ConfirmedPage({
               Open chat
             </Link>
             <Link
-              href={`/consult/${booking.id}/room`}
+              href="/me"
               className="flex flex-1 items-center justify-center gap-2 rounded-full border border-rule px-5 py-3 text-sm transition-colors hover:border-accent/40 hover:bg-surface-2"
             >
-              <Video className="size-4" strokeWidth={2} />
-              Join video room
+              My consultations
             </Link>
           </div>
         </div>

@@ -37,7 +37,7 @@ const STEPS = [
   },
   {
     icon: MessageSquareText,
-    title: "Chat or video",
+    title: "Chat with your advocate",
     body: "The consultation opens the moment payment lands. Talk it through, then decide.",
   },
 ];
@@ -135,9 +135,9 @@ export default async function Home() {
               className="animate-rise mt-6 max-w-xl text-lg leading-relaxed text-slate"
               style={{ animationDelay: "80ms" }}
             >
-              Verified advocates across India at a fixed fee. Thirty minutes by
-              chat or video — and you see exactly how the fee splits before you
-              book.
+              Verified advocates across India at a fixed fee. Thirty minutes of
+              real chat with an advocate who practises your matter — and you see
+              exactly how the fee splits before you book.
             </p>
 
             <div
