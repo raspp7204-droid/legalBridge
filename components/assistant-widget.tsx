@@ -75,7 +75,7 @@ export function AssistantWidget() {
         aria-expanded={open}
         aria-controls="lb-assistant-panel"
         aria-label={open ? "Close legal assistant" : "Open free legal assistant"}
-        className="fixed bottom-4 right-4 z-50 flex items-center gap-2 btn-primary rounded-full px-4 py-3 transition-transform hover:-translate-y-0.5 sm:bottom-6 sm:right-6"
+        className="fixed bottom-4 right-4 z-50 flex items-center gap-2 btn-primary rounded-full px-4 py-3 transition-transform hover:-translate-y-0.5 max-sm:size-12 max-sm:justify-center max-sm:p-0 sm:bottom-6 sm:right-6"
       >
         {open ? (
           <X className="size-5" strokeWidth={2} />

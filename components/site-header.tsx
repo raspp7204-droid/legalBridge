@@ -56,11 +56,11 @@ export async function SiteHeader() {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2 max-md:gap-1.5">
           {/* Language dropdown is visually present and does nothing (CLAUDE.md §3) */}
           <button
             type="button"
-            className="hidden items-center gap-1.5 rounded-full border border-rule bg-surface px-3 py-1.5 text-slate transition-colors hover:border-accent/40 hover:text-ink sm:flex"
+            className="hidden items-center gap-1.5 rounded-full border border-rule bg-surface px-3 py-1.5 text-slate transition-colors hover:border-accent/40 hover:text-ink md:flex"
             aria-label="Change language"
           >
             <Globe className="size-4" strokeWidth={2} />
@@ -75,15 +75,18 @@ export async function SiteHeader() {
             >
               For advocates
             </Link>
+            {/* Under md the sheet carries every other action, so this is the
+                one visible control — filled, and sized to the 40px hamburger
+                beside it, instead of a hairline pill that clashes with it. */}
             <Link
               href="/sign-in"
-              className="mono-label rounded-full border border-rule px-3 py-2 text-ink transition-colors hover:border-accent/40"
+              className="mono-label rounded-full border border-rule px-3 py-2 text-ink transition-colors hover:border-accent/40 max-md:border-accent max-md:bg-accent max-md:px-3.5 max-md:py-2.5 max-md:text-white"
             >
               Sign in
             </Link>
             <Link
               href="/sign-up"
-              className="btn-primary mono-label hidden rounded-full px-4 py-2 sm:inline-block"
+              className="btn-primary mono-label hidden rounded-full px-4 py-2 md:inline-block"
               >
                 Get started
               </Link>
@@ -95,13 +98,13 @@ export async function SiteHeader() {
             {role === "CLIENT" && (
               <PointsPill
                 points={user?.points ?? 0}
-                className="hidden sm:inline-flex"
+                className="hidden md:inline-flex"
               />
             )}
             {user?.clientCode && (
               <Link
                 href="/account"
-                className="mono-label hidden rounded-full border border-rule bg-surface px-3 py-1.5 text-muted transition-colors hover:border-accent/40 hover:text-ink sm:inline-block"
+                className="mono-label hidden rounded-full border border-rule bg-surface px-3 py-1.5 text-muted transition-colors hover:border-accent/40 hover:text-ink md:inline-block"
                 title="Your LawNest ID"
               >
                 {user.clientCode}
@@ -120,7 +123,7 @@ export async function SiteHeader() {
                 <a
                   href="/sign-out"
                   title="Sign out"
-                  className="mono-label hidden rounded-full border border-rule px-3 py-2 text-slate transition-colors hover:border-accent/40 hover:text-ink sm:inline-block"
+                  className="mono-label hidden rounded-full border border-rule px-3 py-2 text-slate transition-colors hover:border-accent/40 hover:text-ink md:inline-block"
                 >
                   Sign out
                 </a>
@@ -129,14 +132,14 @@ export async function SiteHeader() {
             {role === "LAWYER" ? (
               <Link
                 href="/lawyer/inbox"
-                className="btn-primary mono-label hidden rounded-full px-4 py-2 sm:inline-block"
+                className="btn-primary mono-label hidden rounded-full px-4 py-2 md:inline-block"
               >
                 Open inbox
               </Link>
             ) : role === "CLIENT" ? (
               <Link
                 href="/lawyers"
-                className="btn-primary mono-label hidden rounded-full px-4 py-2 sm:inline-block"
+                className="btn-primary mono-label hidden rounded-full px-4 py-2 md:inline-block"
               >
                 Consult now
               </Link>

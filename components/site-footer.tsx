@@ -104,15 +104,19 @@ export async function SiteFooter() {
       : "Verified advocates across India at a fixed fee. You see the price, and the split, before you pay.";
 
   return (
-    <footer className="relative mt-24 overflow-hidden border-t border-rule bg-surface">
+    <footer className="relative mt-16 overflow-hidden border-t border-rule bg-surface sm:mt-24">
       <Engraving side="left" />
-      <div className="container relative py-14">
+      {/* Extra bottom padding on phones: the assistant launcher is fixed over
+          this corner and was sitting on the last line of the disclaimer. */}
+      <div className="container relative py-10 pb-16 sm:py-14">
+        {/* Two columns on a phone: one column stacked 19 links deep and made
+            the footer the longest thing on every page. */}
         <div
-          className={`grid gap-10 sm:grid-cols-2 ${
+          className={`grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-2 sm:gap-10 ${
             columns.length === 3 ? "lg:grid-cols-4" : "lg:grid-cols-5"
           }`}
         >
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <div className="flex items-center gap-2">
               <span className="flex size-8 items-center justify-center rounded-lg border border-rule bg-surface-2">
                 <Scale className="size-4 text-accent" strokeWidth={2} />
@@ -139,7 +143,7 @@ export async function SiteFooter() {
           {columns.map((col) => (
             <div key={col.title}>
               <p className="mono-label text-muted">{col.title}</p>
-              <ul className="mt-4 space-y-2.5">
+              <ul className="mt-3 space-y-2 sm:mt-4 sm:space-y-2.5">
                 {col.links.map((l) =>
                   l.href.startsWith("http") ? (
                     <li key={l.href + l.label}>
@@ -168,7 +172,7 @@ export async function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 border-t border-rule pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col gap-3 border-t border-rule pt-6 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
           <p className="mono-label text-muted">
             © 2026 LawNest · Bengaluru
           </p>
