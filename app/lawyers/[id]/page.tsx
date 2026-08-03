@@ -5,6 +5,8 @@ import { Star, MapPin, Scale, Languages } from "lucide-react";
 import { db } from "@/lib/db";
 import { blockLawyers } from "@/lib/auth";
 import { FeeBreakdown } from "@/components/fee-breakdown";
+import { WelcomeOfferRail } from "@/components/welcome-offer-card";
+import { welcomeEligible } from "@/lib/offer-state";
 import { SlotPicker } from "@/components/slot-picker";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatSlotTime, relativeSlotDay } from "@/lib/lawyers";
@@ -67,6 +69,7 @@ export default async function LawyerProfilePage({
   // Reachable right now? Online, verified, and not mid-consultation.
   const instant = await isInstantAvailable(lawyer);
   const instantAt = instant ? nextInstantStart(now) : null;
+  const offerEligible = await welcomeEligible();
 
   return (
     <main className="container section-tight">
@@ -176,6 +179,9 @@ export default async function LawyerProfilePage({
         {/* Right — sticky booking column */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
           <div className="space-y-4">
+            {/* Above the fee card, never inside it: FeeBreakdown keeps showing
+                the true split, and this explains what comes off on top. */}
+            {offerEligible && <WelcomeOfferRail fee={lawyer.fee} />}
             <FeeBreakdown fee={lawyer.fee} />
             <SlotPicker
               lawyerId={lawyer.id}

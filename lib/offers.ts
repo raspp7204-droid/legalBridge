@@ -63,8 +63,30 @@ export const PLATFORM_PERCENT = Math.round(PLATFORM_RATE * 100);
  * A fixed instant, not now + N days. A computed deadline mismatches between
  * server render and client hydration, and it would reset on every refresh
  * during the pitch.
+ *
+ * Kept about a week out so the countdown reads as urgent rather than as a
+ * date in the middle distance — bump it the morning of the pitch. Nothing
+ * breaks if it lapses: eligibility never consults the clock, and the
+ * countdown clamps to "Final hours" instead of going negative.
  */
-export const CAMPAIGN_ENDS = "2026-09-30T18:30:00.000Z";
+export const CAMPAIGN_ENDS = "2026-08-10T18:29:59.999Z";
+
+/** "30 September" — the deadline as static text, identical on both sides of
+    hydration. What a countdown renders before it has mounted. */
+export const CAMPAIGN_END_LABEL = new Intl.DateTimeFormat("en-IN", {
+  day: "numeric",
+  month: "long",
+  timeZone: "Asia/Kolkata",
+}).format(new Date(CAMPAIGN_ENDS));
+
+/**
+ * Seats left in the founding cohort. Counted off the live advocate roster, so
+ * scarcity is a real number that moves when someone joins — never a random
+ * one that changes on every render.
+ */
+export function seatsLeft(claimed: number) {
+  return Math.max(1, FOUNDING_SEATS - claimed);
+}
 
 export type TimeLeft = {
   days: number;

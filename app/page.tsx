@@ -17,6 +17,8 @@ import { AskAiButton } from "@/components/ask-ai-button";
 import { CategoryTile } from "@/components/category-tile";
 import { LawyerCard, LawyerCardCompact } from "@/components/lawyer-card";
 import { RewardsBand } from "@/components/rewards-band";
+import { WelcomeOfferBand } from "@/components/welcome-offer-card";
+import { welcomeEligible } from "@/lib/offer-state";
 import { lawyerCardSelect } from "@/lib/lawyers";
 import { formatRupees, TIER_FEE } from "@/lib/money";
 
@@ -103,6 +105,8 @@ export default async function Home() {
     }),
     db.lawyerProfile.count({ where: { status: "VERIFIED", online: true } }),
   ]);
+
+  const offerEligible = await welcomeEligible();
 
   // Marketplace numbers — advocate, court and city counts are all live.
   const [verifiedCount, courts, cities] = await Promise.all([
@@ -372,7 +376,9 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Rewards — the loyalty loop, advertised before you have to book */}
+      {/* The launch offer, then the loyalty loop it feeds: half off to get
+          you here, points to bring you back. Hidden once it has been used. */}
+      {offerEligible && <WelcomeOfferBand />}
       <RewardsBand />
 
       {/* Online now — ranked on rating and availability, never on payment */}

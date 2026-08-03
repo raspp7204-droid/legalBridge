@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { CheckCircle2, MessageSquare, Gift } from "lucide-react";
 import { db } from "@/lib/db";
 import { formatRupees } from "@/lib/money";
-import { formatPoints, pointsToRupees } from "@/lib/rewards";
+import { formatPoints, pointsToRupees, REDEEM_STEP } from "@/lib/rewards";
 import { formatSlotFull } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,13 @@ export default async function ConfirmedPage({
   const booking = await db.booking.findUnique({
     where: { id },
     include: {
-      lawyer: { include: { user: { select: { name: true, avatar: true } } } },
+      lawyer: {
+        include: {
+          user: { select: { name: true, avatar: true } },
+          categories: { select: { slug: true, name: true } },
+        },
+      },
+      client: { select: { points: true } },
     },
   });
 
@@ -29,6 +35,13 @@ export default async function ConfirmedPage({
 
   const rewardOff = pointsToRupees(booking.pointsSpent);
   const welcomeOff = booking.discount - rewardOff;
+
+  // What to say in the "book another" card — how close they are to the next
+  // ₹100 off, and which matter to send them back into.
+  const balance = booking.client.points;
+  const toNextReward = (REDEEM_STEP - (balance % REDEEM_STEP)) % REDEEM_STEP;
+  const matter = booking.lawyer.categories[0]?.name ?? "your matter";
+  const matterSlug = booking.lawyer.categories[0]?.slug ?? "";
 
   return (
     /* Centred on purpose — capped at 720px and set on a band so the receipt
@@ -140,6 +153,40 @@ export default async function ConfirmedPage({
               My consultations
             </Link>
           </div>
+        </div>
+      </div>
+
+      {/* The second-purchase engine. The only surface on the site with a
+          guaranteed reader, so this is where the next booking is asked for. */}
+      <div className="card mt-4 overflow-hidden">
+        <div className="h-[3px] w-full bg-accent" aria-hidden="true" />
+        <div className="flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
+          <div className="max-w-md">
+            <p className="mono-label text-accent">Your next consultation</p>
+            <p className="mt-2 text-sm leading-relaxed text-slate">
+              {toNextReward > 0 ? (
+                <>
+                  You are {formatPoints(toNextReward)} points from{" "}
+                  {formatRupees(pointsToRupees(REDEEM_STEP))} off. Another
+                  consultation in {matter.toLowerCase()} earns you{" "}
+                  {formatPoints(booking.pointsEarned)} more.
+                </>
+              ) : (
+                <>
+                  You have {formatPoints(balance)} points waiting —{" "}
+                  {formatRupees(pointsToRupees(balance))} off your next
+                  consultation, redeemable at checkout.
+                </>
+              )}
+            </p>
+          </div>
+          <Link
+            href={`/lawyers?category=${matterSlug}`}
+            className="btn-primary mono-label inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-3"
+          >
+            Book another
+            <MessageSquare className="size-3.5" strokeWidth={2.5} />
+          </Link>
         </div>
       </div>
 
