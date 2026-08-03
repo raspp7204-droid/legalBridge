@@ -17,6 +17,7 @@
   --rule:       #E4DDCE;   /* hairlines, card borders */
   --danger:     #B23A31;   /* errors */
   --star:       #C8962E;   /* rating stars ONLY */
+  --accent-light: #E9A79F; /* oxblood lifted for ink-navy surfaces (hero only) */
 
 
   /* Layout (RETHEME.md Task 2) — one container system, widened so the
@@ -75,6 +76,7 @@
   --color-accent-dim: var(--accent-dim);
   --color-accent-bg: var(--accent-bg);
   --color-verified: var(--verified);
+  --color-accent-light: var(--accent-light);
   --color-rule: var(--rule);
   --color-danger: var(--danger);
   --color-star: var(--star);
@@ -227,6 +229,100 @@
   border-radius: 0.375rem;
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
+}
+
+/* ---- On-dark (the landing hero only) ----
+   Oxblood on ink-navy is two dark colours fighting, so on this one surface
+   the accent lifts to a clay tint and the primary button inverts to ivory.
+   Everything below is scoped under .on-dark — no other page is touched. */
+.on-dark {
+  color: #EFE9DC;
+}
+
+.on-dark h1,
+.on-dark h2,
+.on-dark h3 {
+  color: #FBF7EE;
+}
+
+.on-dark .tone-accent {
+  color: var(--accent-light);
+}
+
+/* Ivory pill — the one loud element in the hero */
+.btn-ivory {
+  background: #F7F3EA;
+  color: var(--ink);
+  border: 1px solid #F7F3EA;
+  transition: background-color 120ms ease, border-color 120ms ease,
+    transform 120ms ease;
+}
+
+.btn-ivory:hover {
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+}
+
+.btn-ivory:active {
+  transform: translateY(1px);
+}
+
+/* Ghost pill — hairline in ivory, fills faintly on hover */
+.btn-ghost-light {
+  background: rgb(247 243 234 / 0.06);
+  color: #F7F3EA;
+  border: 1px solid rgb(247 243 234 / 0.32);
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.btn-ghost-light:hover {
+  background: rgb(247 243 234 / 0.14);
+  border-color: rgb(247 243 234 / 0.55);
+}
+
+/* Category chip on dark */
+.chip-glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 999px;
+  border: 1px solid rgb(247 243 234 / 0.2);
+  background: rgb(247 243 234 / 0.07);
+  color: rgb(239 233 220 / 0.92);
+  padding: 0.3125rem 0.75rem;
+  font-size: 0.8125rem;
+  transition: background-color 120ms ease, border-color 120ms ease,
+    color 120ms ease;
+}
+
+.chip-glass:hover {
+  background: rgb(247 243 234 / 0.15);
+  border-color: rgb(247 243 234 / 0.45);
+  color: #FFFFFF;
+}
+
+/* Frosted panel holding the live advocate cards */
+.panel-glass {
+  border-radius: 18px;
+  border: 1px solid rgb(247 243 234 / 0.18);
+  background: rgb(12 20 36 / 0.42);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 24px 60px rgb(6 11 22 / 0.45);
+}
+
+/* White .card surfaces still appear on the dark plate (the live panel), so
+   undo the inherited ivory or their copy vanishes into the paper. */
+.on-dark .card {
+  color: var(--slate);
+}
+
+.on-dark .card .font-display,
+.on-dark .card h3 {
+  color: var(--ink);
+}
+
+.on-dark :focus-visible {
+  outline-color: #F7F3EA;
 }
 
 }
