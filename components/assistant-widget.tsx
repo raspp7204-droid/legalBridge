@@ -49,6 +49,14 @@ export function AssistantWidget() {
     if (open) inputRef.current?.focus();
   }, [open]);
 
+  // Anything on the page can open the assistant by firing this event — the
+  // landing hero's "Experience LawNest AI" button does (components/ask-ai-button).
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("lawnest:open-assistant", onOpen);
+    return () => window.removeEventListener("lawnest:open-assistant", onOpen);
+  }, []);
+
   // Esc closes the panel from anywhere inside it.
   useEffect(() => {
     if (!open) return;

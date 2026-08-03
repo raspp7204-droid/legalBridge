@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  Check,
   MessagesSquare,
   Search,
   CreditCard,
@@ -12,6 +13,7 @@ import { blockLawyers } from "@/lib/auth";
 import { Starfield } from "@/components/starfield";
 import { Engraving } from "@/components/engraving";
 import { HeroBackdrop } from "@/components/hero-backdrop";
+import { AskAiButton } from "@/components/ask-ai-button";
 import { CategoryTile } from "@/components/category-tile";
 import { LawyerCard, LawyerCardCompact } from "@/components/lawyer-card";
 import { RewardsBand } from "@/components/rewards-band";
@@ -24,6 +26,16 @@ const LADDER = [
   { tier: "LOWER", fee: 399, note: "2–5 yrs · district courts" },
   { tier: "MIDDLE", fee: 549, note: "6–12 yrs · sessions & high court" },
   { tier: "HIGH", fee: 799, note: "13+ yrs · senior counsel" },
+];
+
+/* The tickmark strip along the foot of the hero — five promises, each one
+   something the visitor can check on the very next page. */
+const PROMISES = [
+  "Bar Council verified",
+  "Fixed fee, no hourly billing",
+  "Fee split shown before you pay",
+  "Chat + video consultation",
+  "Rewards on every booking",
 ];
 
 const STEPS = [
@@ -131,22 +143,24 @@ export default async function Home() {
 
   return (
     <main>
-      {/* Hero — one full-bleed ink-navy plate: the promise, the live
-          marketplace, and the four numbers that justify it, all above the fold
-          on a laptop. Everything below the hero stays on ivory. */}
-      <section className="on-dark relative isolate overflow-hidden">
+      {/* Hero — a laptop screen's worth: the promise, the eight matters as
+          chips, three ways in, the live advocate panel, and a tickmark strip
+          of what you get, ruled off along the foot. */}
+      <section className="relative isolate overflow-hidden">
         <HeroBackdrop />
 
-        <div className="container relative flex flex-col justify-center pt-12 pb-10 sm:pt-16 lg:min-h-[calc(100vh-64px)] lg:pt-14 lg:pb-10">
-          <div className="grid gap-10 lg:grid-cols-[1.12fr_0.88fr] lg:items-center lg:gap-14">
+        <div className="container relative flex flex-col justify-center pt-10 pb-10 sm:pt-14 lg:min-h-[calc(100vh-64px)] lg:pt-12 lg:pb-10">
+          {/* 1.25/0.75 rather than an even split: the copy column has to hold
+              three CTAs on one row before the panel needs the space. */}
+          <div className="grid gap-10 lg:grid-cols-[1.25fr_0.75fr] lg:items-center lg:gap-14">
             {/* Copy */}
             <div>
               <div className="animate-rise inline-flex items-center gap-2.5">
                 <span className="relative flex size-2">
-                  <span className="animate-pulse-dot absolute inline-flex size-2 rounded-full bg-accent-light" />
-                  <span className="relative inline-flex size-2 rounded-full bg-accent-light" />
+                  <span className="animate-pulse-dot absolute inline-flex size-2 rounded-full bg-accent" />
+                  <span className="relative inline-flex size-2 rounded-full bg-accent" />
                 </span>
-                <span className="mono-label text-accent-light">
+                <span className="mono-label text-accent">
                   Live now · {onlineCount} advocates online
                 </span>
               </div>
@@ -157,7 +171,7 @@ export default async function Home() {
               </h1>
 
               <p
-                className="animate-rise mt-6 max-w-xl text-lg leading-relaxed text-[#EFE9DC]/75"
+                className="animate-rise mt-6 max-w-xl text-lg leading-relaxed text-slate"
                 style={{ animationDelay: "80ms" }}
               >
                 Verified advocates across India at a fixed fee. Thirty minutes of
@@ -178,7 +192,7 @@ export default async function Home() {
                     /* Eight chips cost five rows at 375px and push the CTAs
                        under the fold — the last two hide on phones, where the
                        category grid is a short scroll away anyway. */
-                    className={`chip-glass ${i >= 6 ? "max-sm:hidden" : ""}`}
+                    className={`chip-matter ${i >= 6 ? "max-sm:hidden" : ""}`}
                   >
                     {c.name}
                   </Link>
@@ -191,36 +205,39 @@ export default async function Home() {
               >
                 <Link
                   href="/lawyers"
-                  className="btn-ivory inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium"
+                  className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
                 >
                   Find an advocate
                   <ArrowRight className="size-4" strokeWidth={2.5} />
                 </Link>
                 <Link
                   href="/categories"
-                  className="btn-ghost-light inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium"
+                  className="btn-secondary inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
                 >
-                  Browse legal matters
+                  Explore the platform
                 </Link>
+                {/* Opens the floating assistant in place — no navigation, so
+                    the demo can ask a question without leaving the landing. */}
+                <AskAiButton className="btn-quiet inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium" />
               </div>
             </div>
 
-            {/* Advocates online now — white cards floating on the navy plate */}
+            {/* Advocates online now */}
             <aside
-              className="animate-rise panel-glass p-4 sm:p-5"
+              className="animate-rise card p-4 sm:p-5"
               style={{ animationDelay: "200ms" }}
             >
               <div className="flex items-baseline justify-between gap-3">
                 <h2 className="text-[1.25rem]">Advocates online now</h2>
                 <Link
                   href="/lawyers?online=1"
-                  className="mono-label shrink-0 text-accent-light hover:underline"
+                  className="mono-label shrink-0 text-accent hover:underline"
                 >
                   See all
                 </Link>
               </div>
 
-              <p className="mono-label mt-1.5 flex items-center gap-2 text-[#EFE9DC]/70">
+              <p className="mono-label mt-1.5 flex items-center gap-2 text-verified">
                 <span className="relative flex size-2">
                   <span className="animate-pulse-dot absolute inline-flex size-2 rounded-full bg-verified" />
                   <span className="relative inline-flex size-2 rounded-full bg-verified" />
@@ -236,38 +253,25 @@ export default async function Home() {
                 ))}
               </div>
 
-              <p className="mt-4 border-t border-[#EFE9DC]/15 pt-3 text-sm leading-relaxed text-[#EFE9DC]/70">
+              <p className="mt-4 border-t border-rule pt-3 text-sm leading-relaxed text-slate">
                 Every advocate here is enrolment-verified against the Bar Council
                 register before they can take a consultation.
               </p>
             </aside>
           </div>
 
-          {/* The four numbers, ruled off along the foot of the plate */}
-          <div
-            className="animate-rise mt-12 border-t border-[#EFE9DC]/15 pt-7 lg:mt-14"
+          {/* What you get, ruled off along the foot of the hero */}
+          <ul
+            className="animate-rise mt-11 flex flex-wrap gap-x-7 gap-y-3 border-t border-rule pt-6 lg:mt-12"
             style={{ animationDelay: "260ms" }}
           >
-            <dl className="grid grid-cols-2 gap-x-6 gap-y-7 sm:gap-x-8 lg:grid-cols-4">
-              {stats.map((s) => (
-                <div
-                  key={s.value}
-                  className="lg:border-l lg:border-[#EFE9DC]/15 lg:pl-6 lg:first:border-l-0 lg:first:pl-0"
-                >
-                  <dt className="font-display text-[2rem] leading-none text-accent-light">
-                    {s.value}
-                  </dt>
-                  <dd className="mt-2.5 max-w-[26ch] text-sm leading-relaxed text-[#EFE9DC]/70">
-                    {s.body}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-
-            <p className="mono-label mt-7 text-[#EFE9DC]/45">
-              Sector figures · National Judicial Data Grid, Bar Council of India
-            </p>
-          </div>
+            {PROMISES.map((p) => (
+              <li key={p} className="flex items-center gap-2 text-sm text-slate">
+                <Check className="size-4 shrink-0 text-accent" strokeWidth={2.5} />
+                {p}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -281,13 +285,28 @@ export default async function Home() {
             Legal help in India is{" "}
             <span className="tone-accent">unpriced</span>, not unavailable
           </h2>
-          <p className="mt-5 max-w-2xl leading-relaxed text-slate">
-            Three tiers, one fixed price each. What you pay depends on how senior
-            an advocate you want — never on how urgent your problem sounds on the
-            phone.
+          <dl className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {stats.map((s) => (
+              <div key={s.value} className="card p-5">
+                <dt className="font-display text-3xl text-ink">{s.value}</dt>
+                <dd className="mt-3 text-sm leading-relaxed text-slate">
+                  {s.body}
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          <p className="mono-label mt-5 text-muted">
+            Sector figures · National Judicial Data Grid, Bar Council of India
           </p>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+          <p className="mt-12 max-w-2xl leading-relaxed text-slate">
+            So we priced it. Three tiers, one fixed fee each — what you pay
+            depends on how senior an advocate you want, never on how urgent your
+            problem sounds on the phone.
+          </p>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
             {LADDER.map((t) => (
               <div key={t.tier} className="card overflow-hidden">
                 <div className="h-[3px] w-full bg-accent" aria-hidden="true" />
