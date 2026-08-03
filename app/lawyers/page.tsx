@@ -89,7 +89,7 @@ export default async function LawyersPage({
   /* One ranked list, no paid placement: results are ordered by whatever the
      client asked for (rating, fee, experience) and nothing else. */
   const [lawyers, categories, onlineCount] = await Promise.all([
-    db.lawyerProfile.findMany({ where, orderBy, ...lawyerCardSelect }),
+    db.lawyerProfile.findMany({ where, orderBy, ...lawyerCardSelect() }),
     db.category.findMany({
       orderBy: { name: "asc" },
       select: { slug: true, name: true },

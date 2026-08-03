@@ -491,10 +491,12 @@ async function main() {
     if (p.seed.status !== Status.VERIFIED) continue;
 
     const starts: Date[] = [];
-    for (let day = 1; day <= 7 && starts.length < 12; day++) {
+    for (let day = 0; day <= 7 && starts.length < 12; day++) {
       for (const [h, m] of SLOT_TIMES) {
         if (starts.length >= 12) break;
-        starts.push(istSlot(day, h, m));
+        const at = istSlot(day, h, m);
+        if (at <= new Date()) continue; // today's earlier times have gone
+        starts.push(at);
       }
     }
 

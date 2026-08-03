@@ -7,7 +7,12 @@ import { blockLawyers } from "@/lib/auth";
 import { FeeBreakdown } from "@/components/fee-breakdown";
 import { SlotPicker } from "@/components/slot-picker";
 import { VerifiedBadge } from "@/components/verified-badge";
-import { formatSlotDay, formatSlotTime } from "@/lib/lawyers";
+import { formatSlotTime, relativeSlotDay } from "@/lib/lawyers";
+import {
+  ensureUpcomingSlots,
+  isInstantAvailable,
+  nextInstantStart,
+} from "@/lib/slots";
 
 export const dynamic = "force-dynamic";
 
@@ -25,20 +30,43 @@ export default async function LawyerProfilePage({
     include: {
       user: { select: { name: true, avatar: true } },
       categories: { select: { slug: true, name: true } },
-      slots: { orderBy: { startsAt: "asc" } },
+      // Future slots only — a picker offering yesterday's 10:00 is worse
+      // than one showing nothing.
+      slots: {
+        where: { startsAt: { gt: new Date() } },
+        orderBy: { startsAt: "asc" },
+      },
       _count: { select: { bookings: { where: { paid: true } } } },
     },
   });
 
   if (!lawyer) notFound();
 
-  const slotDTOs = lawyer.slots.map((s) => ({
+  /* Self-heal a stale calendar. Seeded advocates only ever get topped up when
+     they toggle online or get approved, so a database left alone for a week
+     shows every profile as "by appointment". Costs nothing in the normal case
+     — it only runs when there is genuinely nothing left to book. */
+  let slots = lawyer.slots;
+  if (slots.length === 0 && lawyer.status === "VERIFIED") {
+    await ensureUpcomingSlots(lawyer.id);
+    slots = await db.slot.findMany({
+      where: { lawyerId: lawyer.id, startsAt: { gt: new Date() } },
+      orderBy: { startsAt: "asc" },
+    });
+  }
+
+  const now = new Date();
+  const slotDTOs = slots.map((s) => ({
     id: s.id,
     startsAt: s.startsAt.toISOString(),
     booked: s.booked,
-    day: formatSlotDay(s.startsAt),
+    day: relativeSlotDay(s.startsAt, now),
     time: formatSlotTime(s.startsAt),
   }));
+
+  // Reachable right now? Online, verified, and not mid-consultation.
+  const instant = await isInstantAvailable(lawyer);
+  const instantAt = instant ? nextInstantStart(now) : null;
 
   return (
     <main className="container section-tight">
@@ -153,6 +181,7 @@ export default async function LawyerProfilePage({
               lawyerId={lawyer.id}
               slots={slotDTOs}
               fee={lawyer.fee}
+              instantTime={instantAt ? formatSlotTime(instantAt) : null}
             />
           </div>
         </aside>

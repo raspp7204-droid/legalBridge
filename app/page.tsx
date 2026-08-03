@@ -87,7 +87,7 @@ export default async function Home() {
       where: { status: "VERIFIED", online: true },
       orderBy: [{ rating: "desc" }, { reviewCount: "desc" }],
       take: 6,
-      ...lawyerCardSelect,
+      ...lawyerCardSelect(),
     }),
     db.lawyerProfile.count({ where: { status: "VERIFIED", online: true } }),
   ]);

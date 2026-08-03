@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Star, ArrowRight } from "lucide-react";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatRupees } from "@/lib/money";
-import { formatSlotTime, type LawyerCardData } from "@/lib/lawyers";
+import { relativeSlotLabel, type LawyerCardData } from "@/lib/lawyers";
 
 /**
  * Compact row used inside the hero's "Advocates online now" panel — same data,
@@ -43,9 +43,9 @@ export function LawyerCardCompact({ lawyer }: { lawyer: LawyerCardData }) {
         </p>
         <p className="mono-label mt-1 text-muted">
           {lawyer.online ? (
-            <span className="text-verified">● Online</span>
+            <span className="text-verified">● Available now</span>
           ) : nextSlot ? (
-            <>Next slot {formatSlotTime(nextSlot.startsAt)}</>
+            <>Next {relativeSlotLabel(nextSlot.startsAt)}</>
           ) : (
             <>By appointment</>
           )}
@@ -140,11 +140,11 @@ export function LawyerCard({ lawyer }: { lawyer: LawyerCardData }) {
           {lawyer.online ? (
             <span className="flex items-center gap-1.5">
               <span className="size-2 rounded-full bg-verified" />
-              <span className="mono-label text-verified">Online</span>
+              <span className="mono-label text-verified">Available now</span>
             </span>
           ) : nextSlot ? (
             <span className="mono-label text-muted">
-              Next slot {formatSlotTime(nextSlot.startsAt)}
+              Next {relativeSlotLabel(nextSlot.startsAt)}
             </span>
           ) : (
             <span className="mono-label text-muted">By appointment</span>
