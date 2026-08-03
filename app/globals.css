@@ -25,6 +25,14 @@
      of empty paper down both edges. */
   --maxw: 1440px;
   --gutter: clamp(20px, 4vw, 56px);
+
+  /* The sticky header row, and the announcement strip above it. The strip is
+     not sticky — it scrolls away and the header takes over — but while it is
+     on screen it pushes the hero down, so the hero's full-height calc has to
+     know about it. Set on <body> by the layout, which is the only thing that
+     knows whether the strip rendered. */
+  --header-h: 64px;
+  --strip-h: 0px;
 }
 
 /* One continuous page. Sections used to alternate onto a --surface-2 band,
@@ -252,6 +260,9 @@
   background: var(--surface);
   color: var(--ink);
 }
+
+/* Only while the announcement strip is on the page. */
+body.has-strip { --strip-h: 40px; }
 
 /* ---- The recruitment band ----
    The one place on the site where a section owns a colour field instead of

@@ -155,7 +155,7 @@ export default async function Home() {
       <section className="relative isolate overflow-hidden">
         <HeroBackdrop />
 
-        <div className="container relative flex flex-col justify-center pt-10 pb-10 sm:pt-14 lg:min-h-[calc(100vh-64px)] lg:pt-12 lg:pb-10">
+        <div className="container relative flex flex-col justify-center pt-10 pb-10 sm:pt-14 lg:min-h-[calc(100vh-var(--header-h)-var(--strip-h))] lg:pt-12 lg:pb-10">
           {/* 1.25/0.75 rather than an even split: the copy column has to hold
               three CTAs on one row before the panel needs the space. */}
           <div className="grid gap-10 lg:grid-cols-[1.25fr_0.75fr] lg:items-center lg:gap-14">
@@ -283,7 +283,10 @@ export default async function Home() {
 
       {/* The claim, priced. The ladder used to sit in the hero; it earns more
           room here, directly under the market numbers that set it up. */}
-      <section id="pricing" className="relative scroll-mt-16 overflow-hidden">
+      <section
+        id="pricing"
+        className="relative scroll-mt-[calc(var(--header-h)+var(--strip-h))] overflow-hidden"
+      >
         <Engraving side="right" />
         <div className="container section-tight relative">
           <p className="mono-label text-muted">Why this matters</p>

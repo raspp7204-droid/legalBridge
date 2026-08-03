@@ -60,6 +60,11 @@ export function commissionSaved(
 /** Percent of every fee LawNest normally takes — for the "20% → 0%" line. */
 export const PLATFORM_PERCENT = Math.round(PLATFORM_RATE * 100);
 
+/* ---- Announcement strip ---- */
+
+export const PROMO_COOKIE = "lb_offer";
+export const PROMO_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
+
 /* ---- Campaign clock ---- */
 
 /**
