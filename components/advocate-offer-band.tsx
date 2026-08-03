@@ -10,16 +10,15 @@ import {
 } from "@/lib/offers";
 
 /**
- * The recruitment ad — a solid --ink field, the same navy the headings are set
- * in everywhere else.
+ * The recruitment ad — a full-bleed field in --paper-deep, which is --paper a
+ * few shades down.
  *
- * app/globals.css:30-33 says sections must not sit on coloured slabs, and that
- * rule is right for every other surface: the contrast on this site comes from
- * white cards on warm paper. This band breaks it deliberately because an ad
- * that looks like a section does not get read as an ad. It was oxblood first
- * and that was too loud for a full-page field — ink carries the same weight
- * without shouting, and it is a colour the site already uses. Do not add a
- * third dark field.
+ * It has been oxblood (too loud to sit under for a whole section) and ink
+ * (a hard dark slab in the middle of a light page). Deepening the page's own
+ * background does the job both were reaching for: the band still reads as its
+ * own surface rather than another section, because it is the only thing on the
+ * page that is not --paper or a white card, but it does not fight anything.
+ * The oxblood left for the one CTA, which is now the loudest thing in it.
  *
  * blockLawyers() keeps signed-in advocates off the landing and the listing, so
  * the audience here is clients and signed-out visitors — the people who know
@@ -35,17 +34,17 @@ export function AdvocateOfferBand({
   const saving = commissionSaved();
 
   return (
-    <section className="offer-band bg-ink">
+    <section className="border-y border-rule bg-paper-deep">
       <div className={`container ${variant === "hero" ? "section" : "section-tight"}`}>
         <div className="flex flex-wrap items-start justify-between gap-x-10 gap-y-8">
           <div className="max-w-2xl">
-            <p className="mono-label flex flex-wrap items-center gap-x-2 gap-y-1 text-white/70">
+            <p className="mono-label flex flex-wrap items-center gap-x-2 gap-y-1 text-accent">
               <span>
                 Founding advocates · {seats}{" "}
                 {seats === 1 ? "seat" : "seats"} left
               </span>
               <span aria-hidden="true">·</span>
-              <Countdown className="text-white/70" />
+              <Countdown className="text-muted" />
             </p>
 
             {variant === "hero" ? (
@@ -60,12 +59,12 @@ export function AdvocateOfferBand({
               </h2>
             )}
 
-            <p className="mt-5 max-w-xl leading-relaxed text-white/80">
+            <p className="mt-5 max-w-xl leading-relaxed text-slate">
               LawNest takes {PLATFORM_PERCENT}% of every consultation. Founding
               advocates pay nothing for {FOUNDING_MONTHS} months — on{" "}
               {FOUNDING_BASIS.consultsPerMonth} consultations a month at{" "}
               {formatRupees(FOUNDING_BASIS.fee)}, that is{" "}
-              <strong className="font-mono-num text-white">
+              <strong className="font-mono-num text-ink">
                 {formatRupees(saving)}
               </strong>{" "}
               of commission you simply never pay.
@@ -74,46 +73,46 @@ export function AdvocateOfferBand({
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 href="/for-advocates"
-                className="btn-on-ink inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
+                className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
               >
                 Claim your seat
                 <ArrowRight className="size-4" strokeWidth={2.5} />
               </Link>
               <Link
                 href="/lawyer/sign-up"
-                className="btn-ghost-light inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
+                className="btn-secondary inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
               >
                 Join as an advocate
               </Link>
             </div>
 
-            <p className="mono-label mt-6 text-white/60">
+            <p className="mono-label mt-6 text-muted">
               Free · no card · Bar Council enrolment verified in 48 hours
             </p>
           </div>
 
           {/* The maths, per tier — the same transparency argument the client
               side makes, pointed at the other half of the marketplace. */}
-          <dl className="grid w-full max-w-sm gap-px overflow-hidden rounded-2xl border border-white/25 bg-white/25">
-            <div className="flex items-baseline justify-between gap-4 bg-ink px-4 py-3">
-              <dt className="mono-label text-white/70">Per consultation</dt>
-              <dd className="mono-label text-white/70">You keep</dd>
+          <dl className="grid w-full max-w-sm gap-px overflow-hidden rounded-2xl border border-rule bg-rule">
+            <div className="flex items-baseline justify-between gap-4 bg-surface px-4 py-3">
+              <dt className="mono-label text-muted">Per consultation</dt>
+              <dd className="mono-label text-muted">You keep</dd>
             </div>
             {[TIER_FEE.LOWER, TIER_FEE.MIDDLE, TIER_FEE.HIGH].map((fee) => {
               const split = splitFee(fee);
               return (
                 <div
                   key={fee}
-                  className="flex items-baseline justify-between gap-4 bg-ink px-4 py-3"
+                  className="flex items-baseline justify-between gap-4 bg-surface px-4 py-3"
                 >
-                  <dt className="font-mono-num text-sm text-white/80">
+                  <dt className="font-mono-num text-sm text-slate">
                     {formatRupees(fee)}
                   </dt>
                   <dd className="flex items-baseline gap-2.5">
-                    <span className="font-mono-num text-sm text-white/50 line-through">
+                    <span className="font-mono-num text-sm text-muted line-through">
                       {formatRupees(split.lawyerCut)}
                     </span>
-                    <span className="font-mono-num text-lg">
+                    <span className="font-mono-num text-lg text-accent">
                       {formatRupees(fee)}
                     </span>
                   </dd>

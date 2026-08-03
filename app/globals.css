@@ -15,6 +15,7 @@
   --accent-bg:  #F3E7E5;   /* oxblood tint — chips, badges */
   --verified:   #2C6E5B;   /* sage/forest green — online + verified only */
   --rule:       #E4DDCE;   /* hairlines, card borders */
+  --paper-deep: #EBE3D2;   /* --paper, a few shades down — the ad band only */
   --danger:     #B23A31;   /* errors */
   --star:       #C8962E;   /* rating stars ONLY */
 
@@ -76,6 +77,7 @@
 
 @theme inline {
   --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-ink: var(--ink);
@@ -264,13 +266,11 @@
 /* Only while the announcement strip is on the page. */
 body.has-strip { --strip-h: 40px; }
 
-/* ---- Dark promotional fields ----
-   The two places where a section owns a colour field instead of sitting on
-   paper (see the note at the top of this file — the deliberate exceptions,
-   not a leak): the announcement strip in --accent, and the recruitment band
-   in --ink. Everything below is scoped to .offer-band, so no other surface
-   inherits it, and it carries no background of its own — the element picks
-   bg-accent or bg-ink. */
+/* ---- The announcement strip ----
+   The one place that sits on a solid --accent field (see the note at the top
+   of this file — the deliberate exception, not a leak). Scoped to
+   .offer-band, so no other surface inherits it. The recruitment band used to
+   share this and no longer does: it is --paper-deep with ordinary ink type. */
 .offer-band {
   color: #FFFFFF;
 }
@@ -284,35 +284,6 @@ body.has-strip { --strip-h: 40px; }
 /* The global focus ring is oxblood, which is invisible on oxblood. */
 .offer-band :focus-visible {
   outline-color: #FFFFFF;
-}
-
-/* Solid ivory pill — the loud CTA on the ink field */
-.btn-on-ink {
-  background: #FFFFFF;
-  color: var(--ink);
-  border: 1px solid #FFFFFF;
-  transition: background-color 120ms ease, transform 120ms ease;
-}
-
-.btn-on-ink:hover {
-  background: var(--paper);
-}
-
-.btn-on-ink:active {
-  transform: translateY(1px);
-}
-
-/* Hairline pill for the second action */
-.btn-ghost-light {
-  background: transparent;
-  color: #FFFFFF;
-  border: 1px solid rgb(255 255 255 / 0.45);
-  transition: background-color 120ms ease, border-color 120ms ease;
-}
-
-.btn-ghost-light:hover {
-  background: rgb(255 255 255 / 0.12);
-  border-color: #FFFFFF;
 }
 
 /* Tertiary pill — quiet third action beside the two real ones */
