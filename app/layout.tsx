@@ -62,7 +62,13 @@ export default async function RootLayout({
     // Clerk owns authentication for the whole app (LAUNCH.md Task 1).
     // Font vars live on <html> so :root can resolve them — --font-display in
     // globals.css references --font-fraunces and only sees :root scope.
-    <ClerkProvider>
+    /* afterSignOutUrl points at our own /sign-out route rather than "/".
+       Clerk's <UserButton> sign-out clears its session in the browser and then
+       soft-navigates, which leaves the server-rendered header — name, points
+       pill, LawNest ID — sitting there from the React cache until something
+       forces a refetch. Routing it through /sign-out → /reset ends on a hard
+       navigation, so the profile cannot survive the sign-out. */
+    <ClerkProvider afterSignOutUrl="/sign-out">
       <html
         lang="en"
         className={`${fraunces.variable} ${inter.variable} ${GeistMono.variable}`}

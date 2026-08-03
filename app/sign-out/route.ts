@@ -34,6 +34,9 @@ export async function GET() {
 
   /* Hand off to /reset, which finishes the job in the browser: on a Clerk
      development instance the dev browser token also lives in localStorage,
-     and cookies alone leave a dead session able to resurrect itself. */
-  redirect("/reset");
+     and cookies alone leave a dead session able to resurrect itself.
+     ?to=/ because someone who chose to sign out wants the site, not a login
+     form — /reset still defaults to /sign-in when it is reached to recover a
+     broken session instead. */
+  redirect("/reset?to=/");
 }
