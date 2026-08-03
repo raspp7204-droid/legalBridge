@@ -12,8 +12,9 @@ export const dynamic = "force-dynamic";
  * nor a "Sign in" link because the server still sees the stale cookie. That
  * leaves no way back in from the UI at all.
  *
- * This clears the cookies from the server, so it works with the Clerk script
- * blocked entirely. Clerk re-issues everything on the next real sign-in.
+ * This clears the httpOnly cookies from the server — which the browser cannot
+ * touch — then hands off to /reset for the localStorage half. Works with the
+ * Clerk script blocked entirely. Clerk re-issues everything on next sign-in.
  */
 const CLERK_COOKIE_PREFIXES = [
   "__session",
@@ -31,5 +32,8 @@ export async function GET() {
     }
   }
 
-  redirect("/sign-in");
+  /* Hand off to /reset, which finishes the job in the browser: on a Clerk
+     development instance the dev browser token also lives in localStorage,
+     and cookies alone leave a dead session able to resurrect itself. */
+  redirect("/reset");
 }
