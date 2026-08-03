@@ -236,8 +236,7 @@ export default async function Home() {
       </section>
 
       {/* Why this exists — the market first, then what we've built on it */}
-      <section className="band-alt">
-        <div className="container section-tight">
+      <section className="container section-tight">
           <p className="mono-label text-muted">Why this matters</p>
           <h2 className="mt-4 max-w-2xl">
             Legal help in India is{" "}
@@ -258,7 +257,6 @@ export default async function Home() {
           <p className="mono-label mt-5 text-muted">
             Sector figures · National Judicial Data Grid, Bar Council of India
           </p>
-        </div>
       </section>
 
       {/* Categories */}
@@ -291,8 +289,7 @@ export default async function Home() {
       </section>
 
       {/* How it works */}
-      <section className="band-alt">
-        <div className="container section">
+      <section className="container section">
         <h2>How it works</h2>
         <div className="mt-8 grid gap-3 sm:grid-cols-3">
           {STEPS.map((s, i) => (
@@ -305,7 +302,6 @@ export default async function Home() {
               </p>
             </div>
           ))}
-        </div>
         </div>
       </section>
 
@@ -338,8 +334,7 @@ export default async function Home() {
       </section>
 
       {/* Free assistant band */}
-      <section className="band-alt">
-        <div className="container section-tight">
+      <section className="container section-tight">
         <div className="card p-6 sm:p-9">
           <div className="h-px w-16 bg-accent" aria-hidden="true" />
           <h2 className="mt-5 flex items-center gap-3">
@@ -354,7 +349,6 @@ export default async function Home() {
           <p className="mono-label mt-6 text-muted">
             Free · not legal advice · bottom-right corner
           </p>
-        </div>
         </div>
       </section>
 

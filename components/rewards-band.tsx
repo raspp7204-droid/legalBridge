@@ -15,9 +15,6 @@ const LADDER = [TIER_FEE.LOWER, TIER_FEE.MIDDLE, TIER_FEE.HIGH];
 
 export function RewardsBand() {
   return (
-    /* Sits on paper, not a band: it lands directly after the band-alt
-       "How it works" strip, and two bands in a row double the hairline.
-       The card's own border plus the accent rule carry the separation. */
     <section className="container section-tight">
       <div>
         <div className="card overflow-hidden">

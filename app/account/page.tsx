@@ -22,7 +22,7 @@ export default async function AccountPage() {
   ]);
 
   return (
-    <main className="band-alt">
+    <main>
       <div className="container container-narrow section-tight">
         <div className="document">
           <p className="mono-label text-muted">Account</p>

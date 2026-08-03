@@ -1,21 +1,23 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   IndianRupee,
   CalendarDays,
-  Inbox,
   Star,
   Timer,
   Wallet,
   ArrowRight,
-  MessageSquare,
+  Percent,
+  Users,
+  Receipt,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireLawyerProfile } from "@/lib/auth";
 import { AvailabilityToggle } from "@/components/availability-toggle";
 import { EarningsChart } from "@/components/earnings-chart";
 import { formatRupees } from "@/lib/money";
-import { formatSlotFull, formatSlotTime } from "@/lib/lawyers";
+import { formatSlotFull, formatSlotTime, formatSlotDay } from "@/lib/lawyers";
 
 export const dynamic = "force-dynamic";
 
@@ -26,12 +28,15 @@ function Kpi({
   label,
   value,
   hint,
+  delta,
   accent = false,
 }: {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   label: string;
   value: string;
   hint?: string;
+  /** Percent change against the previous period; null when there's no baseline. */
+  delta?: number | null;
   accent?: boolean;
 }) {
   return (
@@ -42,12 +47,63 @@ function Kpi({
         </span>
         <p className="mono-label text-muted">{label}</p>
       </div>
-      <p
-        className={`font-mono-num mt-3 text-2xl ${accent ? "text-accent" : "text-ink"}`}
-      >
-        {value}
-      </p>
+      <div className="mt-3 flex flex-wrap items-baseline gap-2">
+        <p
+          className={`font-mono-num text-2xl ${accent ? "text-accent" : "text-ink"}`}
+        >
+          {value}
+        </p>
+        {delta !== undefined && delta !== null && (
+          <span
+            className={`mono-label flex items-center gap-0.5 ${
+              delta >= 0 ? "text-verified" : "text-danger"
+            }`}
+          >
+            {delta >= 0 ? (
+              <TrendingUp className="size-3" strokeWidth={2.5} />
+            ) : (
+              <TrendingDown className="size-3" strokeWidth={2.5} />
+            )}
+            {Math.abs(delta)}%
+          </span>
+        )}
+      </div>
       {hint && <p className="mono-label mt-1 text-muted">{hint}</p>}
+    </div>
+  );
+}
+
+/** A single share-of-revenue row. Bar width is the share, not the count. */
+function MixRow({
+  name,
+  count,
+  earned,
+  total,
+}: {
+  name: string;
+  count: number;
+  earned: number;
+  total: number;
+}) {
+  const pct = total ? Math.round((earned / total) * 100) : 0;
+  return (
+    <div>
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="truncate text-sm text-ink">{name}</p>
+        <p className="font-mono-num shrink-0 text-sm">
+          {formatRupees(earned)}
+          <span className="mono-label ml-1.5 text-muted">{pct}%</span>
+        </p>
+      </div>
+      <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-2">
+        <div
+          className="h-full rounded-full bg-accent"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <p className="mono-label mt-1 text-muted">
+        {count} {count === 1 ? "consultation" : "consultations"}
+      </p>
     </div>
   );
 }
@@ -66,9 +122,11 @@ export default async function LawyerDashboard() {
   const endOfDay = new Date(startOfDay);
   endOfDay.setDate(endOfDay.getDate() + 1);
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const thirtyDaysAgo = new Date(Date.now() - 29 * 24 * 60 * 60 * 1000);
 
-  const [bookings, totals, monthTotals] = await Promise.all([
+  const [bookings, totals, monthTotals, lastMonthTotals, slotStats] =
+    await Promise.all([
     db.booking.findMany({
       where: { lawyerId: profile.id, paid: true },
       orderBy: { slotAt: "desc" },
@@ -86,6 +144,24 @@ export default async function LawyerDashboard() {
     db.booking.aggregate({
       where: { lawyerId: profile.id, paid: true, createdAt: { gte: startOfMonth } },
       _sum: { lawyerCut: true },
+      _count: true,
+    }),
+    // Same window one month back, so "this month" can carry a real delta
+    // instead of a number with nothing to compare it against.
+    db.booking.aggregate({
+      where: {
+        lawyerId: profile.id,
+        paid: true,
+        createdAt: { gte: startOfLastMonth, lt: startOfMonth },
+      },
+      _sum: { lawyerCut: true },
+    }),
+    // Slot utilisation — the one number that tells an advocate whether to
+    // open more availability or raise their tier.
+    db.slot.groupBy({
+      by: ["booked"],
+      where: { lawyerId: profile.id, startsAt: { gte: startOfDay } },
+      _count: true,
     }),
   ]);
 
@@ -95,6 +171,12 @@ export default async function LawyerDashboard() {
   const upcoming = bookings
     .filter((b) => b.slotAt >= now)
     .sort((a, b) => a.slotAt.getTime() - b.slotAt.getTime());
+
+  // One chronological list: today's remaining sessions run straight into the
+  // days after, which is how a practice actually reads a diary.
+  const agenda = [...today.filter((b) => b.slotAt >= now), ...upcoming]
+    .filter((b, i, arr) => arr.findIndex((x) => x.id === b.id) === i)
+    .slice(0, 8);
 
   // Pending payout — everything earned that hasn't reached a payout run yet.
   // Payouts settle weekly; nothing here is a real bank transfer.
@@ -127,6 +209,45 @@ export default async function LawyerDashboard() {
   const responseRate = bookings.length
     ? Math.round((answered / bookings.length) * 100)
     : 100;
+
+  /* ---- Business metrics ---- */
+
+  const thisMonth = monthTotals._sum.lawyerCut ?? 0;
+  const lastMonth = lastMonthTotals._sum.lawyerCut ?? 0;
+  // Null when there is no prior month to compare against — a "+100%" against
+  // zero is noise, not a trend.
+  const monthDelta =
+    lastMonth > 0 ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100) : null;
+
+  const openSlots = slotStats.find((s) => !s.booked)?._count ?? 0;
+  const takenSlots = slotStats.find((s) => s.booked)?._count ?? 0;
+  const totalSlots = openSlots + takenSlots;
+  const utilisation = totalSlots ? Math.round((takenSlots / totalSlots) * 100) : 0;
+
+  const avgValue = totals._count
+    ? Math.round((totals._sum.lawyerCut ?? 0) / totals._count)
+    : 0;
+
+  // Repeat business — the metric that separates a practice from a queue.
+  const clientIds = bookings.map((b) => b.clientId);
+  const uniqueClients = new Set(clientIds).size;
+  const repeatClients = uniqueClients
+    ? Math.round(((clientIds.length - uniqueClients) / clientIds.length) * 100)
+    : 0;
+
+  // Revenue by practice area, biggest first.
+  const byMatter = new Map<string, { count: number; earned: number }>();
+  for (const b of bookings) {
+    const name = b.lawyer.categories[0]?.name ?? "General";
+    const row = byMatter.get(name) ?? { count: 0, earned: 0 };
+    row.count += 1;
+    row.earned += b.lawyerCut;
+    byMatter.set(name, row);
+  }
+  const matterMix = [...byMatter.entries()]
+    .map(([name, r]) => ({ name, ...r }))
+    .sort((a, b) => b.earned - a.earned);
+  const mixTotal = matterMix.reduce((s, m) => s + m.earned, 0);
 
   // What still stands between this advocate and a live listing.
   const missing = [
@@ -211,8 +332,9 @@ export default async function LawyerDashboard() {
         </div>
       )}
 
-      {/* KPI row */}
-      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      {/* Revenue — what the practice earned */}
+      <p className="mono-label mt-9 text-muted">Revenue</p>
+      <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Kpi
           icon={IndianRupee}
           label="Total earnings"
@@ -223,8 +345,13 @@ export default async function LawyerDashboard() {
         <Kpi
           icon={CalendarDays}
           label="This month"
-          value={formatRupees(monthTotals._sum.lawyerCut ?? 0)}
-          hint={now.toLocaleDateString("en-IN", { month: "long" })}
+          value={formatRupees(thisMonth)}
+          delta={monthDelta}
+          hint={
+            monthDelta === null
+              ? now.toLocaleDateString("en-IN", { month: "long" })
+              : `vs ${formatRupees(lastMonth)} last month`
+          }
         />
         <Kpi
           icon={Wallet}
@@ -233,10 +360,27 @@ export default async function LawyerDashboard() {
           hint="settles weekly"
         />
         <Kpi
-          icon={Inbox}
-          label="Consultations"
-          value={String(totals._count)}
-          hint="paid bookings"
+          icon={Receipt}
+          label="Avg consultation"
+          value={formatRupees(avgValue)}
+          hint="your share per booking"
+        />
+      </div>
+
+      {/* Practice — how the business is running */}
+      <p className="mono-label mt-8 text-muted">Practice</p>
+      <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Kpi
+          icon={Percent}
+          label="Slot utilisation"
+          value={`${utilisation}%`}
+          hint={`${takenSlots} of ${totalSlots} upcoming slots booked`}
+        />
+        <Kpi
+          icon={Users}
+          label="Repeat clients"
+          value={`${repeatClients}%`}
+          hint={`${uniqueClients} distinct ${uniqueClients === 1 ? "client" : "clients"}`}
         />
         <Kpi
           icon={Star}
@@ -392,86 +536,73 @@ export default async function LawyerDashboard() {
             </div>
           </section>
 
-          {/* Today */}
+          {/* Practice mix — where the revenue actually comes from */}
           <section className="card p-5">
-            <h2 className="text-xl">Today</h2>
-            {today.length === 0 ? (
+            <div className="flex flex-wrap items-baseline justify-between gap-3">
+              <h2 className="text-xl">Practice mix</h2>
+              <p className="mono-label text-muted">by revenue</p>
+            </div>
+            {matterMix.length === 0 ? (
               <p className="mt-3 text-sm text-muted">
-                Nothing scheduled today.
+                No revenue to break down yet.
               </p>
             ) : (
-              <div className="mt-4 space-y-3">
-                {today.map((b) => (
-                  <div key={b.id} className="flex items-center gap-3">
-                    <Image
-                      src={b.client.avatar}
-                      alt=""
-                      width={36}
-                      height={36}
-                      className="size-9 shrink-0 rounded-full object-cover"
-                      unoptimized
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm">{b.client.name}</p>
-                      <p className="mono-label text-muted">
-                        {formatSlotTime(b.slotAt)} ·{" "}
-                        {formatRupees(b.lawyerCut)} to you
-                      </p>
-                    </div>
-                    <Link
-                      href={`/consult/${b.id}`}
-                      className="btn-primary mono-label shrink-0 rounded-full px-3 py-1.5"
-                    >
-                      Open
-                    </Link>
-                  </div>
+              <div className="mt-5 space-y-4">
+                {matterMix.slice(0, 5).map((m) => (
+                  <MixRow key={m.name} {...m} total={mixTotal} />
                 ))}
               </div>
             )}
           </section>
 
-          {/* Upcoming */}
-          <section className="card p-5">
-            <h2 className="text-xl">Upcoming</h2>
-            {upcoming.length === 0 ? (
-              <p className="mt-3 text-sm text-muted">
-                No upcoming consultations booked.
+          {/* Schedule — a dense agenda, not a feed of client photos */}
+          <section className="card overflow-hidden">
+            <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-rule p-5">
+              <h2 className="text-xl">Schedule</h2>
+              <p className="mono-label text-muted">
+                {today.length} today · {upcoming.length} upcoming
+              </p>
+            </div>
+
+            {upcoming.length === 0 && today.length === 0 ? (
+              <p className="p-5 text-sm text-muted">
+                Nothing booked. Open more slots on your profile to get listed
+                higher for clients filtering by availability.
               </p>
             ) : (
-              <div className="mt-4 space-y-4">
-                {upcoming.slice(0, 4).map((b) => (
-                  <div
-                    key={b.id}
-                    className="rounded-xl border border-rule bg-surface-2 p-3"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src={b.client.avatar}
-                        alt=""
-                        width={32}
-                        height={32}
-                        className="size-8 shrink-0 rounded-full object-cover"
-                        unoptimized
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm">{b.client.name}</p>
-                        <p className="mono-label text-muted">
-                          {formatSlotFull(b.slotAt)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-3">
+              <ul className="divide-y divide-rule">
+                {agenda.map((b) => {
+                  const isToday = b.slotAt >= startOfDay && b.slotAt < endOfDay;
+                  return (
+                    <li key={b.id}>
                       <Link
                         href={`/consult/${b.id}`}
-                        className="mono-label flex w-full items-center justify-center gap-1.5 rounded-full border border-rule bg-surface px-3 py-2 transition-colors hover:border-accent/40"
+                        className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-surface-2"
                       >
-                        <MessageSquare className="size-3.5" strokeWidth={2} />
-                        Open chat
+                        <div className="w-16 shrink-0">
+                          <p className="font-mono-num text-sm text-ink">
+                            {formatSlotTime(b.slotAt)}
+                          </p>
+                          <p className="mono-label text-muted">
+                            {isToday ? "Today" : formatSlotDay(b.slotAt)}
+                          </p>
+                        </div>
+                        <div className="min-w-0 flex-1 border-l border-rule pl-3">
+                          <p className="mono-label truncate text-ink">
+                            {b.client.clientCode ?? "—"}
+                          </p>
+                          <p className="mono-label mt-0.5 truncate text-muted">
+                            {b.lawyer.categories[0]?.name ?? "General"}
+                          </p>
+                        </div>
+                        <p className="font-mono-num shrink-0 text-sm text-accent">
+                          {formatRupees(b.lawyerCut)}
+                        </p>
                       </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    </li>
+                  );
+                })}
+              </ul>
             )}
           </section>
         </div>

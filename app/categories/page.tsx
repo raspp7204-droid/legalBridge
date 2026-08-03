@@ -49,7 +49,7 @@ export default async function CategoriesPage() {
       </div>
 
       {/* Closing band so the page ends on a section, not on empty paper */}
-      <section className="band-alt relative">
+      <section className="relative">
         <div className="container section-tight flex flex-wrap items-center justify-between gap-6">
           <div>
             <h2 className="text-[1.75rem]">Not sure which one fits?</h2>

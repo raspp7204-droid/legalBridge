@@ -30,7 +30,7 @@ export default async function ConfirmedPage({
   return (
     /* Centred on purpose — capped at 720px and set on a band so the receipt
        reads as a filed document (CHAT-AND-POLISH.md Task 3). */
-    <main className="band-alt">
+    <main>
       <div className="container container-narrow section-tight">
         <div className="document">
       <div className="card overflow-hidden">
