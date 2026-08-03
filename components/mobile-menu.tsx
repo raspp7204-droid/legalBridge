@@ -124,13 +124,24 @@ export function MobileMenu({
                   </Link>
                 ))}
                 {signedIn && (
-                  <Link href="/account" className={link}>
-                    My account
-                    <ArrowRight
-                      className="size-3.5 text-muted"
-                      strokeWidth={2.5}
-                    />
-                  </Link>
+                  <>
+                    <Link href="/account" className={link}>
+                      My account
+                      <ArrowRight
+                        className="size-3.5 text-muted"
+                        strokeWidth={2.5}
+                      />
+                    </Link>
+                    {/* Plain link, not Clerk's <SignOutButton>: this has to
+                        work when the Clerk script cannot load. */}
+                    <a href="/sign-out" className={link}>
+                      Sign out
+                      <ArrowRight
+                        className="size-3.5 text-muted"
+                        strokeWidth={2.5}
+                      />
+                    </a>
+                  </>
                 )}
               </nav>
 

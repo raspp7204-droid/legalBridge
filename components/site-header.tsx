@@ -110,10 +110,21 @@ export async function SiteHeader() {
             <span className="mono-label hidden max-w-[9rem] truncate text-ink lg:inline-block">
               {user?.name.replace(/^Adv\.\s*/, "") ?? ""}
             </span>
+            {/* fallback shows while Clerk boots — and stays if it never
+                does, so the header is never a dead end. */}
             <UserButton
               appearance={{ elements: { avatarBox: "size-9" } }}
               userProfileUrl="/account"
               userProfileMode="navigation"
+              fallback={
+                <a
+                  href="/sign-out"
+                  title="Sign out"
+                  className="mono-label hidden rounded-full border border-rule px-3 py-2 text-slate transition-colors hover:border-accent/40 hover:text-ink sm:inline-block"
+                >
+                  Sign out
+                </a>
+              }
             />
             {role === "LAWYER" ? (
               <Link
