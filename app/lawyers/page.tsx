@@ -149,8 +149,8 @@ export default async function LawyersPage({
               actionLabel="Clear filters"
             />
           ) : (
-            /* 3 up on desktop, 2 on tablet, 1 on mobile (RETHEME.md Task 3) */
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
+            /* 3 up on desktop, 2 on tablet, 2 compact on mobile */
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] sm:gap-5">
               {lawyers.map((l) => (
                 <LawyerCard key={l.id} lawyer={l} />
               ))}
