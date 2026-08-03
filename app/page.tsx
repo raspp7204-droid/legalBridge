@@ -18,7 +18,9 @@ import { CategoryTile } from "@/components/category-tile";
 import { LawyerCard, LawyerCardCompact } from "@/components/lawyer-card";
 import { RewardsBand } from "@/components/rewards-band";
 import { WelcomeOfferBand } from "@/components/welcome-offer-card";
+import { AdvocateOfferBand } from "@/components/advocate-offer-band";
 import { welcomeEligible } from "@/lib/offer-state";
+import { seatsLeft } from "@/lib/offers";
 import { lawyerCardSelect } from "@/lib/lawyers";
 import { formatRupees, TIER_FEE } from "@/lib/money";
 
@@ -443,6 +445,11 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {/* Recruitment. After the client social proof, where it cannot compete
+          with the booking funnel above it, and where it gives the page a hard
+          stop before the press logos. */}
+      <AdvocateOfferBand seats={seatsLeft(verifiedCount)} />
 
       {/* Press row */}
       <section className="relative overflow-hidden pb-8">

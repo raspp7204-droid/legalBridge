@@ -48,6 +48,7 @@ const COLUMNS = [
   {
     title: "For advocates",
     links: [
+      { href: "/for-advocates", label: "Join free for 1 year" },
       { href: "/lawyer/sign-in", label: "Advocate sign-in" },
       { href: "/lawyer", label: "Advocate dashboard" },
       { href: "/lawyer/inbox", label: "Consultation inbox" },

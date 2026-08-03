@@ -69,11 +69,14 @@ export async function SiteHeader() {
 
           {!signedIn && (
             <>
+            {/* Marketing before the auth wall: this used to point straight at
+                a sign-in form, so an advocate met the pitch only after
+                deciding to sign in. md: rather than lg: — tablets get it too. */}
             <Link
-              href="/lawyer/sign-in"
-              className="mono-label hidden rounded-full border border-rule px-3 py-2 text-slate transition-colors hover:border-accent/40 hover:text-ink lg:inline-block"
+              href="/for-advocates"
+              className="mono-label hidden rounded-full border border-accent/40 px-3 py-2 text-accent transition-colors hover:bg-accent-bg md:inline-block"
             >
-              For advocates
+              Advocates: free 1 year
             </Link>
             {/* Under md the sheet carries every other action, so this is the
                 one visible control — filled, and sized to the 40px hamburger

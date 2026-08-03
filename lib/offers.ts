@@ -38,7 +38,10 @@ export function welcomePayable(amount: number) {
 
 /* ---- Advocate: founding year ---- */
 
-export const FOUNDING_SEATS = 12;
+/** Comfortably above the current roster — seats left is FOUNDING_SEATS minus
+    the advocates already verified, so a cohort smaller than the roster would
+    read as "1 seat left" forever. */
+export const FOUNDING_SEATS = 50;
 export const FOUNDING_MONTHS = 12;
 /** The volume the "worth ₹X" headline is quoted against. */
 export const FOUNDING_BASIS = { consultsPerMonth: 20, fee: TIER_FEE.HIGH };

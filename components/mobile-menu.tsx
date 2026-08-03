@@ -184,7 +184,17 @@ export function MobileMenu({
                       page — it used to live only in the footer. */}
                     <div className="rounded-xl border border-rule bg-surface-2 p-3.5">
                       <p className="mono-label text-muted">For advocates</p>
-                      <div className="mt-2.5 grid grid-cols-2 gap-2">
+                      <p className="mt-1.5 text-sm text-ink">
+                        Keep <strong className="font-medium">100%</strong> of
+                        every fee for your first year.
+                      </p>
+                      <Link
+                        href="/for-advocates"
+                        className="btn-primary mono-label mt-3 flex min-h-[44px] items-center justify-center rounded-full px-3"
+                      >
+                        See the offer
+                      </Link>
+                      <div className="mt-2 grid grid-cols-2 gap-2">
                         <Link
                           href="/lawyer/sign-in"
                           className="flex min-h-[44px] items-center justify-center rounded-full border border-accent/40 bg-surface px-3 text-sm text-accent"
