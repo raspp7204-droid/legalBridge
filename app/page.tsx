@@ -11,6 +11,7 @@ import { db } from "@/lib/db";
 import { blockLawyers } from "@/lib/auth";
 import { Starfield } from "@/components/starfield";
 import { Engraving } from "@/components/engraving";
+import { CourthouseBackdrop } from "@/components/courthouse-backdrop";
 import { LiveStrip } from "@/components/live-strip";
 import { CategoryTile } from "@/components/category-tile";
 import { LawyerCard, LawyerCardCompact } from "@/components/lawyer-card";
@@ -134,7 +135,7 @@ export default async function Home() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <Starfield />
-        <Engraving side="right" />
+        <CourthouseBackdrop />
         {/* Two-region hero: copy + CTAs left, live marketplace panel right.
             Collapses to one column below 900px (RETHEME.md Task 3). */}
         <div className="container section relative grid gap-12 min-[900px]:grid-cols-[1.05fr_0.95fr] min-[900px]:items-center">
