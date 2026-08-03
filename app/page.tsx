@@ -14,7 +14,9 @@ import { Engraving } from "@/components/engraving";
 import { LiveStrip } from "@/components/live-strip";
 import { CategoryTile } from "@/components/category-tile";
 import { LawyerCard, LawyerCardCompact } from "@/components/lawyer-card";
+import { RewardsBand } from "@/components/rewards-band";
 import { lawyerCardSelect } from "@/lib/lawyers";
+import { formatRupees, TIER_FEE } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
 
@@ -90,26 +92,41 @@ export default async function Home() {
     db.lawyerProfile.count({ where: { status: "VERIFIED", online: true } }),
   ]);
 
-  // Marketplace numbers — advocate and court counts are real (seed), the
-  // lifetime consultation figure is the platform's own running total.
-  const [verifiedCount, courts, bookingCount] = await Promise.all([
+  // Marketplace numbers — advocate, court and city counts are all live.
+  const [verifiedCount, courts, cities] = await Promise.all([
     db.lawyerProfile.count({ where: { status: "VERIFIED" } }),
     db.lawyerProfile.findMany({
       where: { status: "VERIFIED" },
       select: { court: true },
       distinct: ["court"],
     }),
-    db.booking.count({ where: { paid: true } }),
+    db.lawyerProfile.findMany({
+      where: { status: "VERIFIED" },
+      select: { city: true },
+      distinct: ["city"],
+    }),
   ]);
 
+  /* The market, then the platform. The first two are public sector figures
+     and are labelled as such under the grid; the last two are live counts
+     out of the database. */
   const stats = [
-    { label: "Verified advocates", value: String(verifiedCount) },
-    { label: "Courts covered", value: String(courts.length) },
     {
-      label: "Consultations booked",
-      value: (2400 + bookingCount).toLocaleString("en-IN"),
+      value: "5 Cr+",
+      body: "cases pending across Indian courts — most people never speak to an advocate at all",
     },
-    { label: "Median reply", value: "4 min" },
+    {
+      value: "15 lakh+",
+      body: "advocates enrolled with State Bar Councils, and no honest way to price one",
+    },
+    {
+      value: String(verifiedCount),
+      body: `advocates enrolment-verified on LawNest, across ${courts.length} courts in ${cities.length} cities`,
+    },
+    {
+      value: formatRupees(TIER_FEE.LOWER),
+      body: "the fixed floor for 30 minutes — no hourly billing, no surprise fee",
+    },
   ];
 
   return (
@@ -218,19 +235,29 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Stats band — the marketplace at a glance */}
+      {/* Why this exists — the market first, then what we've built on it */}
       <section className="band-alt">
-        <div className="container py-8 sm:py-10">
-          <dl className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+        <div className="container section-tight">
+          <p className="mono-label text-muted">Why this matters</p>
+          <h2 className="mt-4 max-w-2xl">
+            Legal help in India is{" "}
+            <span className="tone-accent">unpriced</span>, not unavailable
+          </h2>
+
+          <dl className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {stats.map((s) => (
-              <div key={s.label}>
-                <dt className="mono-label text-muted">{s.label}</dt>
-                <dd className="font-mono-num mt-1.5 text-2xl text-ink sm:text-3xl">
-                  {s.value}
+              <div key={s.value} className="card p-5">
+                <dt className="font-display text-3xl text-ink">{s.value}</dt>
+                <dd className="mt-3 text-sm leading-relaxed text-slate">
+                  {s.body}
                 </dd>
               </div>
             ))}
           </dl>
+
+          <p className="mono-label mt-5 text-muted">
+            Sector figures · National Judicial Data Grid, Bar Council of India
+          </p>
         </div>
       </section>
 
@@ -281,6 +308,9 @@ export default async function Home() {
         </div>
         </div>
       </section>
+
+      {/* Rewards — the loyalty loop, advertised before you have to book */}
+      <RewardsBand />
 
       {/* Online now — ranked on rating and availability, never on payment */}
       <section className="container section">
