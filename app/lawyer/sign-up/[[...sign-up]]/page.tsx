@@ -25,6 +25,7 @@ export default function LawyerSignUpPage() {
         cta: "Advocate sign-in",
       }}
       banner={<PlacementBanner />}
+      recoverTo="/lawyer/sign-up"
     >
       <SignUp
         appearance={clerkAppearance}

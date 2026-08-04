@@ -22,6 +22,7 @@ export default function LawyerSignInPage() {
         cta: "Join as an advocate",
       }}
       banner={<PlacementBanner />}
+      recoverTo="/lawyer/sign-in"
     >
       <SignIn
         appearance={clerkAppearance}

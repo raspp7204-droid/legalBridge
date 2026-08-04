@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { Engraving } from "@/components/engraving";
+import { ClerkRecovery } from "@/components/clerk-recovery";
 
 /** Clerk widgets restyled into Daylight Chambers (LAUNCH.md Task 1). */
 export const clerkAppearance = {
@@ -35,6 +36,7 @@ export function AuthShell({
   points,
   footer,
   banner,
+  recoverTo = "/sign-in",
   children,
 }: {
   eyebrow: string;
@@ -45,6 +47,8 @@ export function AuthShell({
   footer: { label: string; href: string; cta: string };
   /** Optional offer banner above the fold — the advocate pages carry one. */
   banner?: React.ReactNode;
+  /** Where a session reset should return to — this page, not the client one. */
+  recoverTo?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -94,9 +98,10 @@ export function AuthShell({
             </p>
           </div>
 
-          {/* Right — the Clerk widget */}
+          {/* Right — the Clerk widget, and the way out if it never boots */}
           <div className="max-[900px]:order-2 min-[900px]:justify-self-end">
             {children}
+            <ClerkRecovery to={recoverTo} />
           </div>
         </div>
       </div>
