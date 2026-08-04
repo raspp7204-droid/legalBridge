@@ -15,6 +15,7 @@ const CLIENT_NAV = [
 const LAWYER_NAV = [
   { href: "/lawyer", label: "Dashboard" },
   { href: "/lawyer/inbox", label: "Inbox" },
+  { href: "/lawyer/placement", label: "Placement" },
   { href: "/lawyer/profile", label: "My profile" },
 ];
 
@@ -22,6 +23,7 @@ const ADMIN_NAV = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/verification", label: "Verification" },
   { href: "/admin/promotions", label: "Promotions" },
+  { href: "/admin/feedback", label: "Suggestions" },
 ];
 
 export async function SiteHeader() {

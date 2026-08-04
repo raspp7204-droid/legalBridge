@@ -31,13 +31,24 @@ enum Status {
   REJECTED
 }
 
-// Paid placement tiers (LAUNCH.md Task 5) — admin console only, no longer
-// surfaced to clients.
+// Paid placement tiers (LAUNCH.md Task 5). BASIC/FEATURED/SPOTLIGHT are the
+// monthly rate card. PLACEMENT is the founding launch offer — one payment of
+// ₹2,999 covering three years at the top of the advocate's practice area.
 enum PromoTier {
   NONE
   BASIC
   FEATURED
   SPOTLIGHT
+  PLACEMENT
+}
+
+// Suggestion box. SUGGESTION is the default because that is what we are
+// asking for; the other two exist so a complaint does not have to masquerade
+// as an idea.
+enum FeedbackKind {
+  SUGGESTION
+  ISSUE
+  PRAISE
 }
 
 // LawNest Rewards — 5% back on every paid consultation, 100 points = ₹100 off.
@@ -155,6 +166,27 @@ model Message {
 
   // The chat poll reads this every 2s — by far the hottest query we run.
   @@index([bookingId, createdAt])
+}
+
+/**
+ * The suggestion box. Deliberately not related to User: a suggestion has to
+ * work when it comes from a signed-out visitor, and a submission is a record
+ * of what someone said at the time — it should not change or disappear
+ * because the account behind it did. The sender's details are copied in.
+ */
+model Feedback {
+  id        String       @id @default(cuid())
+  kind      FeedbackKind @default(SUGGESTION)
+  body      String
+  name      String? // blank when sent anonymously
+  email     String? // optional, only so we can reply
+  role      Role? // who was signed in, if anyone
+  userId    String? // no FK on purpose — see above
+  page      String? // the route it was sent from
+  handled   Boolean      @default(false)
+  createdAt DateTime     @default(now())
+
+  @@index([createdAt])
 }
 
 model RewardLedger {
