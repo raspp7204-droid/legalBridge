@@ -30,6 +30,10 @@ export const PLACEMENT_RANK = 1;
 /** ₹83 — what the one-time fee works out to per month. */
 export const PLACEMENT_MONTHLY = Math.round(PLACEMENT_PRICE / PLACEMENT_MONTHS);
 
+/** Its own cookie, so dismissing the advocate strip never hides a client's. */
+export const PLACEMENT_COOKIE = "lb_placement";
+export const PLACEMENT_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
+
 export const TIER_PRICE: Record<PromoTier, number> = {
   NONE: 0,
   BASIC: 999,

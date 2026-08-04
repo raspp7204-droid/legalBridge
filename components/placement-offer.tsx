@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, TrendingUp, Search, BadgeCheck, Lock } from "lucide-react";
+import {
+  ArrowRight,
+  TrendingUp,
+  Search,
+  BadgeCheck,
+  Lock,
+  Megaphone,
+} from "lucide-react";
 import { formatRupees } from "@/lib/money";
 import {
   PLACEMENT_PRICE,
@@ -79,6 +86,47 @@ export function PlacementRateCard() {
         <p className="mono-label text-muted">
           First {PLACEMENT_TRIAL_MONTHS} months free · paid once · nothing to
           renew
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The compact banner, for screens where the full offer would be a detour —
+ * the advocate auth pages, where the job of the page is the sign-up box.
+ *
+ * A card rather than a full-bleed strip: the strip slot above the header is
+ * already taken, and an advocate reading this is mid-signup, so it has to sit
+ * beside the form instead of on top of it.
+ */
+export function PlacementBanner() {
+  return (
+    <div className="card mb-8 overflow-hidden">
+      <div className="h-[3px] w-full bg-accent" aria-hidden="true" />
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-4 p-4 sm:p-5">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent-bg text-accent">
+          <Megaphone className="size-4" strokeWidth={2.5} />
+        </span>
+
+        <div className="min-w-[16rem] flex-1">
+          <p className="mono-label text-accent">
+            Founding placement · {placementDiscountPercent()}% off
+          </p>
+          <p className="font-display mt-1.5 text-[1.0625rem] leading-snug">
+            {formatRupees(PLACEMENT_PRICE)} puts you first in your practice area
+            for {PLACEMENT_YEARS} years
+          </p>
+          <p className="mt-1.5 text-sm leading-relaxed text-slate">
+            {formatRupees(PLACEMENT_MONTHLY)} a month against{" "}
+            {formatRupees(placementListPrice())} on the monthly card. Free for
+            the first {PLACEMENT_TRIAL_MONTHS} months — join now and claim it
+            from your dashboard.
+          </p>
+        </div>
+
+        <p className="mono-label shrink-0 text-muted">
+          Nothing charged today
         </p>
       </div>
     </div>
