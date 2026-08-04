@@ -1,0 +1,484 @@
+# LawNest — The Business Model, Explained Simply
+
+**What this file is:** the money side of LawNest, written so that anyone can follow it — no business background needed. Every number here is taken from the actual working code, not made up. If you can do multiplication, you can check every line yourself.
+
+**Who should read it:** anyone pitching LawNest, and any investor who wants to know exactly how this makes money.
+
+> There is a longer document called `PITCH.md` that covers the problem, the market and the Q&A. **This file is about one thing: how the business earns.** Its heart is Section 4 — the advertising and promotion model.
+
+---
+
+## 1. LawNest in one minute
+
+India has a strange problem. There are lawyers everywhere, and almost nobody talks to one.
+
+Not because people don't have legal problems. They do — a neighbour builds on their land, a cheque bounces, a landlord refuses to return a deposit, a job ends unfairly. They have the problem. They just never speak to a lawyer about it.
+
+**Why? Because nobody knows what it will cost.**
+
+If you walk into a lawyer's chamber, nothing on the wall tells you the price. You might be charged ₹500. You might be charged ₹15,000. You don't know until you're already sitting there, and by then it feels rude to walk out. So most people do the safest thing: they don't go at all. They ask a cousin. They Google it. They wait, and the problem gets worse.
+
+**LawNest fixes exactly one thing: the price is written down before you talk.**
+
+Pick your problem → see verified advocates → the fee is printed on the card (₹399, ₹549 or ₹799) → pick a time → pay → talk for 30 minutes by chat or video.
+
+That's it. No haggling. No "we'll discuss fees later."
+
+---
+
+## 2. The one screen that explains the whole company
+
+Before a client pays, they see this card on the advocate's page:
+
+```
+CONSULTATION                    ₹549
+─────────────────────────────────────
+Advocate receives               ₹440
+Platform fee                    ₹109
+─────────────────────────────────────
+30 minutes · chat or video
+```
+
+Look at what that card does. It doesn't just show the price. **It shows our own cut.** We are telling the customer, before they pay, exactly how much we keep.
+
+Almost no marketplace does this. Zomato doesn't tell you its commission on your pizza. Uber doesn't show the driver's share on the booking screen.
+
+We show it, because our entire promise is "no surprises about money," and we would be liars if we hid our own fee while promising that. It costs us nothing and it buys enormous trust. **That card is the company in one picture.**
+
+---
+
+## 3. Way 1 to make money — Commission
+
+This is the simple one. Every time someone books a consultation, **we keep 20% and the advocate keeps 80%.**
+
+Three prices, decided by how experienced the advocate is:
+
+| Experience | Client pays | Advocate gets | **LawNest gets** |
+|---|---|---|---|
+| Junior (2–5 years) | ₹399 | ₹320 | **₹79** |
+| Middle (6–12 years) | ₹549 | ₹440 | **₹109** |
+| Senior (13+ years) | ₹799 | ₹640 | **₹159** |
+
+### Check the math yourself
+
+Take the ₹549 one:
+
+```
+20% of 549  =  549 × 0.20  =  109.8
+We round DOWN, so LawNest keeps  =  ₹109
+Advocate gets the rest           =  549 − 109  =  ₹440
+```
+
+We round *down* on purpose. When there's a spare rupee, the advocate gets it, not us. It's one rupee — but the code does it that way on every booking, and it means the advocate is never short-changed by rounding.
+
+### The problem with commission
+
+Commission is real money, and it works today. But it has a weakness, and an investor will find it in about four seconds, so we say it first:
+
+**Commission only exists when a booking happens.** No booking, no rupee. If bookings drop for a month, revenue drops that same month. There is no floor. It's like a shop that only earns when a customer walks in.
+
+Also, ₹109 is small. To earn ₹1,00,000 in a month from commission alone, we need about **917 consultations**. That's 30 a day, every day. Possible — but it's a grind.
+
+So commission alone is not the business. It's the *proof* that people want this. **The business is the next part.**
+
+---
+
+## 4. Way 2 to make money — Promotion (the advertising model)
+
+### 4.1 The idea, using a shop
+
+Walk into any supermarket. Look at the shelf at eye-level, right at the front. Then look at the bottom shelf in the last aisle.
+
+Same shop. Same shoppers. Wildly different sales.
+
+Here's the thing school textbooks don't mention: **the brands don't just get put there. They pay for it.** Companies pay supermarkets for eye-level shelf space, for the display at the entrance, for the stand near the till. It's called *slotting* or *placement*, and it is one of the most profitable things a supermarket does.
+
+Why so profitable? Because **the shelf already exists.** The supermarket doesn't build a new shelf to sell the spot. It already has the shoppers, already has the shelf, and it sells the *position*. The cost of selling that position is almost zero, so almost all of the money is profit.
+
+Newspapers do it. Google does it — search anything and the first results say "Sponsored." Amazon does it. Zomato does it.
+
+**LawNest has a shelf too.** When a client clicks "Property & land," they see a list of advocates. Somebody is first. Somebody is fifth. And being first matters enormously — people read the top of a list far more than the bottom.
+
+So we sell that position. That's the promotion business.
+
+### 4.2 What exactly we sell
+
+An advocate pays us, and their name goes to the **top of their own practice area**.
+
+Meaning: if an advocate practises property law, and a client filters the list to "Property & land," that advocate is the first one they read. Their card carries a small grey label that says **PROMOTED**.
+
+That's the product. It is live in the code right now — an advocate can buy it on `/lawyer/placement`, and their position on the public listing changes immediately.
+
+### 4.3 The three rules that stop this being a scam
+
+This is the most important part of the whole section, and it's the part a serious investor will test hardest. An ad model in a legal marketplace can go wrong very fast — "the lawyer who paid the most appears first" sounds terrible, because it *would* be terrible.
+
+So we wrote three hard rules into the code, not into a policy document:
+
+**Rule 1 — Paying can never put an advocate in front of someone they don't match.**
+Promotion only *re-orders* advocates who already fit what the client asked for. If a client wants a Hindi-speaking property advocate in Bengaluru, and a promoted advocate is a criminal lawyer in Kolkata, that advocate does not appear. Not higher up — *not at all*. Money moves you up the right list. It cannot move you onto the wrong list.
+
+**Rule 2 — Every promoted card says so.**
+A promoted listing carries a visible `PROMOTED` tag. We never disguise a paid position as an earned one. The label is deliberately plain and grey — it must be readable, and it must not look like a prize the advocate won.
+
+**Rule 3 — An explicit choice by the client always wins.**
+If the client sorts by "cheapest first," the cheapest advocate is first — promoted or not. If they sort by "most experienced," the most experienced is first. Promotion applies to the default view inside one practice area. **The moment a client tells us what they want, their instruction beats our advertiser's money.**
+
+Say all three out loud in the pitch. Most people expect a marketplace to dodge this question. Answering it before it's asked is worth more than any slide.
+
+### 4.4 The rate card
+
+Two ways to buy placement.
+
+**The normal price — pay every month:**
+
+| Package | Price per month |
+|---|---|
+| Basic | ₹999 |
+| Featured | ₹2,499 |
+| Spotlight | ₹4,999 |
+
+**The launch offer — pay once, covered for three years:**
+
+```
+FOUNDING PLACEMENT              ₹2,999
+──────────────────────────────────────
+Term                     3 years
+Works out to             ₹83 / month
+Monthly card would be    ₹35,964
+You save                 ₹32,965
+──────────────────────────────────────
+First 3 months free · paid once · nothing to renew
+```
+
+### 4.5 The founding-placement math, step by step
+
+Here's how ₹2,999 becomes ₹83 a month:
+
+```
+Step 1 — How many months is 3 years?
+         3 × 12 = 36 months
+
+Step 2 — Split the price across those months
+         2,999 ÷ 36 = 83.3
+         So: about ₹83 per month
+
+Step 3 — What would 36 months cost at the normal Basic price?
+         999 × 36 = ₹35,964
+
+Step 4 — How much does the advocate save?
+         35,964 − 2,999 = ₹32,965
+
+Step 5 — What discount is that?
+         2,999 ÷ 35,964 = 0.083, which is 8.3%
+         So they pay 8.3% of the normal price
+         100 − 8.3 = about 92% off
+```
+
+**₹83 a month.** For an advocate charging ₹799 a consultation, that is one-tenth of a single booking. If placement brings them **one extra client a year**, they've made their money back several times over.
+
+### 4.6 "Isn't ₹2,999 far too cheap?"
+
+An investor will ask this, and they should. The honest answer:
+
+**Yes — and that is the point.** It is a deliberate launch price, not the real price.
+
+An advertising slot is worth nothing until people are actually looking at it. A billboard on an empty road cannot be sold. Right now LawNest is early, so our shelf has fewer shoppers walking past — and we should price it like that instead of pretending otherwise.
+
+What ₹2,999 actually buys *us* is more valuable than the money:
+
+1. **It gets advocates used to paying us.** The hardest sale in any marketplace is the first one. Once an advocate has paid for placement once, the second sale is far easier.
+2. **It locks in the supply side.** An advocate with three years of placement on LawNest has a reason to send their clients here rather than to a competitor.
+3. **It proves the model works.** "Advocates will pay for placement" is a claim. A list of advocates who *did* pay is evidence. We are buying evidence.
+4. **It creates the price we grow into.** The monthly card sits right beside it at ₹999–₹4,999. Every founding advocate sees what the real price is. When their term ends, that's the price they renew at.
+
+There is exactly one honest risk here, and we say it plainly: **if the term is three years, we don't get to raise that advocate's price for three years.** We have accepted that, on purpose, for the first small group of advocates only — the placement inventory is capped at **12 slots**. It is not an open offer, it's a founding cohort.
+
+### 4.7 Why promotion beats commission (the real argument)
+
+This is the part that makes an investor lean forward. Compare the two income lines honestly:
+
+| | Commission | Promotion |
+|---|---|---|
+| When do we earn? | Only when a booking happens | Every month, booking or not |
+| Can we predict it? | No — it moves with demand | Yes — it's a signed-up amount |
+| What does it cost us to deliver? | Advocate's time, support, disputes | **Almost nothing** |
+| Does it grow when we grow? | Grows with bookings | Grows with bookings **and** with price |
+| Is there a limit? | Limited by consultations | Limited by slots — which makes it scarce |
+
+Read the third row twice. **Promotion revenue costs us almost nothing to deliver.**
+
+When we earn ₹109 in commission, real things had to happen: an advocate spent 30 minutes, we ran a video room, someone might raise a complaint. There are real costs sitting behind that ₹109.
+
+When we earn ₹999 in placement, what did we deliver? A different ordering of a list we were already showing. A database field changed from `false` to `true`. **The cost of delivering it is effectively zero, so nearly the whole amount is profit.**
+
+That's why Google is one of the most profitable companies on earth. It isn't because search is expensive — it's because the ads are almost free to serve.
+
+**The line to say in the pitch:**
+
+> *"Commission proves people want this. Promotion is what makes it a business. One is money we work for. The other is money the shelf earns while we sleep."*
+
+---
+
+## 5. The full math, worked slowly
+
+### 5.1 One advocate, one month
+
+Take a mid-tier advocate, ₹549 per consultation, who does 8 consultations a month and also pays for Basic promotion.
+
+```
+COMMISSION
+  8 consultations × ₹109 to LawNest  =  ₹872
+
+PROMOTION
+  Basic placement                     =  ₹999
+
+TOTAL FROM ONE ADVOCATE               =  ₹1,871 per month
+```
+
+Notice something: **the ₹999 of placement is larger than the ₹872 of commission.** One advocate, doing a normal month of work, and the advertising line has already overtaken the commission line.
+
+### 5.2 One hundred advocates
+
+Now scale it. 100 verified advocates. Not every advocate advertises — realistically about 1 in 5 pays for placement.
+
+```
+COMMISSION
+  100 advocates × 8 consultations   =  800 consultations
+  800 × ₹109 average                =  ₹87,200
+
+PROMOTION
+  20 advocates paying ₹999          =  ₹19,980
+
+MONTHLY TOTAL                       =  ₹1,07,180
+YEARLY                              =  ₹12,86,160  (about ₹12.9 lakh)
+```
+
+### 5.3 One thousand advocates
+
+```
+COMMISSION
+  1,000 × 8 = 8,000 consultations
+  8,000 × ₹109                      =  ₹8,72,000
+
+PROMOTION
+  200 advocates × ₹999              =  ₹1,99,800
+  (and some upgrade — say 40 move to Featured at ₹2,499
+   instead of Basic, adding 40 × ₹1,500 = ₹60,000)
+
+MONTHLY TOTAL                       =  about ₹11,31,800
+YEARLY                              =  about ₹1.36 crore
+```
+
+### 5.4 The number that actually matters — profit, not revenue
+
+Revenue is what comes in. **Profit is what's left.** They are very different, and mixing them up is the fastest way to lose credibility.
+
+Roughly, from the ₹11.3 lakh month above:
+
+```
+Commission revenue        ₹8,72,000
+  minus real costs behind it (support, disputes,
+  video/chat infrastructure, refunds)
+  — realistically we keep about 70%    →  about ₹6,10,000 profit
+
+Promotion revenue         ₹2,59,800
+  minus cost to deliver it
+  — almost nothing                     →  about ₹2,55,000 profit
+```
+
+Now look at the ratio. Promotion is **23% of the revenue** but roughly **29% of the profit** — and it takes no extra staff to run.
+
+Push it further. If placement prices rise as traffic grows — which is the whole logic of an ad business — commission stays flat while promotion multiplies. **This is a business whose profit grows faster than its revenue.** Investors care about that far more than the top-line number.
+
+---
+
+## 6. Who pays us, and why they're happy to
+
+A business model only works if **both sides feel they won.** Here's each side's arithmetic.
+
+### The client's arithmetic
+
+| | Without LawNest | With LawNest |
+|---|---|---|
+| Knowing the price beforehand | No | Yes, printed |
+| Travel to a chamber | Yes, often twice | No |
+| Half a day off work | Yes | No |
+| Cost of 30 minutes | Unknown, often ₹1,500+ | ₹399–₹799 |
+| Risk of being overcharged | High | Zero — fee is fixed |
+
+The client isn't paying us a fee. They're paying *less than they otherwise would*, and they know the number in advance. We're cheaper **and** more certain. That's a rare combination.
+
+### The advocate's arithmetic
+
+This is the one to rehearse, because advocates are the customer that actually pays us twice.
+
+A junior advocate's real problem is not skill. It is that **nobody knows they exist.** They finished law school, they're enrolled with the Bar Council, they're sitting in a chamber waiting for a senior to hand them work.
+
+Their options for getting clients:
+
+| Option | Cost | Result |
+|---|---|---|
+| Wait for referrals | Free | Slow, unpredictable, years |
+| Google/Facebook ads | ₹15,000+/month, needs skill | Some leads, mostly time-wasters |
+| **LawNest placement** | **₹83/month at founding price** | Clients who have already paid |
+
+That last row is the entire sales pitch to an advocate. And there's a detail that matters more than the price:
+
+**Every person who reaches an advocate on LawNest has already paid.** They are not browsing. They are not "just asking." They booked a slot and their money is through. An advocate's inbox on LawNest contains zero time-wasters — and any advocate will tell you that time-wasters are the single most exhausting part of their week.
+
+**Their return on ₹2,999:**
+
+```
+One extra client from placement, at ₹799            =  ₹640 earned
+                                                       (they keep 80%)
+Placement cost for the whole 3 years                =  ₹2,999
+Extra clients needed to break even  =  2,999 ÷ 640  =  4.7
+
+So: about 5 extra clients across THREE YEARS pays for it.
+```
+
+Five clients in three years. That's less than two a year. **An advocate who thinks they'll get fewer than two extra clients a year from being first in their field doesn't believe in the platform at all** — and that's a fair thing for them to conclude, but almost nobody does.
+
+---
+
+## 7. What it costs us to run
+
+Honesty here is worth more than optimism. The costs are small, and we can say exactly why.
+
+| Cost | Roughly | Why it's low |
+|---|---|---|
+| Hosting the website | ₹0–₹2,000/month at this size | Serverless — we pay for what's used |
+| Database | ₹0–₹1,500/month | Same |
+| Payments | Close to ₹0 | UPI has no merchant fee in India |
+| The AI assistant | Per question, small | Only runs when someone asks |
+| Advocate verification | Staff time | The one genuinely manual job |
+| Support and disputes | Staff time | Grows with bookings, not with advocates |
+
+**The big one is verification** — a human checks each advocate's Bar Council enrolment before they go live. That is slow and it costs money, and we are keeping it that way on purpose. The verified badge is the only reason a stranger trusts an advocate on our site. The day we automate it badly is the day the badge is worth nothing.
+
+---
+
+## 8. Honest weaknesses (say these before you're asked)
+
+Every pitch has holes. Naming them yourself turns a weakness into a display of judgement.
+
+**1. Paid ads to find clients don't pay for themselves.**
+We earn about ₹109 per consultation. Getting a client through Instagram or Google ads costs ₹80–₹250. At the top of that range we'd lose money on every booking. So growth cannot come from buying ads. It has to come from search, content, word of mouth, and advocates bringing their own clients onto the platform. We know this. It shapes the whole growth plan.
+
+**2. Three years is a long time to fix a price.**
+The founding placement locks an advocate's price for three years. That's a real cost to us. It's capped at 12 slots for exactly that reason.
+
+**3. Promotion revenue needs traffic first.**
+Nobody pays for a good spot in an empty shop. The advertising business only becomes big *after* the client side is busy. Commission comes first in time; promotion comes first in profit.
+
+**4. We are not a law firm and can never give advice.**
+LawNest is a technology platform. Every page says so, and the AI assistant refuses to give legal advice and says it cannot replace a lawyer. Advocate advertising rules in India are strict — advocates cannot solicit clients. **This is why we, the platform, do the advertising, and the advocate simply appears in a directory.** That distinction is legally important and we should get it reviewed properly before scaling.
+
+**5. Most of our numbers are projections.**
+The product is real and working. The revenue at 1,000 advocates is arithmetic, not history. We say "projected" every single time, and never once say "we have."
+
+---
+
+## 9. What is actually built (the showcase)
+
+This is what separates us from a team with slides. **The product exists and works.** Open it and click.
+
+**Working right now:**
+
+- Browse 8 legal categories, filter advocates by category, city, language, experience and price — every filter is shareable as a URL
+- The fee breakdown card, showing our own cut, before payment
+- Slot picking, checkout, and a confirmed booking
+- Real chat between client and advocate, updating on both sides within about 2 seconds
+- A video consultation room
+- A client dashboard, and an advocate dashboard with earnings, payouts, slot use and practice mix
+- An admin console: verify advocates, see bookings, see revenue
+- **A working promotion system** — an advocate buys placement, and their position on the public listing changes immediately, labelled `PROMOTED`
+- **A suggestion box** — anyone, signed in or not, can send us an idea, and it lands in an admin inbox
+- An AI legal assistant that answers in simple language, replies in Hindi if you write Hindi, always says it is not legal advice, and can point you at a real advocate on the platform
+
+**Deliberately faked, and we say so:**
+
+- Payment is a realistic checkout screen, not a real gateway — no real money moves
+- The video room shows your own camera and a static advocate tile
+- Notifications are on-screen only, not SMS or email
+
+### The 90-second demo, with the business model inside it
+
+1. **Landing page** — the three prices, printed. *"You know the cost before you click."*
+2. **Property & land → filter to Bengaluru** — the search works, results are real.
+3. **Open a senior advocate → stop on the fee card.** *"₹799. The advocate gets ₹640. We keep ₹159. Shown before you pay — that's the whole company."*
+4. **Pick a slot → pay → confirmed.** The booking is real, it's in the database.
+5. **Open the chat** — a real conversation, already running.
+6. **Join the video room** — your face appears.
+7. **Switch to Admin → verification queue → approve an advocate** → they appear in the public listing instantly.
+8. **The money moment.** Open the advocate's placement page. *"Here's how we make money beyond commission. ₹2,999, once, and this advocate is first in their practice area for three years — ₹83 a month. Watch."* Buy it, go back to the listing, **their name has moved to the top with a PROMOTED label.** Then open the admin promotions page and show the revenue counting up.
+9. **The AI assistant** — ask it in Hindi: *"मेरे पड़ोसी ने मेरी ज़मीन पर कब्ज़ा कर लिया है, क्या करूं?"* It answers in Hindi, refuses to give legal advice, and recommends the property category.
+
+Step 8 is the one that wins. Everyone demos a booking. **Almost nobody demos their own revenue model working live.**
+
+---
+
+## 10. What we would do with investment
+
+| Where the money goes | Why |
+|---|---|
+| Verifying advocates in 8 cities | Supply is everything. An empty marketplace is worth nothing. No advocates, no product. |
+| Content and search | The only client acquisition that pays for itself at our price point. People search "cheque bounce case kya hota hai" — we should be the answer. |
+| One support person | Disputes and refunds are the fastest way to lose trust, and right now nobody owns them. |
+| Legal review | Bar Council advertising rules must be reviewed properly by a practising advocate before we scale the promotion business. |
+| A real payment gateway | Currently simulated. Needed before a single real rupee moves. |
+
+**What we are not spending it on:** paid advertising to find clients. The maths in Section 8 says it loses money at our price point. Saying that out loud tells an investor we can read our own numbers.
+
+---
+
+## 11. Numbers to memorise
+
+If you remember nothing else, remember these. You will be asked.
+
+| Number | What it is |
+|---|---|
+| **₹399 / ₹549 / ₹799** | The three consultation prices |
+| **80 / 20** | Advocate keeps 80%, LawNest keeps 20% |
+| **₹79 / ₹109 / ₹159** | What we earn per consultation at each tier |
+| **₹999 / ₹2,499 / ₹4,999** | Monthly placement rate card |
+| **₹2,999** | Founding placement — paid once, covers 3 years |
+| **₹83** | What that works out to per month |
+| **₹35,964** | What 3 years costs at the normal monthly price |
+| **92%** | The founding discount |
+| **12** | Placement slots available — the offer is capped |
+| **5** | Extra clients an advocate needs over 3 years to break even on placement |
+| **~0** | What it costs us to deliver a placement — the reason this model works |
+
+---
+
+## 12. Small dictionary
+
+Terms you'll hear, in plain words.
+
+- **Marketplace** — a business that connects two groups (here: clients and advocates) and takes a cut.
+- **Commission** — a percentage of each sale. Ours is 20%.
+- **Placement / promotion** — paying to appear higher in a list. Same idea as a supermarket shelf or a "Sponsored" result on Google.
+- **Organic** — the opposite of promoted. Ranked because you earned it, not because you paid.
+- **Recurring revenue** — money that arrives every month without a new sale. Predictable. Investors value it highly.
+- **Margin** — how much of the money you keep after the cost of delivering it. Placement has a very high margin.
+- **Unit economics** — the profit on one single sale. If one sale loses money, a million sales lose a million times more.
+- **Inventory** — the thing you have to sell. Ours is the 12 placement slots.
+- **CAC** — Customer Acquisition Cost. What it costs to get one customer.
+- **GMV** — Gross Merchandise Value. Everything customers paid, including the advocates' share. **Not our revenue** — never confuse the two in front of an investor.
+- **MRR** — Monthly Recurring Revenue. The placement money that arrives every month.
+
+---
+
+## 13. The closing line
+
+> *"Every legal marketplace says it connects people to lawyers. We do something narrower and harder: we put the price on the front of the door.*
+>
+> *That builds trust with clients, which brings advocates, which builds a place worth being seen in. And the moment a place is worth being seen in, being seen first becomes worth paying for.*
+>
+> *That's the business. Commission proves people want it. Advertising is what makes it worth owning."*
+
+---
+
+*Every figure in this document is derived from the live code — the fee split from `lib/money.ts`, the placement pricing from `lib/promotions.ts`. Change a price in the code and this file must be updated to match. Projections at 100 and 1,000 advocates are arithmetic, not results, and must always be described that way.*
