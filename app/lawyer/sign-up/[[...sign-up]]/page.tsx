@@ -1,5 +1,6 @@
 import { SignUp } from "@clerk/nextjs";
 import { AuthShell, clerkAppearance } from "@/components/auth-shell";
+import { PlacementBanner } from "@/components/placement-offer";
 import { FOUNDING_MONTHS, PLATFORM_PERCENT } from "@/lib/offers";
 
 export const metadata = { title: "Join as an advocate — LawNest" };
@@ -23,6 +24,8 @@ export default function LawyerSignUpPage() {
         href: "/lawyer/sign-in",
         cta: "Advocate sign-in",
       }}
+      banner={<PlacementBanner />}
+      recoverTo="/lawyer/sign-up"
     >
       <SignUp
         appearance={clerkAppearance}

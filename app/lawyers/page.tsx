@@ -9,6 +9,7 @@ import { LiveStrip } from "@/components/live-strip";
 import { WelcomeOfferStrip } from "@/components/welcome-offer-card";
 import { welcomeEligible } from "@/lib/offer-state";
 import { lawyerCardSelect, EXPERIENCE_BANDS, SORTS } from "@/lib/lawyers";
+import { liftPromoted, isActivePromo } from "@/lib/promotions";
 import {
   toList,
   activeFilterCount,
@@ -88,9 +89,7 @@ export default async function LawyersPage({
         ? [{ years: "desc" }, { rating: "desc" }]
         : [{ rating: "desc" }, { reviewCount: "desc" }];
 
-  /* One ranked list, no paid placement: results are ordered by whatever the
-     client asked for (rating, fee, experience) and nothing else. */
-  const [lawyers, categories, onlineCount] = await Promise.all([
+  const [ranked, categories, onlineCount] = await Promise.all([
     db.lawyerProfile.findMany({ where, orderBy, ...lawyerCardSelect() }),
     db.category.findMany({
       orderBy: { name: "asc" },
@@ -98,6 +97,14 @@ export default async function LawyersPage({
     }),
     db.lawyerProfile.count({ where: { status: "VERIFIED", online: true } }),
   ]);
+
+  /* Paid placement, and the two limits on it.
+     It applies only inside a practice area the client filtered to — that is
+     the thing an advocate actually bought — and never over an explicit sort,
+     because a client who asked for cheapest-first is owed cheapest-first.
+     With nobody promoted this returns the query's own order untouched. */
+  const promotable = categorySlugs.length > 0 && sort === "rating";
+  const lawyers = promotable ? liftPromoted(ranked) : ranked;
 
   const total = lawyers.length;
 
@@ -160,7 +167,11 @@ export default async function LawyersPage({
             /* 3 up on desktop, 2 on tablet, 2 compact on mobile */
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] sm:gap-5">
               {lawyers.map((l) => (
-                <LawyerCard key={l.id} lawyer={l} />
+                <LawyerCard
+                  key={l.id}
+                  lawyer={l}
+                  promoted={promotable && isActivePromo(l)}
+                />
               ))}
             </div>
           )}

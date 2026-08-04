@@ -58,6 +58,7 @@ const COLUMNS = [
   {
     title: "Company",
     links: [
+      { href: "/feedback", label: "Suggestions & feedback" },
       { href: "/privacy", label: "Privacy policy" },
       { href: INSTAGRAM, label: "Instagram" },
       { href: "/admin", label: "Platform admin" },
@@ -84,11 +85,13 @@ const LAWYER_COLUMNS = [
     links: [
       { href: "/lawyer", label: "Payouts & balance" },
       { href: "/lawyer", label: "Consultation history" },
+      { href: "/lawyer/placement", label: "Placement" },
     ],
   },
   {
     title: "Company",
     links: [
+      { href: "/feedback", label: "Suggestions & feedback" },
       { href: "/privacy", label: "Privacy policy" },
       { href: INSTAGRAM, label: "Instagram" },
       { href: "/", label: "About LawNest" },

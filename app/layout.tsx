@@ -7,9 +7,12 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { AssistantWidget } from "@/components/assistant-widget";
 import { OfferStrip } from "@/components/offer-strip";
+import { PlacementStrip } from "@/components/placement-strip";
+import { FeedbackWidget } from "@/components/feedback-widget";
 import { getDbUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { isFirstConsultation, PROMO_COOKIE } from "@/lib/offers";
+import { PLACEMENT_COOKIE, isActivePromo } from "@/lib/promotions";
 import { pointsToRupees } from "@/lib/rewards";
 import "./globals.css";
 
@@ -50,6 +53,23 @@ export default async function RootLayout({
   const dismissed = jar.get(PROMO_COOKIE)?.value === "1";
   const showStrip = !dismissed && !isLawyer && user?.role !== "ADMIN";
 
+  /* The advocate's half of the same slot: the placement offer. Gated on the
+     advocate not already holding a live campaign — selling a placement to
+     someone who has bought one is the fastest way to look like a mailshot.
+     The query only runs for advocates who could still see the strip. */
+  const placementDismissed = jar.get(PLACEMENT_COOKIE)?.value === "1";
+  const lawyerPromo =
+    user && isLawyer && !placementDismissed
+      ? await db.lawyerProfile.findUnique({
+          where: { userId: user.id },
+          select: { promoted: true, promotedUntil: true },
+        })
+      : null;
+  const showPlacementStrip =
+    isLawyer &&
+    !placementDismissed &&
+    !(lawyerPromo && isActivePromo(lawyerPromo));
+
   // A strip that promises a first-consultation discount to someone who has
   // already used it would be a lie, so it switches to their points instead.
   const paidBookings =
@@ -75,7 +95,7 @@ export default async function RootLayout({
       >
         <body
           className={`flex min-h-screen flex-col antialiased ${
-            showStrip ? "has-strip" : ""
+            showStrip || showPlacementStrip ? "has-strip" : ""
           }`}
         >
           {showStrip && (
@@ -84,11 +104,15 @@ export default async function RootLayout({
               pointsWorth={pointsToRupees(user?.points ?? 0)}
             />
           )}
+          {showPlacementStrip && <PlacementStrip />}
           <SiteHeader />
           <div className="flex-1">{children}</div>
           <SiteFooter />
           {/* Floating assistant — client-facing pages only */}
           {!isLawyer && <AssistantWidget />}
+          {/* Suggestion box — everyone, including advocates and admins.
+              It sits above the assistant where there is one to sit above. */}
+          <FeedbackWidget signedIn={!!user} stacked={!isLawyer} />
         </body>
       </html>
     </ClerkProvider>

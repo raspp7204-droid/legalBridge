@@ -20,6 +20,7 @@ export default function ClientSignUpPage() {
         href: "/sign-in",
         cta: "Sign in",
       }}
+      recoverTo="/sign-up"
     >
       <SignUp
         appearance={clerkAppearance}

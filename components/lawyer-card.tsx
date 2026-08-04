@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Star, ArrowRight } from "lucide-react";
+import { Star, ArrowRight, Megaphone } from "lucide-react";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatRupees } from "@/lib/money";
 import { relativeSlotLabel, type LawyerCardData } from "@/lib/lawyers";
@@ -62,7 +62,20 @@ export function LawyerCardCompact({ lawyer }: { lawyer: LawyerCardData }) {
   );
 }
 
-export function LawyerCard({ lawyer }: { lawyer: LawyerCardData }) {
+/**
+ * `promoted` is passed in rather than read off the row. An advocate can hold a
+ * live campaign and still appear in a list placement did not order — the hero
+ * panel, an explicit price sort — and tagging those would claim a payment
+ * bought a position it did not buy. The label means "this is why they are
+ * here", so only the caller that applied placement can set it.
+ */
+export function LawyerCard({
+  lawyer,
+  promoted = false,
+}: {
+  lawyer: LawyerCardData;
+  promoted?: boolean;
+}) {
   const nextSlot = lawyer.slots[0];
 
   return (
@@ -72,6 +85,15 @@ export function LawyerCard({ lawyer }: { lawyer: LawyerCardData }) {
     <article
       className="card card-interactive flex flex-col p-5 max-sm:p-3"
     >
+      {/* Row 0 — the disclosure. Muted on purpose: it has to be readable and
+          it must not look like a badge the advocate earned. */}
+      {promoted && (
+        <p className="mono-label mb-3 flex items-center gap-1.5 text-muted max-sm:mb-2">
+          <Megaphone className="size-3 shrink-0" strokeWidth={2.5} />
+          Promoted
+        </p>
+      )}
+
       {/* Row 1 — avatar, name, verified, tier chip */}
       <div className="flex items-start gap-3.5 max-sm:flex-col max-sm:gap-2">
         <span
