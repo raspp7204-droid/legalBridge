@@ -12,6 +12,7 @@ import { db } from "@/lib/db";
 import { blockLawyers } from "@/lib/auth";
 import { Starfield } from "@/components/starfield";
 import { Engraving } from "@/components/engraving";
+import { SubscriptionBand } from "@/components/subscription-offer";
 import { HeroBackdrop } from "@/components/hero-backdrop";
 import { AskAiButton } from "@/components/ask-ai-button";
 import { CategoryTile } from "@/components/category-tile";
@@ -436,6 +437,10 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {/* Recruitment. After the client social proof, where it cannot compete
+          with the booking funnel above it. */}
+      <SubscriptionBand />
 
       {/* Press row */}
       <section className="relative overflow-hidden pb-8">

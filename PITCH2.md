@@ -4,7 +4,7 @@
 
 **Who should read it:** anyone pitching LawNest, and any investor who wants to know exactly how this makes money.
 
-> There is a longer document called `PITCH.md` that covers the problem, the market and the Q&A. **This file is about one thing: how the business earns.** Its heart is Section 4 — the advertising and promotion model.
+> There is a longer document called `PITCH.md` that covers the problem, the market and the Q&A. **This file is about one thing: how the business earns.** Its heart is Section 4 — the advertising and promotion model. Section 4A covers the advocate subscription.
 
 ---
 
@@ -190,6 +190,51 @@ That's why Google is one of the most profitable companies on earth. It isn't bec
 **The line to say in the pitch:**
 
 > *"Commission proves people want this. Promotion is what makes it a business. One is money we work for. The other is money the shelf earns while we sleep."*
+
+---
+
+## 4A. Way 3 to make money — The advocate subscription
+
+There is a third line, and it is the newest one.
+
+**From their second year, every advocate pays ₹999 a year to stay listed.** The first year is free — that is the introductory offer, and it is how we get advocates onto the platform at all.
+
+### What is actually free in year one
+
+This matters, and getting it backwards is the fastest way to lose credibility with an investor:
+
+| | Year 1 | Year 2 onwards |
+|---|---|---|
+| Subscription | **₹0** | **₹999 / year** |
+| Commission on each consultation | 20% | 20% |
+
+**The commission is never waived.** A new advocate pays 20% from their very first consultation. What they don't pay, for twelve months, is the yearly fee to be listed. Say it exactly that way — "no subscription fee for the first year," never "the first year is free."
+
+### Why this shape is right
+
+```
+Step 1 — What does ₹999 a year come to per month?
+         999 ÷ 12 = ₹83 per month
+
+Step 2 — How many consultations cover it for a whole year?
+         A senior advocate keeps ₹640 of a ₹799 consultation
+         999 ÷ 640 = 1.56
+         So: 2 consultations pay the entire year's subscription
+```
+
+**Two consultations a year.** Not two a month — two a *year*. If LawNest cannot bring an advocate two consultations in twelve months, they should leave, and the fee makes that decision easy and honest for them.
+
+Three reasons this is a better instrument than it looks:
+
+1. **It's recurring and it's predictable.** Like promotion revenue, it arrives whether or not anyone books that month. 200 advocates on subscription is ₹1,99,800 a year that does not depend on demand.
+2. **It costs nothing to deliver.** Same argument as placement — the listing already exists.
+3. **It quietly cleans the marketplace.** An advocate who won't pay ₹83 a month isn't taking the platform seriously, and a directory full of inactive advocates is worse than a smaller one where everyone answers. The fee removes them without us having to.
+
+And the free first year is not generosity — it is the standard trade. We need advocates before we can have clients, so year one buys supply and year two starts earning from it.
+
+### The honest weakness
+
+**We have not collected a single rupee of subscription yet**, and we won't for twelve months after the first advocate joins. It is real revenue in the model and zero revenue today. Say that plainly if asked — the number is a projection with a date attached, not a result.
 
 ---
 
@@ -415,6 +460,8 @@ If you remember nothing else, remember these. You will be asked.
 | **₹399 / ₹549 / ₹799** | The three consultation prices |
 | **80 / 20** | Advocate keeps 80%, LawNest keeps 20% |
 | **₹79 / ₹109 / ₹159** | What we earn per consultation at each tier |
+| **₹999 / year** | Advocate subscription, from year two — free in year one |
+| **2** | Consultations that cover a whole year's subscription |
 | **₹999 / ₹2,499 / ₹4,999** | Monthly placement rate card |
 | **12** | Placement slots in total — scarcity is what makes them worth buying |
 | **2** | Extra clients a month an advocate needs to break even on Basic |

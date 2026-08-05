@@ -155,7 +155,18 @@ export async function requireLawyerProfile() {
 
   const profile = await db.lawyerProfile.findUnique({
     where: { userId: user.id },
-    include: { user: { select: { id: true, name: true, avatar: true, email: true } } },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          avatar: true,
+          email: true,
+          // Drives the subscription free-year countdown (lib/subscription.ts).
+          createdAt: true,
+        },
+      },
+    },
   });
   if (!profile) redirect("/lawyer/sign-in");
   return profile;

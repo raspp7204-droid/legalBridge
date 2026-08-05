@@ -1,7 +1,9 @@
-import { PLATFORM_RATE, TIER_FEE } from "@/lib/money";
+
 
 /**
- * Launch campaigns — one on each side of the marketplace.
+ * The client-side launch campaign. The advocate side moved to
+ * lib/subscription.ts when the founding-year commission waiver was replaced by
+ * a waived first-year subscription — a different promise, so a different file.
  *
  * Same discipline as lib/rewards.ts: every figure a banner prints is computed
  * here, never typed into JSX, so a campaign changes in exactly one file.
@@ -42,23 +44,3 @@ export function isFirstConsultation(paidBookings: number) {
 export function welcomePayable(amount: number) {
   return amount - welcomeDiscount(amount);
 }
-
-/* ---- Advocate: founding year ---- */
-
-export const FOUNDING_MONTHS = 12;
-/** The volume the "worth ₹X" headline is quoted against. */
-export const FOUNDING_BASIS = { consultsPerMonth: 20, fee: TIER_FEE.HIGH };
-
-/**
- * Commission an advocate keeps across the founding year. Derived from
- * PLATFORM_RATE so the ad can never disagree with the fee card.
- */
-export function commissionSaved(
-  consultsPerMonth = FOUNDING_BASIS.consultsPerMonth,
-  fee = FOUNDING_BASIS.fee,
-) {
-  return Math.round(consultsPerMonth * FOUNDING_MONTHS * fee * PLATFORM_RATE);
-}
-
-/** Percent of every fee LawNest normally takes — for the "20% → 0%" line. */
-export const PLATFORM_PERCENT = Math.round(PLATFORM_RATE * 100);

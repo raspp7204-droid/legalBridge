@@ -20,6 +20,7 @@ import {
   SearchDemandChart,
   OnlineSwitchChart,
 } from "@/components/market-charts";
+import { SubscriptionStatusCard } from "@/components/subscription-offer";
 import { searchDemandSeries, onlineSwitchSeries, trend } from "@/lib/demand";
 import { formatRupees } from "@/lib/money";
 import { formatSlotFull, formatSlotTime, formatSlotDay } from "@/lib/lawyers";
@@ -617,6 +618,9 @@ export default async function LawyerDashboard() {
         </div>
 
         <div className="space-y-6">
+          {/* Subscription — the free year, and what happens after it */}
+          <SubscriptionStatusCard joinedAt={profile.user.createdAt} />
+
           {/* Payout summary */}
           <section className="card overflow-hidden">
             <div className="h-[3px] w-full bg-accent" aria-hidden="true" />

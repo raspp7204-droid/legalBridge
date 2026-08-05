@@ -1,6 +1,12 @@
 import { SignUp } from "@clerk/nextjs";
 import { AuthShell, clerkAppearance } from "@/components/auth-shell";
-import { FOUNDING_MONTHS, PLATFORM_PERCENT } from "@/lib/offers";
+import { SubscriptionBanner } from "@/components/subscription-offer";
+import {
+  COMMISSION_PERCENT,
+  FREE_MONTHS,
+  SUBSCRIPTION_FEE,
+} from "@/lib/subscription";
+import { formatRupees } from "@/lib/money";
 
 export const metadata = { title: "Join as an advocate — LawNest" };
 
@@ -14,7 +20,8 @@ export default function LawyerSignUpPage() {
       /* Written from lib/offers.ts so the auth page can never contradict the
          recruitment band that sent the advocate here. */
       points={[
-        `Founding advocates keep 100% of every fee for ${FOUNDING_MONTHS} months — normally ${100 - PLATFORM_PERCENT}%.`,
+        `No subscription fee for your first ${FREE_MONTHS} months — ${formatRupees(SUBSCRIPTION_FEE)} a year after that.`,
+        `You keep ${100 - COMMISSION_PERCENT}% of every consultation fee, from the first one.`,
         "Your profile stays pending until our team verifies your enrolment number.",
         "Consultations, earnings and payouts all sit in one dashboard.",
       ]}
@@ -24,6 +31,7 @@ export default function LawyerSignUpPage() {
         cta: "Advocate sign-in",
       }}
       recoverTo="/lawyer/sign-up"
+      banner={<SubscriptionBanner />}
     >
       <SignUp
         appearance={clerkAppearance}

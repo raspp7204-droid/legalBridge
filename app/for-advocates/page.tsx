@@ -10,20 +10,22 @@ import {
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { Engraving } from "@/components/engraving";
+import { SubscriptionBand } from "@/components/subscription-offer";
 import { formatRupees, splitFee, TIER_FEE } from "@/lib/money";
 import {
-  commissionSaved,
-  FOUNDING_BASIS,
-  FOUNDING_MONTHS,
-  PLATFORM_PERCENT,
-} from "@/lib/offers";
+  COMMISSION_PERCENT,
+  FREE_MONTHS,
+  SUBSCRIPTION_FEE,
+  SUBSCRIPTION_MONTHLY,
+  consultsToCoverFee,
+} from "@/lib/subscription";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Join as an advocate — LawNest",
   description:
-    "Founding advocates keep 100% of every consultation fee for their first year on LawNest.",
+    "No subscription fee for your first year on LawNest — just 20% commission on consultations you take.",
 };
 
 /**
@@ -72,13 +74,17 @@ const WHAT_YOU_GET = [
 const STEPS = [
   ["01", "Create your account", "Email and a one-time code. No documents at this stage."],
   ["02", "We verify your enrolment", "Your Bar Council number is matched against the register — usually within 48 hours."],
-  ["03", "Your listing goes live", "You appear in search, clients book your slots, and your first year is commission-free."],
+  ["03", "Your listing goes live", "You appear in search, clients book your slots, and you pay no subscription fee for a year."],
 ];
 
 const FAQ = [
   [
+    "What exactly is free in the first year?",
+    `The subscription, and only the subscription. There is no fee to be listed for your first ${FREE_MONTHS} months. The ${COMMISSION_PERCENT}% commission applies from your very first consultation — it is not waived, and we would rather say so now than have you discover it on your first payout.`,
+  ],
+  [
     "What happens after the twelve months?",
-    `You move to the standard split — you keep ${100 - PLATFORM_PERCENT}% of every consultation and LawNest takes ${PLATFORM_PERCENT}%. There is no monthly fee before or after, and nothing to cancel.`,
+    `A ${formatRupees(SUBSCRIPTION_FEE)} subscription falls due once a year, alongside the same ${COMMISSION_PERCENT}% commission. That is about ${formatRupees(SUBSCRIPTION_MONTHLY)} a month, and ${consultsToCoverFee()} consultations cover it for the whole year. Stop renewing and your listing simply comes down — there is no notice period and nothing to claw back.`,
   ],
   [
     "Who decides my fee?",
@@ -115,38 +121,7 @@ export default async function ForAdvocatesPage() {
 
   return (
     <main>
-      {/* A plain hero, not an offer band. The page still has to introduce
-          itself now that the recruitment banner is gone. */}
-      <section className="container section">
-        <p className="mono-label text-muted">For advocates</p>
-        <h1 className="mt-5 max-w-[18ch] text-balance">
-          Consultations that are already{" "}
-          <span className="tone-accent">paid for</span>.
-        </h1>
-        <p className="mt-5 max-w-xl leading-relaxed text-slate">
-          A verified listing, clients who have already paid before they reach
-          your inbox, and one dashboard for the whole practice. Your Bar Council
-          enrolment is checked before you go live.
-        </p>
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Link
-            href="/lawyer/sign-up"
-            className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
-          >
-            Join as an advocate
-            <ArrowRight className="size-4" strokeWidth={2.5} />
-          </Link>
-          <Link
-            href="/lawyer/sign-in"
-            className="btn-secondary inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
-          >
-            Advocate sign-in
-          </Link>
-        </div>
-        <p className="mono-label mt-6 text-muted">
-          Free to join · no card · Bar Council enrolment verified in 48 hours
-        </p>
-      </section>
+      <SubscriptionBand variant="hero" />
 
       {/* The maths, in public — the client side gets a fee breakdown before
           booking, so the advocate side gets one before joining. */}
@@ -157,9 +132,10 @@ export default async function ForAdvocatesPage() {
           <span className="tone-accent">from you</span>
         </h2>
         <p className="mt-5 max-w-2xl leading-relaxed text-slate">
-          Nothing, for {FOUNDING_MONTHS} months. After that, the same{" "}
-          {PLATFORM_PERCENT}% every advocate pays — shown to the client before
-          they pay, so nobody negotiates in the dark.
+          Two things, and only two. {COMMISSION_PERCENT}% of each consultation,
+          from your first one — shown to the client before they pay, so nobody
+          negotiates in the dark. And a {formatRupees(SUBSCRIPTION_FEE)} yearly
+          subscription, which is waived for your entire first year.
         </p>
 
         <div className="mt-8 grid gap-3 sm:grid-cols-3">
@@ -176,22 +152,22 @@ export default async function ForAdvocatesPage() {
 
                   <dl className="mt-5 space-y-2.5 border-t border-rule pt-4">
                     <div className="flex items-baseline justify-between gap-3">
-                      <dt className="text-sm text-slate">Standard split</dt>
-                      <dd className="font-mono-num text-sm text-muted">
+                      <dt className="text-sm text-ink">You receive</dt>
+                      <dd className="font-mono-num text-sm text-accent">
                         {formatRupees(split.lawyerCut)}
                       </dd>
                     </div>
                     <div className="flex items-baseline justify-between gap-3">
-                      <dt className="text-sm text-ink">Founding year</dt>
-                      <dd className="font-mono-num text-sm text-accent">
-                        {formatRupees(fee)}
+                      <dt className="text-sm text-slate">
+                        LawNest commission
+                      </dt>
+                      <dd className="font-mono-num text-sm text-muted">
+                        {formatRupees(split.platformCut)}
                       </dd>
                     </div>
                     <div className="flex items-baseline justify-between gap-3">
-                      <dt className="mono-label text-muted">Commission waived</dt>
-                      <dd className="font-mono-num text-sm text-verified">
-                        {formatRupees(split.platformCut)}
-                      </dd>
+                      <dt className="mono-label text-muted">Year one and after</dt>
+                      <dd className="mono-label text-verified">Unchanged</dd>
                     </div>
                   </dl>
                 </div>
@@ -200,11 +176,32 @@ export default async function ForAdvocatesPage() {
           })}
         </div>
 
-        <p className="mono-label mt-5 text-muted">
-          At {FOUNDING_BASIS.consultsPerMonth} consultations a month on{" "}
-          {formatRupees(FOUNDING_BASIS.fee)} · {formatRupees(commissionSaved())}{" "}
-          waived across the year
-        </p>
+        {/* Year one against year two, side by side — the actual offer */}
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <div className="card p-5 sm:p-6">
+            <p className="mono-label text-accent">Year one</p>
+            <p className="font-mono-num mt-2 text-3xl text-accent">
+              {formatRupees(0)}
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-slate">
+              No subscription fee at all for {FREE_MONTHS} months. You pay only
+              the {COMMISSION_PERCENT}% on consultations you actually take — so
+              a month with no bookings costs you nothing.
+            </p>
+          </div>
+          <div className="card p-5 sm:p-6">
+            <p className="mono-label text-muted">Year two onwards</p>
+            <p className="font-mono-num mt-2 text-3xl">
+              {formatRupees(SUBSCRIPTION_FEE)}
+              <span className="mono-label text-muted"> / year</span>
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-slate">
+              About {formatRupees(SUBSCRIPTION_MONTHLY)} a month, on top of the
+              same {COMMISSION_PERCENT}%. {consultsToCoverFee()} consultations
+              cover it for the whole year.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* What you get */}
@@ -287,12 +284,12 @@ export default async function ForAdvocatesPage() {
           <div className="max-w-lg">
             <p className="mono-label text-muted">Ready when you are</p>
             <h2 className="mt-4 text-[1.75rem]">
-              Your first year costs you nothing
+              Your first year has no subscription fee
             </h2>
             <p className="mt-3 leading-relaxed text-slate">
-              Sign up in a minute, get verified in about two days, and keep every
-              rupee of every consultation until{" "}
-              {new Date().getFullYear() + 1}.
+              Sign up in a minute, get verified in about two days, and pay
+              nothing to be listed until {new Date().getFullYear() + 1}. After
+              that it is {formatRupees(SUBSCRIPTION_FEE)} a year.
             </p>
           </div>
           <Link

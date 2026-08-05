@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Fraunces, Inter } from "next/font/google";
 import { GeistMono } from "geist/font/mono";
@@ -6,7 +7,17 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { AssistantWidget } from "@/components/assistant-widget";
 import { FeedbackWidget } from "@/components/feedback-widget";
+import {
+  SubscriptionStrip,
+  SUBSCRIPTION_COOKIE,
+} from "@/components/subscription-strip";
 import { getDbUser } from "@/lib/auth";
+import {
+  daysLeftFree,
+  formatRenewal,
+  isFreeYear,
+  renewsOn,
+} from "@/lib/subscription";
 import "./globals.css";
 
 // Display face — opsz axis pinned to 72 in globals.css (PLAN.md §2)
@@ -38,6 +49,14 @@ export default async function RootLayout({
   const user = await getDbUser();
   const isLawyer = user?.role === "LAWYER";
 
+  /* The introductory offer, in the one strip slot above the header. Shown to
+     advocates only, and only while their free year is actually running — a bar
+     advertising an offer that lapsed months ago is worse than no bar. */
+  const jar = await cookies();
+  const stripDismissed = jar.get(SUBSCRIPTION_COOKIE)?.value === "1";
+  const showSubscriptionStrip =
+    !!user && isLawyer && !stripDismissed && isFreeYear(user.createdAt);
+
   return (
     // Clerk owns authentication for the whole app (LAUNCH.md Task 1).
     // Font vars live on <html> so :root can resolve them — --font-display in
@@ -53,7 +72,17 @@ export default async function RootLayout({
         lang="en"
         className={`${fraunces.variable} ${inter.variable} ${GeistMono.variable}`}
       >
-        <body className="flex min-h-screen flex-col antialiased">
+        <body
+          className={`flex min-h-screen flex-col antialiased ${
+            showSubscriptionStrip ? "has-strip" : ""
+          }`}
+        >
+          {showSubscriptionStrip && user && (
+            <SubscriptionStrip
+              daysLeft={daysLeftFree(user.createdAt)}
+              renewal={formatRenewal(renewsOn(user.createdAt))}
+            />
+          )}
           <SiteHeader />
           <div className="flex-1">{children}</div>
           <SiteFooter />
