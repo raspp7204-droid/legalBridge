@@ -1,8 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireLawyerProfile } from "@/lib/auth";
+import { withFlash } from "@/lib/flash";
 
 export async function saveProfile(formData: FormData) {
   const profile = await requireLawyerProfile();
@@ -48,4 +50,5 @@ export async function saveProfile(formData: FormData) {
   revalidatePath("/lawyer/profile");
   revalidatePath("/lawyer");
   revalidatePath("/lawyers");
+  redirect(withFlash("/lawyer/profile", "profile-saved"));
 }

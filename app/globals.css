@@ -353,3 +353,35 @@ body.has-strip { --strip-h: 40px; }
   /* Anything explicitly set wider than the viewport scrolls in its own box. */
   table { font-size: 0.875rem; }
 }
+
+/* ---- Confirmation dialogs ----
+   <dialog> gives focus trapping, Escape-to-close and page inertness for free;
+   this is only the entrance, so a destructive prompt does not appear as an
+   instant hard cut. prefers-reduced-motion is respected below. */
+.lb-dialog {
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
+  transition: opacity 140ms ease-out, transform 140ms ease-out, overlay 140ms allow-discrete, display 140ms allow-discrete;
+}
+.lb-dialog[open] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+@starting-style {
+  .lb-dialog[open] {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+.lb-dialog::backdrop {
+  background: rgb(23 35 58 / 0.4);
+  backdrop-filter: blur(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lb-dialog,
+  .lb-dialog[open] {
+    transition: none;
+    transform: none;
+  }
+}

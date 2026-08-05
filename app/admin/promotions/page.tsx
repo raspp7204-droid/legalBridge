@@ -11,6 +11,7 @@ import {
   isActivePromo,
   monthlyRevenue,
 } from "@/lib/promotions";
+import { ActionButton } from "@/components/action-button";
 import { savePromotion, togglePromotion } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -228,25 +229,21 @@ export default async function AdminPromotions() {
                     <div className="flex items-center justify-end gap-2">
                       <form action={savePromotion} id={`promo-${a.id}`}>
                         <input type="hidden" name="id" value={a.id} />
-                        <button
-                          type="submit"
-                          className="mono-label rounded-full border border-rule px-3 py-1.5 transition-colors hover:border-accent/40 hover:text-accent"
-                        >
-                          Save
-                        </button>
+                        <ActionButton
+                          label="Save"
+                          pendingLabel="Saving…"
+                          variant="quiet"
+                          size="sm"
+                        />
                       </form>
                       <form action={togglePromotion}>
                         <input type="hidden" name="id" value={a.id} />
-                        <button
-                          type="submit"
-                          className={`mono-label rounded-full px-3 py-1.5 transition-colors ${
-                            a.promoted
-                              ? "border border-rule text-muted hover:text-ink"
-                              : "btn-primary"
-                          }`}
-                        >
-                          {a.promoted ? "Turn off" : "Promote"}
-                        </button>
+                        <ActionButton
+                          label={a.promoted ? "Turn off" : "Promote"}
+                          pendingLabel={a.promoted ? "Stopping…" : "Promoting…"}
+                          variant={a.promoted ? "quiet" : "primary"}
+                          size="sm"
+                        />
                       </form>
                     </div>
                   </td>

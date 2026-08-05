@@ -8,6 +8,7 @@ import { requireAdmin } from "@/lib/auth";
 import { TIER_FEE } from "@/lib/money";
 import { ensureUpcomingSlots } from "@/lib/slots";
 import { isAllowedAvatar } from "@/lib/avatars";
+import { withFlash } from "@/lib/flash";
 
 /** Every surface an advocate's details appear on. */
 function revalidateAdvocate(id: string) {
@@ -29,7 +30,7 @@ export async function updateAvatar(formData: FormData) {
   if (!id || !avatar) return;
 
   if (!isAllowedAvatar(avatar)) {
-    redirect(`/admin/lawyers/${id}?photo=rejected`);
+    redirect(withFlash(`/admin/lawyers/${id}`, "photo-rejected"));
   }
 
   const profile = await db.lawyerProfile.findUnique({
@@ -44,7 +45,7 @@ export async function updateAvatar(formData: FormData) {
   });
 
   revalidateAdvocate(id);
-  redirect(`/admin/lawyers/${id}?photo=saved`);
+  redirect(withFlash(`/admin/lawyers/${id}`, "photo-saved"));
 }
 
 /**
@@ -98,7 +99,7 @@ export async function updateLawyer(formData: FormData) {
   }
 
   revalidateAdvocate(id);
-  redirect(`/admin/lawyers/${id}?saved=1`);
+  redirect(withFlash(`/admin/lawyers/${id}`, "advocate-saved"));
 }
 
 /**
@@ -147,5 +148,5 @@ export async function deleteLawyer(formData: FormData) {
 
   revalidateAdvocate(id);
   revalidatePath("/admin/bookings");
-  redirect("/admin/lawyers?deleted=1");
+  redirect(withFlash("/admin/lawyers", "advocate-deleted"));
 }

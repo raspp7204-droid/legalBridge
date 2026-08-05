@@ -3,6 +3,8 @@ import { FileText, Check, X } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { EmptyState } from "@/components/empty-state";
+import { ActionButton } from "@/components/action-button";
+import { ConfirmSubmit } from "@/components/confirm-submit";
 import { approveLawyer, rejectLawyer } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -114,24 +116,32 @@ export default async function VerificationQueue() {
                       <option value="HIGH">HIGH · ₹799</option>
                     </select>
                   </div>
-                  <button
-                    type="submit"
-                    className="btn-primary mono-label flex h-[42px] shrink-0 items-center gap-1.5 self-end rounded-full px-5"
-                  >
-                    <Check className="size-4" strokeWidth={2.5} />
-                    Approve
-                  </button>
+                  <div className="shrink-0 self-end">
+                    <ActionButton
+                      label="Approve"
+                      pendingLabel="Approving…"
+                      icon={<Check className="size-3.5" strokeWidth={2.5} />}
+                      className="h-[42px] px-5"
+                    />
+                  </div>
                 </form>
 
                 <form action={rejectLawyer}>
                   <input type="hidden" name="id" value={l.id} />
-                  <button
-                    type="submit"
-                    className="mono-label flex h-[42px] items-center gap-1.5 rounded-full border border-danger/40 px-5 text-danger transition-colors hover:bg-danger/10"
-                  >
-                    <X className="size-4" strokeWidth={2.5} />
-                    Reject
-                  </button>
+                  <ConfirmSubmit
+                    trigger="Reject"
+                    icon={<X className="size-3.5" strokeWidth={2.5} />}
+                    title={`Reject ${l.user.name}?`}
+                    body={
+                      <>
+                        They will not appear to clients. Their profile stays,
+                        so they can correct their enrolment details and be
+                        reviewed again — nothing is deleted.
+                      </>
+                    }
+                    confirmLabel="Reject advocate"
+                    pendingLabel="Rejecting…"
+                  />
                 </form>
               </div>
             </article>

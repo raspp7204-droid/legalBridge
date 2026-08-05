@@ -1,13 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Check, TriangleAlert, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash2, TriangleAlert } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { SaveButton } from "@/components/save-button";
 import { formatRupees, TIER_FEE } from "@/lib/money";
 import { AVATAR_PRESETS, ALLOWED_AVATAR_HOSTS } from "@/lib/avatars";
-import { AvatarUpload } from "@/components/avatar-upload";
+import { AvatarUpload, PresetPhotoButton } from "@/components/avatar-upload";
+import { ActionButton } from "@/components/action-button";
+import { ConfirmSubmit } from "@/components/confirm-submit";
 import { updateAvatar, updateLawyer, deleteLawyer } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -22,14 +24,11 @@ const field =
 
 export default async function AdminEditLawyer({
   params,
-  searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ saved?: string; photo?: string }>;
 }) {
   await requireAdmin();
   const { id } = await params;
-  const sp = await searchParams;
 
   const lawyer = await db.lawyerProfile.findUnique({
     where: { id },
@@ -63,30 +62,6 @@ export default async function AdminEditLawyer({
         {lawyer.user.email ?? "no account email"} · {lawyer._count.bookings}{" "}
         bookings · {lawyer._count.slots} slots
       </p>
-
-      {sp.saved && (
-        <p className="mono-label mt-6 flex items-center gap-2 rounded-lg border border-verified/40 bg-surface px-4 py-3 text-verified">
-          <Check className="size-3.5" strokeWidth={3} />
-          Changes saved and live on the listing
-        </p>
-      )}
-      {sp.photo === "saved" && (
-        <p className="mono-label mt-6 flex items-center gap-2 rounded-lg border border-verified/40 bg-surface px-4 py-3 text-verified">
-          <Check className="size-3.5" strokeWidth={3} />
-          Photo updated
-        </p>
-      )}
-      {sp.photo === "rejected" && (
-        <p className="mono-label mt-6 flex items-start gap-2 rounded-lg border border-danger/40 bg-surface px-4 py-3 text-danger">
-          <TriangleAlert className="mt-0.5 size-3.5 shrink-0" strokeWidth={2.5} />
-          <span>
-            That photo was not saved. Uploads must be a JPEG, PNG or WebP, and
-            a pasted URL has to come from {ALLOWED_AVATAR_HOSTS.join(", ")} —
-            any other host is refused by the image optimiser and would break
-            the advocate&apos;s page.
-          </span>
-        </p>
-      )}
 
       {/* ---- Photo ---- */}
       <section className="card mt-8 p-5 sm:p-6">
@@ -132,26 +107,11 @@ export default async function AdminEditLawyer({
           <p className="mono-label text-muted">Choose a photo</p>
           <div className="mt-3 flex flex-wrap gap-2.5">
             {AVATAR_PRESETS.map((url) => (
-              <button
+              <PresetPhotoButton
                 key={url}
-                type="submit"
-                name="avatar"
-                value={url}
-                title="Use this photo"
-                className={`rounded-full p-[3px] transition-colors ${
-                  url === lawyer.user.avatar
-                    ? "bg-accent"
-                    : "bg-rule hover:bg-accent/50"
-                }`}
-              >
-                <Image
-                  src={url}
-                  alt=""
-                  width={48}
-                  height={48}
-                  className="size-12 rounded-full object-cover"
-                />
-              </button>
+                url={url}
+                current={url === lawyer.user.avatar}
+              />
             ))}
           </div>
         </form>
@@ -173,12 +133,13 @@ export default async function AdminEditLawyer({
               className={field}
             />
           </label>
-          <button
-            type="submit"
-            className="btn-secondary mono-label mt-3 rounded-full px-4 py-2.5"
-          >
-            Update photo
-          </button>
+          <div className="mt-3">
+            <ActionButton
+              label="Update photo"
+              pendingLabel="Updating…"
+              variant="secondary"
+            />
+          </div>
         </form>
       </section>
 
@@ -341,28 +302,32 @@ export default async function AdminEditLawyer({
           </p>
         )}
 
-        {/* `required` on the checkbox does the confirming — the browser will
-            not submit until it is ticked, and no JS is involved. */}
         <form action={deleteLawyer} className="mt-5">
           <input type="hidden" name="id" value={lawyer.id} />
-          <label className="flex cursor-pointer items-start gap-2.5 text-sm text-slate">
-            <input
-              type="checkbox"
-              required
-              className="mt-1 accent-[var(--danger)]"
-            />
-            <span>
-              I understand this permanently deletes {lawyer.user.name} and all
-              their bookings.
-            </span>
-          </label>
-          <button
-            type="submit"
-            className="mono-label mt-4 inline-flex items-center gap-2 rounded-full border border-danger px-4 py-2.5 text-danger transition-colors hover:bg-danger hover:text-white"
-          >
-            <Trash2 className="size-3.5" strokeWidth={2.5} />
-            Delete permanently
-          </button>
+          <ConfirmSubmit
+            trigger="Delete permanently"
+            icon={<Trash2 className="size-3.5" strokeWidth={2.5} />}
+            title={`Delete ${lawyer.user.name}?`}
+            body={
+              <>
+                <p>
+                  This removes their account and everything attached to it:{" "}
+                  {lawyer._count.bookings} bookings and every message in them,{" "}
+                  {lawyer._count.slots} slots, and their reward history.
+                </p>
+                {paidBookings > 0 && (
+                  <p className="mt-3 text-danger">
+                    {paidBookings} paid{" "}
+                    {paidBookings === 1 ? "consultation" : "consultations"} will
+                    be destroyed and clients will lose those threads.
+                  </p>
+                )}
+                <p className="mt-3">This cannot be undone.</p>
+              </>
+            }
+            confirmLabel="Delete permanently"
+            pendingLabel="Deleting…"
+          />
         </form>
       </section>
     </main>

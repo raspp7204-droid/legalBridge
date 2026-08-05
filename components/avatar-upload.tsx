@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { Upload, Loader2, X } from "lucide-react";
+import { Upload, Loader2, X, Check } from "lucide-react";
 import { AVATAR_PX, AVATAR_MAX_CHARS } from "@/lib/avatars";
 
 /**
@@ -43,6 +43,50 @@ function SubmitButton({ ready }: { ready: boolean }) {
           <Upload className="size-3.5" strokeWidth={2.5} />
           Save this photo
         </>
+      )}
+    </button>
+  );
+}
+
+/**
+ * One of the stock portraits, as its own submit button.
+ *
+ * A client component only so it can dim and spin while its form is in flight —
+ * clicking a face and having nothing happen for a second is exactly the silent
+ * action this pass exists to remove.
+ */
+export function PresetPhotoButton({
+  url,
+  current,
+}: {
+  url: string;
+  current: boolean;
+}) {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      name="avatar"
+      value={url}
+      disabled={pending}
+      title={current ? "Current photo" : "Use this photo"}
+      className={`relative rounded-full p-[3px] transition-all disabled:cursor-not-allowed ${
+        current ? "bg-accent" : "bg-rule hover:bg-accent/50"
+      } ${pending ? "opacity-50" : "hover:-translate-y-0.5"}`}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={url}
+        alt=""
+        width={48}
+        height={48}
+        className="size-12 rounded-full object-cover"
+      />
+      {current && (
+        <span className="absolute -right-0.5 -bottom-0.5 flex size-4 items-center justify-center rounded-full bg-accent text-white">
+          <Check className="size-2.5" strokeWidth={4} />
+        </span>
       )}
     </button>
   );

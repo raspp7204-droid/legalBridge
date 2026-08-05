@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Fraunces, Inter } from "next/font/google";
@@ -8,6 +9,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { AssistantWidget } from "@/components/assistant-widget";
 import { FeedbackWidget } from "@/components/feedback-widget";
 import { OfferStrip } from "@/components/offer-strip";
+import { Toast } from "@/components/toast";
 import {
   SubscriptionStrip,
   SUBSCRIPTION_COOKIE,
@@ -108,6 +110,10 @@ export default async function RootLayout({
               renewal={formatRenewal(renewsOn(user.createdAt))}
             />
           )}
+          {/* One mount for every action's confirmation — see lib/flash.ts */}
+          <Suspense fallback={null}>
+            <Toast />
+          </Suspense>
           <SiteHeader />
           <div className="flex-1">{children}</div>
           <SiteFooter />
