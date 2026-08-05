@@ -7,11 +7,15 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { AssistantWidget } from "@/components/assistant-widget";
 import { FeedbackWidget } from "@/components/feedback-widget";
+import { OfferStrip } from "@/components/offer-strip";
 import {
   SubscriptionStrip,
   SUBSCRIPTION_COOKIE,
 } from "@/components/subscription-strip";
 import { getDbUser } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { isFirstConsultation, PROMO_COOKIE } from "@/lib/offers";
+import { pointsToRupees } from "@/lib/rewards";
 import {
   daysLeftFree,
   formatRenewal,
@@ -57,6 +61,21 @@ export default async function RootLayout({
   const showSubscriptionStrip =
     !!user && isLawyer && !stripDismissed && isFreeYear(user.createdAt);
 
+  /* The client's half of the same slot. Role-gated rather than path-gated: an
+     advocate or admin never sees a client offer, and the two strips can never
+     collide because each is gated to the audience it is for. The booking count
+     only runs for clients — unguarded it would hit Neon on every page. */
+  const offerDismissed = jar.get(PROMO_COOKIE)?.value === "1";
+  const showOfferStrip = !offerDismissed && !isLawyer && user?.role !== "ADMIN";
+
+  // A strip promising a first-consultation discount to someone who has already
+  // used it would be a lie, so it switches to their points instead.
+  const paidBookings =
+    showOfferStrip && user?.role === "CLIENT"
+      ? await db.booking.count({ where: { clientId: user.id, paid: true } })
+      : 0;
+  const stripVariant = isFirstConsultation(paidBookings) ? "first" : "return";
+
   return (
     // Clerk owns authentication for the whole app (LAUNCH.md Task 1).
     // Font vars live on <html> so :root can resolve them — --font-display in
@@ -74,9 +93,15 @@ export default async function RootLayout({
       >
         <body
           className={`flex min-h-screen flex-col antialiased ${
-            showSubscriptionStrip ? "has-strip" : ""
+            showSubscriptionStrip || showOfferStrip ? "has-strip" : ""
           }`}
         >
+          {showOfferStrip && (
+            <OfferStrip
+              variant={stripVariant}
+              pointsWorth={pointsToRupees(user?.points ?? 0)}
+            />
+          )}
           {showSubscriptionStrip && user && (
             <SubscriptionStrip
               daysLeft={daysLeftFree(user.createdAt)}

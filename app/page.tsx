@@ -13,6 +13,8 @@ import { blockLawyers } from "@/lib/auth";
 import { Starfield } from "@/components/starfield";
 import { Engraving } from "@/components/engraving";
 import { SubscriptionBand } from "@/components/subscription-offer";
+import { WelcomeOfferBand } from "@/components/welcome-offer-card";
+import { welcomeEligible } from "@/lib/offer-state";
 import { HeroBackdrop } from "@/components/hero-backdrop";
 import { AskAiButton } from "@/components/ask-ai-button";
 import { CategoryTile } from "@/components/category-tile";
@@ -103,6 +105,8 @@ export default async function Home() {
     }),
     db.lawyerProfile.count({ where: { status: "VERIFIED", online: true } }),
   ]);
+
+  const offerEligible = await welcomeEligible();
 
   // Marketplace numbers — advocate, court and city counts are all live.
   const [verifiedCount, courts, cities] = await Promise.all([
@@ -374,6 +378,9 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {/* The launch offer. Hidden once it has been used. */}
+      {offerEligible && <WelcomeOfferBand />}
 
       {/* Online now — ranked on rating and availability, never on payment */}
       <section className="container section">
