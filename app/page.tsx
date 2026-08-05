@@ -16,11 +16,6 @@ import { HeroBackdrop } from "@/components/hero-backdrop";
 import { AskAiButton } from "@/components/ask-ai-button";
 import { CategoryTile } from "@/components/category-tile";
 import { LawyerCard, LawyerCardCompact } from "@/components/lawyer-card";
-import { RewardsBand } from "@/components/rewards-band";
-import { WelcomeOfferBand } from "@/components/welcome-offer-card";
-import { AdvocateOfferBand } from "@/components/advocate-offer-band";
-import { welcomeEligible } from "@/lib/offer-state";
-import { seatsLeft } from "@/lib/offers";
 import { lawyerCardSelect } from "@/lib/lawyers";
 import { formatRupees, TIER_FEE } from "@/lib/money";
 
@@ -107,8 +102,6 @@ export default async function Home() {
     }),
     db.lawyerProfile.count({ where: { status: "VERIFIED", online: true } }),
   ]);
-
-  const offerEligible = await welcomeEligible();
 
   // Marketplace numbers — advocate, court and city counts are all live.
   const [verifiedCount, courts, cities] = await Promise.all([
@@ -381,11 +374,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* The launch offer, then the loyalty loop it feeds: half off to get
-          you here, points to bring you back. Hidden once it has been used. */}
-      {offerEligible && <WelcomeOfferBand />}
-      <RewardsBand />
-
       {/* Online now — ranked on rating and availability, never on payment */}
       <section className="container section">
         <div className="flex flex-wrap items-end justify-between gap-4">
@@ -448,11 +436,6 @@ export default async function Home() {
           ))}
         </div>
       </section>
-
-      {/* Recruitment. After the client social proof, where it cannot compete
-          with the booking funnel above it, and where it gives the page a hard
-          stop before the press logos. */}
-      <AdvocateOfferBand seats={seatsLeft(verifiedCount)} />
 
       {/* Press row */}
       <section className="relative overflow-hidden pb-8">

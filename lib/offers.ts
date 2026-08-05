@@ -16,12 +16,19 @@ import { PLATFORM_RATE, TIER_FEE } from "@/lib/money";
 
 /* ---- Client: first consultation ---- */
 
-export const WELCOME_RATE = 0.4;
+export const WELCOME_RATE = 0.1;
 export const WELCOME_CAP = 250;
 /** Shown on the banners so the offer feels claimable. Nothing has to be typed. */
-export const WELCOME_CODE = "FIRST40";
+export const WELCOME_CODE = "FIRST10";
 
-/** Rupees off a first consultation — 40%, never more than ₹250. */
+/**
+ * Rupees off a first consultation — 10%, never more than the cap.
+ *
+ * The cap sits far above anything the rate can now produce (10% of the ₹799
+ * top fee is ₹80), so it no longer binds. It stays because the rate is the
+ * thing that gets tuned, and a rate without a ceiling is how a discount
+ * escapes.
+ */
 export function welcomeDiscount(amount: number) {
   return Math.min(Math.round(amount * WELCOME_RATE), WELCOME_CAP);
 }
@@ -38,10 +45,6 @@ export function welcomePayable(amount: number) {
 
 /* ---- Advocate: founding year ---- */
 
-/** Comfortably above the current roster — seats left is FOUNDING_SEATS minus
-    the advocates already verified, so a cohort smaller than the roster would
-    read as "1 seat left" forever. */
-export const FOUNDING_SEATS = 50;
 export const FOUNDING_MONTHS = 12;
 /** The volume the "worth ₹X" headline is quoted against. */
 export const FOUNDING_BASIS = { consultsPerMonth: 20, fee: TIER_FEE.HIGH };
@@ -59,69 +62,3 @@ export function commissionSaved(
 
 /** Percent of every fee LawNest normally takes — for the "20% → 0%" line. */
 export const PLATFORM_PERCENT = Math.round(PLATFORM_RATE * 100);
-
-/* ---- Announcement strip ---- */
-
-export const PROMO_COOKIE = "lb_offer";
-export const PROMO_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
-
-/* ---- Campaign clock ---- */
-
-/**
- * A fixed instant, not now + N days. A computed deadline mismatches between
- * server render and client hydration, and it would reset on every refresh
- * during the pitch.
- *
- * Kept about a week out so the countdown reads as urgent rather than as a
- * date in the middle distance — bump it the morning of the pitch. Nothing
- * breaks if it lapses: eligibility never consults the clock, and the
- * countdown clamps to "Final hours" instead of going negative.
- */
-export const CAMPAIGN_ENDS = "2026-08-10T18:29:59.999Z";
-
-/** "30 September" — the deadline as static text, identical on both sides of
-    hydration. What a countdown renders before it has mounted. */
-export const CAMPAIGN_END_LABEL = new Intl.DateTimeFormat("en-IN", {
-  day: "numeric",
-  month: "long",
-  timeZone: "Asia/Kolkata",
-}).format(new Date(CAMPAIGN_ENDS));
-
-/**
- * Seats left in the founding cohort. Counted off the live advocate roster, so
- * scarcity is a real number that moves when someone joins — never a random
- * one that changes on every render.
- */
-export function seatsLeft(claimed: number) {
-  return Math.max(1, FOUNDING_SEATS - claimed);
-}
-
-export type TimeLeft = {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  over: boolean;
-};
-
-export function timeLeft(now: number, endsAt = CAMPAIGN_ENDS): TimeLeft {
-  const ms = new Date(endsAt).getTime() - now;
-  if (ms <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, over: true };
-  const s = Math.floor(ms / 1000);
-  return {
-    days: Math.floor(s / 86400),
-    hours: Math.floor((s % 86400) / 3600),
-    minutes: Math.floor((s % 3600) / 60),
-    seconds: s % 60,
-    over: false,
-  };
-}
-
-/** "3d 04h 12m" — the countdown as one compact mono string. */
-export function formatTimeLeft(t: TimeLeft) {
-  if (t.over) return "ended";
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return t.days > 0
-    ? `${t.days}d ${pad(t.hours)}h ${pad(t.minutes)}m`
-    : `${pad(t.hours)}h ${pad(t.minutes)}m ${pad(t.seconds)}s`;
-}

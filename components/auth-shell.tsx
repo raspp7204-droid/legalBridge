@@ -35,7 +35,6 @@ export function AuthShell({
   blurb,
   points,
   footer,
-  banner,
   recoverTo = "/sign-in",
   children,
 }: {
@@ -45,8 +44,6 @@ export function AuthShell({
   blurb: string;
   points: string[];
   footer: { label: string; href: string; cta: string };
-  /** Optional offer banner above the fold — the advocate pages carry one. */
-  banner?: React.ReactNode;
   /** Where a session reset should return to — this page, not the client one. */
   recoverTo?: string;
   children: React.ReactNode;
@@ -55,7 +52,6 @@ export function AuthShell({
     <main className="relative overflow-hidden">
       <Engraving side="left" />
       <div className="container section-tight relative">
-        {banner}
         {/* Below 900px this is one column, so source order decides what a
             phone sees first — and the pitch used to push the actual sign-in
             box off the bottom of the screen. `contents` dissolves the left

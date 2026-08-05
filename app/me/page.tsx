@@ -4,7 +4,6 @@ import { MessageSquare, Gift, Lock } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireClient } from "@/lib/auth";
 import { EmptyState } from "@/components/empty-state";
-import { WelcomeOfferStrip } from "@/components/welcome-offer-card";
 import { formatRupees } from "@/lib/money";
 import { formatPoints, REWARDS_TAGLINE } from "@/lib/rewards";
 import { formatSlotFull } from "@/lib/lawyers";
@@ -114,7 +113,6 @@ export default async function MePage() {
         <div className="document mt-10">
           {/* No paid bookings is exactly the eligibility test, already in
               hand — no extra query to decide whether to offer this. */}
-          <WelcomeOfferStrip className="mb-4" />
           <EmptyState
             title="No consultations yet"
             body="Once you book an advocate, your consultations and their chat threads live here."

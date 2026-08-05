@@ -107,7 +107,7 @@ An advocate pays us, and their name goes to the **top of their own practice area
 
 Meaning: if an advocate practises property law, and a client filters the list to "Property & land," that advocate is the first one they read. Their card carries a small grey label that says **PROMOTED**.
 
-That's the product. It is live in the code right now — an advocate can buy it on `/lawyer/placement`, and their position on the public listing changes immediately.
+That's the product. It is live in the code right now — a placement is switched on from the admin console, and the advocate's position on the public listing changes immediately.
 
 ### 4.3 The three rules that stop this being a scam
 
@@ -128,71 +128,44 @@ Say all three out loud in the pitch. Most people expect a marketplace to dodge t
 
 ### 4.4 The rate card
 
-Two ways to buy placement.
+Three packages, billed monthly. Higher package, higher position.
 
-**The normal price — pay every month:**
+| Package | Price per month | What it buys |
+|---|---|---|
+| Basic | ₹999 | Top of your practice area |
+| Featured | ₹2,499 | Above Basic |
+| Spotlight | ₹4,999 | First, above everyone |
 
-| Package | Price per month |
-|---|---|
-| Basic | ₹999 |
-| Featured | ₹2,499 |
-| Spotlight | ₹4,999 |
+There are only **12 slots**. That is deliberate, and it is the most important sentence in this section — see 4.6.
 
-**The launch offer — pay once, covered for three years:**
+### 4.5 The maths, step by step
 
-```
-FOUNDING PLACEMENT              ₹2,999
-──────────────────────────────────────
-Term                     3 years
-Works out to             ₹83 / month
-Monthly card would be    ₹35,964
-You save                 ₹32,965
-──────────────────────────────────────
-First 3 months free · paid once · nothing to renew
-```
-
-### 4.5 The founding-placement math, step by step
-
-Here's how ₹2,999 becomes ₹83 a month:
+Take the Basic package at ₹999 a month, and ask what it is worth to an advocate.
 
 ```
-Step 1 — How many months is 3 years?
-         3 × 12 = 36 months
+Step 1 — What does one consultation earn the advocate?
+         A senior advocate charges ₹799, and keeps 80%
+         799 × 0.80 = ₹640
 
-Step 2 — Split the price across those months
-         2,999 ÷ 36 = 83.3
-         So: about ₹83 per month
+Step 2 — How many extra clients pay for one month of Basic?
+         999 ÷ 640 = 1.56
+         So: about 2 extra clients a month covers it
 
-Step 3 — What would 36 months cost at the normal Basic price?
-         999 × 36 = ₹35,964
-
-Step 4 — How much does the advocate save?
-         35,964 − 2,999 = ₹32,965
-
-Step 5 — What discount is that?
-         2,999 ÷ 35,964 = 0.083, which is 8.3%
-         So they pay 8.3% of the normal price
-         100 − 8.3 = about 92% off
+Step 3 — And across a whole year?
+         999 × 12 = ₹11,988 a year
+         11,988 ÷ 640 = 18.7
+         So: about 19 extra clients a year
 ```
 
-**₹83 a month.** For an advocate charging ₹799 a consultation, that is one-tenth of a single booking. If placement brings them **one extra client a year**, they've made their money back several times over.
+**Two extra clients a month.** That is the entire question an advocate has to answer. If being first in their practice area brings them two more consultations a month, Basic has paid for itself. Anything above that is profit for them.
 
-### 4.6 "Isn't ₹2,999 far too cheap?"
+### 4.6 Why only 12 slots?
 
-An investor will ask this, and they should. The honest answer:
+Because scarcity is what makes an advertising slot worth anything.
 
-**Yes — and that is the point.** It is a deliberate launch price, not the real price.
+If every advocate could be "first," nobody would be. The moment you sell 200 promoted positions, position 200 is worthless and nobody pays for it again. Capping the inventory keeps each slot valuable — and it means that as more advocates join, **demand for the same 12 slots rises, and the price can rise with it.**
 
-An advertising slot is worth nothing until people are actually looking at it. A billboard on an empty road cannot be sold. Right now LawNest is early, so our shelf has fewer shoppers walking past — and we should price it like that instead of pretending otherwise.
-
-What ₹2,999 actually buys *us* is more valuable than the money:
-
-1. **It gets advocates used to paying us.** The hardest sale in any marketplace is the first one. Once an advocate has paid for placement once, the second sale is far easier.
-2. **It locks in the supply side.** An advocate with three years of placement on LawNest has a reason to send their clients here rather than to a competitor.
-3. **It proves the model works.** "Advocates will pay for placement" is a claim. A list of advocates who *did* pay is evidence. We are buying evidence.
-4. **It creates the price we grow into.** The monthly card sits right beside it at ₹999–₹4,999. Every founding advocate sees what the real price is. When their term ends, that's the price they renew at.
-
-There is exactly one honest risk here, and we say it plainly: **if the term is three years, we don't get to raise that advocate's price for three years.** We have accepted that, on purpose, for the first small group of advocates only — the placement inventory is capped at **12 slots**. It is not an open offer, it's a founding cohort.
+That is the quiet power of this model. Commission per booking is fixed at 20%. But the price of a scarce advertising slot is set by how many people want it. **We are not stuck at ₹999.** Google's ad prices are not set by Google — they are set by how many advertisers want the same word.
 
 ### 4.7 Why promotion beats commission (the real argument)
 
@@ -321,24 +294,24 @@ Their options for getting clients:
 |---|---|---|
 | Wait for referrals | Free | Slow, unpredictable, years |
 | Google/Facebook ads | ₹15,000+/month, needs skill | Some leads, mostly time-wasters |
-| **LawNest placement** | **₹83/month at founding price** | Clients who have already paid |
+| **LawNest placement** | **₹999/month** | Clients who have already paid |
 
 That last row is the entire sales pitch to an advocate. And there's a detail that matters more than the price:
 
 **Every person who reaches an advocate on LawNest has already paid.** They are not browsing. They are not "just asking." They booked a slot and their money is through. An advocate's inbox on LawNest contains zero time-wasters — and any advocate will tell you that time-wasters are the single most exhausting part of their week.
 
-**Their return on ₹2,999:**
+**Their return on ₹999 a month:**
 
 ```
-One extra client from placement, at ₹799            =  ₹640 earned
-                                                       (they keep 80%)
-Placement cost for the whole 3 years                =  ₹2,999
-Extra clients needed to break even  =  2,999 ÷ 640  =  4.7
+One extra client from placement, at ₹799          =  ₹640 earned
+                                                     (they keep 80%)
+Placement cost for one month                      =  ₹999
+Extra clients needed to break even  =  999 ÷ 640  =  1.56
 
-So: about 5 extra clients across THREE YEARS pays for it.
+So: about 2 extra clients a month pays for it.
 ```
 
-Five clients in three years. That's less than two a year. **An advocate who thinks they'll get fewer than two extra clients a year from being first in their field doesn't believe in the platform at all** — and that's a fair thing for them to conclude, but almost nobody does.
+Two clients a month. **An advocate who thinks being first in their practice area won't bring them two extra consultations a month doesn't believe in the platform at all** — and that's a fair thing for them to conclude, but almost nobody does.
 
 ---
 
@@ -366,8 +339,8 @@ Every pitch has holes. Naming them yourself turns a weakness into a display of j
 **1. Paid ads to find clients don't pay for themselves.**
 We earn about ₹109 per consultation. Getting a client through Instagram or Google ads costs ₹80–₹250. At the top of that range we'd lose money on every booking. So growth cannot come from buying ads. It has to come from search, content, word of mouth, and advocates bringing their own clients onto the platform. We know this. It shapes the whole growth plan.
 
-**2. Three years is a long time to fix a price.**
-The founding placement locks an advocate's price for three years. That's a real cost to us. It's capped at 12 slots for exactly that reason.
+**2. Twelve slots is a small business until we are big.**
+Even if all 12 slots sold at the top price, that is under ₹60,000 a month. The advertising line only becomes large when there is enough traffic to justify raising the price, or enough cities to justify more inventory. Today it is a proof, not a profit centre.
 
 **3. Promotion revenue needs traffic first.**
 Nobody pays for a good spot in an empty shop. The advertising business only becomes big *after* the client side is busy. Commission comes first in time; promotion comes first in profit.
@@ -412,7 +385,7 @@ This is what separates us from a team with slides. **The product exists and work
 5. **Open the chat** — a real conversation, already running.
 6. **Join the video room** — your face appears.
 7. **Switch to Admin → verification queue → approve an advocate** → they appear in the public listing instantly.
-8. **The money moment.** Open the advocate's placement page. *"Here's how we make money beyond commission. ₹2,999, once, and this advocate is first in their practice area for three years — ₹83 a month. Watch."* Buy it, go back to the listing, **their name has moved to the top with a PROMOTED label.** Then open the admin promotions page and show the revenue counting up.
+8. **The money moment.** Open `/admin/promotions`. *"Here's how we make money beyond commission. This advocate pays ₹999 a month to be first in their practice area. Watch."* Switch the campaign on, go to the listing filtered to that practice area, **their name has moved to the top with a PROMOTED label.** Then go back to the admin page and show the promotion MRR counting up.
 9. **The AI assistant** — ask it in Hindi: *"मेरे पड़ोसी ने मेरी ज़मीन पर कब्ज़ा कर लिया है, क्या करूं?"* It answers in Hindi, refuses to give legal advice, and recommends the property category.
 
 Step 8 is the one that wins. Everyone demos a booking. **Almost nobody demos their own revenue model working live.**
@@ -443,12 +416,9 @@ If you remember nothing else, remember these. You will be asked.
 | **80 / 20** | Advocate keeps 80%, LawNest keeps 20% |
 | **₹79 / ₹109 / ₹159** | What we earn per consultation at each tier |
 | **₹999 / ₹2,499 / ₹4,999** | Monthly placement rate card |
-| **₹2,999** | Founding placement — paid once, covers 3 years |
-| **₹83** | What that works out to per month |
-| **₹35,964** | What 3 years costs at the normal monthly price |
-| **92%** | The founding discount |
-| **12** | Placement slots available — the offer is capped |
-| **5** | Extra clients an advocate needs over 3 years to break even on placement |
+| **12** | Placement slots in total — scarcity is what makes them worth buying |
+| **2** | Extra clients a month an advocate needs to break even on Basic |
+| **10%** | Discount on a client's first consultation |
 | **~0** | What it costs us to deliver a placement — the reason this model works |
 
 ---
@@ -464,7 +434,7 @@ Terms you'll hear, in plain words.
 - **Recurring revenue** — money that arrives every month without a new sale. Predictable. Investors value it highly.
 - **Margin** — how much of the money you keep after the cost of delivering it. Placement has a very high margin.
 - **Unit economics** — the profit on one single sale. If one sale loses money, a million sales lose a million times more.
-- **Inventory** — the thing you have to sell. Ours is the 12 placement slots.
+- **Inventory** — the thing you have to sell. Ours is the 12 placement slots. Because there are only 12, each one stays worth paying for.
 - **CAC** — Customer Acquisition Cost. What it costs to get one customer.
 - **GMV** — Gross Merchandise Value. Everything customers paid, including the advocates' share. **Not our revenue** — never confuse the two in front of an investor.
 - **MRR** — Monthly Recurring Revenue. The placement money that arrives every month.
@@ -481,4 +451,8 @@ Terms you'll hear, in plain words.
 
 ---
 
-*Every figure in this document is derived from the live code — the fee split from `lib/money.ts`, the placement pricing from `lib/promotions.ts`. Change a price in the code and this file must be updated to match. Projections at 100 and 1,000 advocates are arithmetic, not results, and must always be described that way.*
+*Every figure in this document is derived from the live code — the fee split from `lib/money.ts`, the placement rate card from `lib/promotions.ts`, the first-consultation discount from `lib/offers.ts`.*
+
+*Change a price in the code and this file must be updated to match. Projections at 100 and 1,000 advocates are arithmetic, not results, and must always be described that way.*
+
+*A ₹2,999 three-year "founding placement" was built and then withdrawn before launch. Promotion is sold monthly only — do not quote the old figure.*

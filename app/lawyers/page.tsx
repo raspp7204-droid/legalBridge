@@ -6,8 +6,6 @@ import { FilterRail } from "@/components/filter-rail";
 import { FilterSheet } from "@/components/filter-sheet";
 import { EmptyState } from "@/components/empty-state";
 import { LiveStrip } from "@/components/live-strip";
-import { WelcomeOfferStrip } from "@/components/welcome-offer-card";
-import { welcomeEligible } from "@/lib/offer-state";
 import { lawyerCardSelect, EXPERIENCE_BANDS, SORTS } from "@/lib/lawyers";
 import { liftPromoted, isActivePromo } from "@/lib/promotions";
 import {
@@ -117,8 +115,6 @@ export default async function LawyersPage({
     />
   );
 
-  const offerEligible = await welcomeEligible();
-
   const activeCategory = categorySlugs.length
     ? categories.find((c) => c.slug === categorySlugs[0])?.name
     : null;
@@ -142,9 +138,6 @@ export default async function LawyersPage({
         shown before you book
       </p>
 
-      {/* The offer sits above the filters: whoever you pick from the list
-          below, the discount is already waiting at checkout. */}
-      {offerEligible && <WelcomeOfferStrip className="mt-7" />}
 
       <div className="mt-8 lg:hidden">
         <FilterSheet activeCount={activeFilterCount(sp)}>{rail}</FilterSheet>

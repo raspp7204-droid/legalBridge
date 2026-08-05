@@ -8,11 +8,8 @@ import {
   TIER_PRICE,
   TIER_LABEL,
   PROMO_INVENTORY,
-  PLACEMENT_PRICE,
-  PLACEMENT_YEARS,
   isActivePromo,
   monthlyRevenue,
-  placementRevenue,
 } from "@/lib/promotions";
 import { savePromotion, togglePromotion } from "./actions";
 
@@ -20,13 +17,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Promotions — LawNest" };
 
-const TIERS = [
-  "NONE",
-  "BASIC",
-  "FEATURED",
-  "SPOTLIGHT",
-  "PLACEMENT",
-] as const;
+const TIERS = ["NONE", "BASIC", "FEATURED", "SPOTLIGHT"] as const;
 
 function isoDate(d: Date | null) {
   return d ? d.toISOString().slice(0, 10) : "";
@@ -130,23 +121,6 @@ export default async function AdminPromotions() {
             <span className="text-muted"> /mo</span>
           </p>
         ))}
-        <p className="mono-label text-ink">
-          {TIER_LABEL.PLACEMENT}{" "}
-          <span className="font-mono-num text-accent">
-            {formatRupees(PLACEMENT_PRICE)}
-          </span>
-          <span className="text-muted">
-            {" "}
-            once · {PLACEMENT_YEARS} yrs
-          </span>
-        </p>
-        <p className="mono-label ml-auto text-muted">
-          Placements sold{" "}
-          <span className="font-mono-num text-ink">
-            {formatRupees(placementRevenue(advocates))}
-          </span>{" "}
-          one-time
-        </p>
       </div>
 
       {/* The table */}
@@ -230,17 +204,10 @@ export default async function AdminPromotions() {
                     />
                   </td>
 
-                  <td className="px-4 py-3">
-                    <p className="font-mono-num text-sm">
-                      {a.promotedTier === "NONE"
-                        ? "—"
-                        : formatRupees(TIER_PRICE[a.promotedTier])}
-                    </p>
-                    {a.promotedTier === "PLACEMENT" && (
-                      <p className="mono-label text-muted">
-                        amortised · {formatRupees(PLACEMENT_PRICE)} paid once
-                      </p>
-                    )}
+                  <td className="font-mono-num px-4 py-3 text-sm">
+                    {a.promotedTier === "NONE"
+                      ? "—"
+                      : formatRupees(TIER_PRICE[a.promotedTier])}
                   </td>
 
                   <td className="px-4 py-3">

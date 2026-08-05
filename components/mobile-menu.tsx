@@ -185,14 +185,14 @@ export function MobileMenu({
                     <div className="rounded-xl border border-rule bg-surface-2 p-3.5">
                       <p className="mono-label text-muted">For advocates</p>
                       <p className="mt-1.5 text-sm text-ink">
-                        Keep <strong className="font-medium">100%</strong> of
-                        every fee for your first year.
+                        Verified listing, paid consultations, and one dashboard
+                        for your chambers.
                       </p>
                       <Link
                         href="/for-advocates"
                         className="btn-primary mono-label mt-3 flex min-h-[44px] items-center justify-center rounded-full px-3"
                       >
-                        See the offer
+                        Join as an advocate
                       </Link>
                       <div className="mt-2 grid grid-cols-2 gap-2">
                         <Link

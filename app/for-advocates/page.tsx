@@ -10,16 +10,12 @@ import {
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { Engraving } from "@/components/engraving";
-import { AdvocateOfferBand } from "@/components/advocate-offer-band";
-import { PlacementOffer } from "@/components/placement-offer";
-import { Countdown } from "@/components/countdown";
 import { formatRupees, splitFee, TIER_FEE } from "@/lib/money";
 import {
   commissionSaved,
   FOUNDING_BASIS,
   FOUNDING_MONTHS,
   PLATFORM_PERCENT,
-  seatsLeft,
 } from "@/lib/offers";
 
 export const dynamic = "force-dynamic";
@@ -89,10 +85,6 @@ const FAQ = [
     "LawNest sets your tier during verification, based on years in practice and the courts you appear before. Every advocate in a tier charges the same fixed fee — that is the whole point of the price ladder, and it is why clients trust it.",
   ],
   [
-    "Is placement the same as buying a better rating?",
-    "No. Placement moves you to the top of a practice area a client has already filtered to, and the listing says PROMOTED when it does. It cannot put you in front of someone whose filters you do not match, it cannot touch your rating or your reviews, and it never overrides a client who has sorted by price or experience.",
-  ],
-  [
     "Do I have to be exclusive to LawNest?",
     "No. Your chamber practice is your own. LawNest is a channel, not a retainer.",
   ],
@@ -107,7 +99,7 @@ const FAQ = [
 ];
 
 export default async function ForAdvocatesPage() {
-  const [verifiedCount, courts, cities, placementsSold] = await Promise.all([
+  const [verifiedCount, courts, cities] = await Promise.all([
     db.lawyerProfile.count({ where: { status: "VERIFIED" } }),
     db.lawyerProfile.findMany({
       where: { status: "VERIFIED" },
@@ -119,23 +111,42 @@ export default async function ForAdvocatesPage() {
       select: { city: true },
       distinct: ["city"],
     }),
-    // Scarcity on the placement offer, counted the same way as the seats —
-    // off live rows, never a number someone typed.
-    db.lawyerProfile.count({
-      where: {
-        promoted: true,
-        promotedTier: "PLACEMENT",
-        OR: [{ promotedUntil: null }, { promotedUntil: { gt: new Date() } }],
-      },
-    }),
   ]);
-
-  // Scarcity off the live roster, not a number someone typed.
-  const seats = seatsLeft(verifiedCount);
 
   return (
     <main>
-      <AdvocateOfferBand seats={seats} variant="hero" />
+      {/* A plain hero, not an offer band. The page still has to introduce
+          itself now that the recruitment banner is gone. */}
+      <section className="container section">
+        <p className="mono-label text-muted">For advocates</p>
+        <h1 className="mt-5 max-w-[18ch] text-balance">
+          Consultations that are already{" "}
+          <span className="tone-accent">paid for</span>.
+        </h1>
+        <p className="mt-5 max-w-xl leading-relaxed text-slate">
+          A verified listing, clients who have already paid before they reach
+          your inbox, and one dashboard for the whole practice. Your Bar Council
+          enrolment is checked before you go live.
+        </p>
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <Link
+            href="/lawyer/sign-up"
+            className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
+          >
+            Join as an advocate
+            <ArrowRight className="size-4" strokeWidth={2.5} />
+          </Link>
+          <Link
+            href="/lawyer/sign-in"
+            className="btn-secondary inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium"
+          >
+            Advocate sign-in
+          </Link>
+        </div>
+        <p className="mono-label mt-6 text-muted">
+          Free to join · no card · Bar Council enrolment verified in 48 hours
+        </p>
+      </section>
 
       {/* The maths, in public — the client side gets a fee breakdown before
           booking, so the advocate side gets one before joining. */}
@@ -194,15 +205,6 @@ export default async function ForAdvocatesPage() {
           {formatRupees(FOUNDING_BASIS.fee)} · {formatRupees(commissionSaved())}{" "}
           waived across the year
         </p>
-      </section>
-
-      {/* Placement — the one thing on LawNest an advocate can actually buy.
-          It sits after the commission maths on purpose: the free year is the
-          reason to join, this is the reason to be found once you have. */}
-      <section className="border-y border-rule bg-paper-deep">
-        <div className="container section-tight">
-          <PlacementOffer taken={placementsSold} />
-        </div>
       </section>
 
       {/* What you get */}
@@ -283,10 +285,7 @@ export default async function ForAdvocatesPage() {
       <section className="container section-tight">
         <div className="card flex flex-wrap items-center justify-between gap-6 p-6 sm:p-9">
           <div className="max-w-lg">
-            <p className="mono-label text-accent">
-              {seats} founding seats left ·{" "}
-              <Countdown className="text-muted" />
-            </p>
+            <p className="mono-label text-muted">Ready when you are</p>
             <h2 className="mt-4 text-[1.75rem]">
               Your first year costs you nothing
             </h2>

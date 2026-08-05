@@ -5,13 +5,7 @@ import type { PromoTier } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 
-const TIERS: PromoTier[] = [
-  "NONE",
-  "BASIC",
-  "FEATURED",
-  "SPOTLIGHT",
-  "PLACEMENT",
-];
+const TIERS: PromoTier[] = ["NONE", "BASIC", "FEATURED", "SPOTLIGHT"];
 
 /** Every write here changes ranking on the client site immediately. */
 function revalidateListings() {

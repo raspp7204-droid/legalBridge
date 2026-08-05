@@ -15,7 +15,6 @@ const CLIENT_NAV = [
 const LAWYER_NAV = [
   { href: "/lawyer", label: "Dashboard" },
   { href: "/lawyer/inbox", label: "Inbox" },
-  { href: "/lawyer/placement", label: "Placement" },
   { href: "/lawyer/profile", label: "My profile" },
 ];
 
@@ -71,14 +70,13 @@ export async function SiteHeader() {
 
           {!signedIn && (
             <>
-            {/* Marketing before the auth wall: this used to point straight at
-                a sign-in form, so an advocate met the pitch only after
-                deciding to sign in. md: rather than lg: — tablets get it too. */}
+            {/* The advocate side needs a way in from the top of any page —
+                it points at the recruitment page, not straight at a form. */}
             <Link
               href="/for-advocates"
-              className="mono-label hidden rounded-full border border-accent/40 px-3 py-2 text-accent transition-colors hover:bg-accent-bg md:inline-block"
+              className="mono-label hidden rounded-full border border-rule px-3 py-2 text-slate transition-colors hover:border-accent/40 hover:text-ink md:inline-block"
             >
-              Advocates: free 1 year
+              For advocates
             </Link>
             {/* Under md the sheet carries every other action, so this is the
                 one visible control — filled, and sized to the 40px hamburger

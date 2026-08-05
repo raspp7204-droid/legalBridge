@@ -77,8 +77,9 @@ export default async function PayPage({
   const vpa = process.env.NEXT_PUBLIC_UPI_VPA ?? "founder@okhdfcbank";
   const payeeName = process.env.NEXT_PUBLIC_UPI_NAME ?? "LawNest";
 
-  /* Launch offer — 40% off a client's very first consultation. Eligibility is
-     re-checked in confirmPayment; this figure is only what the sheet shows. */
+  /* Launch offer — a percentage off a client's very first consultation, set by
+     WELCOME_RATE in lib/offers.ts. Eligibility is re-checked in confirmPayment;
+     this figure is only what the sheet shows. */
   const paidBookings = await db.booking.count({
     where: { clientId: client.id, paid: true },
   });
