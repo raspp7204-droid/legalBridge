@@ -20,9 +20,8 @@ import {
   SearchDemandChart,
   OnlineSwitchChart,
 } from "@/components/market-charts";
-import { PlacementStatusCard } from "@/components/placement-offer";
+import { SubscriptionStatusCard } from "@/components/subscription-offer";
 import { searchDemandSeries, onlineSwitchSeries, trend } from "@/lib/demand";
-import { isActivePromo, isPlacement } from "@/lib/promotions";
 import { formatRupees } from "@/lib/money";
 import { formatSlotFull, formatSlotTime, formatSlotDay } from "@/lib/lawyers";
 
@@ -619,12 +618,8 @@ export default async function LawyerDashboard() {
         </div>
 
         <div className="space-y-6">
-          {/* Placement — the offer, or the campaign if they took it */}
-          <PlacementStatusCard
-            active={isActivePromo(profile) && isPlacement(profile)}
-            until={profile.promotedUntil}
-            rank={profile.promotedRank}
-          />
+          {/* Subscription — the free year, and what happens after it */}
+          <SubscriptionStatusCard joinedAt={profile.user.createdAt} />
 
           {/* Payout summary */}
           <section className="card overflow-hidden">

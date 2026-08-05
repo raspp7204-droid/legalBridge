@@ -1,7 +1,9 @@
-import { PLATFORM_RATE, TIER_FEE } from "@/lib/money";
+
 
 /**
- * Launch campaigns — one on each side of the marketplace.
+ * The client-side launch campaign. The advocate side moved to
+ * lib/subscription.ts when the founding-year commission waiver was replaced by
+ * a waived first-year subscription — a different promise, so a different file.
  *
  * Same discipline as lib/rewards.ts: every figure a banner prints is computed
  * here, never typed into JSX, so a campaign changes in exactly one file.
@@ -16,12 +18,19 @@ import { PLATFORM_RATE, TIER_FEE } from "@/lib/money";
 
 /* ---- Client: first consultation ---- */
 
-export const WELCOME_RATE = 0.4;
+export const WELCOME_RATE = 0.1;
 export const WELCOME_CAP = 250;
 /** Shown on the banners so the offer feels claimable. Nothing has to be typed. */
-export const WELCOME_CODE = "FIRST40";
+export const WELCOME_CODE = "FIRST10";
 
-/** Rupees off a first consultation — 40%, never more than ₹250. */
+/**
+ * Rupees off a first consultation — 10%, never more than the cap.
+ *
+ * The cap sits far above anything the rate can now produce (10% of the ₹799
+ * top fee is ₹80), so it no longer binds. It stays because the rate is the
+ * thing that gets tuned, and a rate without a ceiling is how a discount
+ * escapes.
+ */
 export function welcomeDiscount(amount: number) {
   return Math.min(Math.round(amount * WELCOME_RATE), WELCOME_CAP);
 }
@@ -35,30 +44,6 @@ export function isFirstConsultation(paidBookings: number) {
 export function welcomePayable(amount: number) {
   return amount - welcomeDiscount(amount);
 }
-
-/* ---- Advocate: founding year ---- */
-
-/** Comfortably above the current roster — seats left is FOUNDING_SEATS minus
-    the advocates already verified, so a cohort smaller than the roster would
-    read as "1 seat left" forever. */
-export const FOUNDING_SEATS = 50;
-export const FOUNDING_MONTHS = 12;
-/** The volume the "worth ₹X" headline is quoted against. */
-export const FOUNDING_BASIS = { consultsPerMonth: 20, fee: TIER_FEE.HIGH };
-
-/**
- * Commission an advocate keeps across the founding year. Derived from
- * PLATFORM_RATE so the ad can never disagree with the fee card.
- */
-export function commissionSaved(
-  consultsPerMonth = FOUNDING_BASIS.consultsPerMonth,
-  fee = FOUNDING_BASIS.fee,
-) {
-  return Math.round(consultsPerMonth * FOUNDING_MONTHS * fee * PLATFORM_RATE);
-}
-
-/** Percent of every fee LawNest normally takes — for the "20% → 0%" line. */
-export const PLATFORM_PERCENT = Math.round(PLATFORM_RATE * 100);
 
 /* ---- Announcement strip ---- */
 
@@ -86,15 +71,6 @@ export const CAMPAIGN_END_LABEL = new Intl.DateTimeFormat("en-IN", {
   month: "long",
   timeZone: "Asia/Kolkata",
 }).format(new Date(CAMPAIGN_ENDS));
-
-/**
- * Seats left in the founding cohort. Counted off the live advocate roster, so
- * scarcity is a real number that moves when someone joins — never a random
- * one that changes on every render.
- */
-export function seatsLeft(claimed: number) {
-  return Math.max(1, FOUNDING_SEATS - claimed);
-}
 
 export type TimeLeft = {
   days: number;

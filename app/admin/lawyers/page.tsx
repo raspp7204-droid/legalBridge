@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Pencil } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { formatRupees } from "@/lib/money";
@@ -29,20 +30,28 @@ export default async function AdminLawyers() {
       </h1>
       <p className="mt-3 text-muted">{lawyers.length} on the platform</p>
 
+
       <div className="card mt-8 overflow-x-auto">
         <table className="w-full min-w-[720px] text-sm">
           <thead>
             <tr className="border-b border-rule text-left">
-              {["Advocate", "City", "Court", "BCI", "Tier", "Fee", "Status"].map(
-                (h) => (
-                  <th
-                    key={h}
-                    className="mono-label px-4 py-3 font-normal text-muted"
-                  >
-                    {h}
-                  </th>
-                ),
-              )}
+              {[
+                "Advocate",
+                "City",
+                "Court",
+                "BCI",
+                "Tier",
+                "Fee",
+                "Status",
+                "",
+              ].map((h, i) => (
+                <th
+                  key={h || i}
+                  className="mono-label px-4 py-3 font-normal text-muted"
+                >
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -78,6 +87,15 @@ export default async function AdminLawyers() {
                   >
                     {l.status}
                   </span>
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <Link
+                    href={`/admin/lawyers/${l.id}`}
+                    className="mono-label inline-flex items-center gap-1.5 rounded-full border border-rule px-3 py-1.5 transition-colors hover:border-accent/40 hover:text-accent"
+                  >
+                    <Pencil className="size-3" strokeWidth={2.5} />
+                    Edit
+                  </Link>
                 </td>
               </tr>
             ))}

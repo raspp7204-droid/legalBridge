@@ -11,6 +11,7 @@ import type { FeedbackKind } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { EmptyState } from "@/components/empty-state";
+import { ActionButton } from "@/components/action-button";
 import { toggleHandled } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -167,23 +168,13 @@ export default async function AdminFeedback() {
 
                   <form action={toggleHandled} className="shrink-0">
                     <input type="hidden" name="id" value={r.id} />
-                    <button
-                      type="submit"
-                      className={`mono-label inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-colors ${
-                        r.handled
-                          ? "border border-rule text-muted hover:text-ink"
-                          : "border border-rule hover:border-accent/40 hover:text-accent"
-                      }`}
-                    >
-                      {r.handled ? (
-                        <>
-                          <Check className="size-3.5" strokeWidth={3} />
-                          Read
-                        </>
-                      ) : (
-                        "Mark read"
-                      )}
-                    </button>
+                    <ActionButton
+                      label={r.handled ? "Read" : "Mark read"}
+                      pendingLabel={r.handled ? "Reopening…" : "Marking…"}
+                      icon={r.handled ? <Check className="size-3.5" strokeWidth={3} /> : undefined}
+                      variant="quiet"
+                      size="sm"
+                    />
                   </form>
                 </div>
               </li>

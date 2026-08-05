@@ -1,11 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import type { Tier } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { TIER_FEE } from "@/lib/money";
 import { ensureUpcomingSlots } from "@/lib/slots";
+import { withFlash } from "@/lib/flash";
 
 /** Approve → VERIFIED at the chosen tier, with the fee that tier implies. */
 export async function approveLawyer(formData: FormData) {
@@ -28,6 +30,7 @@ export async function approveLawyer(formData: FormData) {
   revalidatePath("/lawyers");
   revalidatePath("/categories");
   revalidatePath("/lawyer");
+  redirect(withFlash("/admin/verification", "advocate-approved"));
 }
 
 export async function rejectLawyer(formData: FormData) {
@@ -43,4 +46,5 @@ export async function rejectLawyer(formData: FormData) {
   revalidatePath("/admin/verification");
   revalidatePath("/admin");
   revalidatePath("/lawyers");
+  redirect(withFlash("/admin/verification", "advocate-rejected"));
 }

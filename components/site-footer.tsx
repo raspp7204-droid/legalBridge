@@ -48,7 +48,7 @@ const COLUMNS = [
   {
     title: "For advocates",
     links: [
-      { href: "/for-advocates", label: "Join free for 1 year" },
+      { href: "/for-advocates", label: "Join as an advocate" },
       { href: "/lawyer/sign-in", label: "Advocate sign-in" },
       { href: "/lawyer", label: "Advocate dashboard" },
       { href: "/lawyer/inbox", label: "Consultation inbox" },
@@ -85,7 +85,6 @@ const LAWYER_COLUMNS = [
     links: [
       { href: "/lawyer", label: "Payouts & balance" },
       { href: "/lawyer", label: "Consultation history" },
-      { href: "/lawyer/placement", label: "Placement" },
     ],
   },
   {

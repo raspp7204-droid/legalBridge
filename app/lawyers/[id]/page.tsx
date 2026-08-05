@@ -69,6 +69,7 @@ export default async function LawyerProfilePage({
   // Reachable right now? Online, verified, and not mid-consultation.
   const instant = await isInstantAvailable(lawyer);
   const instantAt = instant ? nextInstantStart(now) : null;
+
   const offerEligible = await welcomeEligible();
 
   return (

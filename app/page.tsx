@@ -12,15 +12,13 @@ import { db } from "@/lib/db";
 import { blockLawyers } from "@/lib/auth";
 import { Starfield } from "@/components/starfield";
 import { Engraving } from "@/components/engraving";
+import { SubscriptionBand } from "@/components/subscription-offer";
+import { WelcomeOfferBand } from "@/components/welcome-offer-card";
+import { welcomeEligible } from "@/lib/offer-state";
 import { HeroBackdrop } from "@/components/hero-backdrop";
 import { AskAiButton } from "@/components/ask-ai-button";
 import { CategoryTile } from "@/components/category-tile";
 import { LawyerCard, LawyerCardCompact } from "@/components/lawyer-card";
-import { RewardsBand } from "@/components/rewards-band";
-import { WelcomeOfferBand } from "@/components/welcome-offer-card";
-import { AdvocateOfferBand } from "@/components/advocate-offer-band";
-import { welcomeEligible } from "@/lib/offer-state";
-import { seatsLeft } from "@/lib/offers";
 import { lawyerCardSelect } from "@/lib/lawyers";
 import { formatRupees, TIER_FEE } from "@/lib/money";
 
@@ -381,10 +379,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* The launch offer, then the loyalty loop it feeds: half off to get
-          you here, points to bring you back. Hidden once it has been used. */}
+      {/* The launch offer. Hidden once it has been used. */}
       {offerEligible && <WelcomeOfferBand />}
-      <RewardsBand />
 
       {/* Online now — ranked on rating and availability, never on payment */}
       <section className="container section">
@@ -450,9 +446,8 @@ export default async function Home() {
       </section>
 
       {/* Recruitment. After the client social proof, where it cannot compete
-          with the booking funnel above it, and where it gives the page a hard
-          stop before the press logos. */}
-      <AdvocateOfferBand seats={seatsLeft(verifiedCount)} />
+          with the booking funnel above it. */}
+      <SubscriptionBand />
 
       {/* Press row */}
       <section className="relative overflow-hidden pb-8">

@@ -1,17 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import type { PromoTier } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { withFlash } from "@/lib/flash";
 
-const TIERS: PromoTier[] = [
-  "NONE",
-  "BASIC",
-  "FEATURED",
-  "SPOTLIGHT",
-  "PLACEMENT",
-];
+const TIERS: PromoTier[] = ["NONE", "BASIC", "FEATURED", "SPOTLIGHT"];
 
 /** Every write here changes ranking on the client site immediately. */
 function revalidateListings() {
@@ -49,6 +45,7 @@ export async function savePromotion(formData: FormData) {
   });
 
   revalidateListings();
+  redirect(withFlash("/admin/promotions", "promo-saved"));
 }
 
 /** One-click on/off, keeping the tier the advocate is signed up for. */
@@ -83,4 +80,5 @@ export async function togglePromotion(formData: FormData) {
   });
 
   revalidateListings();
+  redirect(withFlash("/admin/promotions", turningOn ? "promo-on" : "promo-off"));
 }
