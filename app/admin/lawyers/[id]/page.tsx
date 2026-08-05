@@ -7,6 +7,7 @@ import { requireAdmin } from "@/lib/auth";
 import { SaveButton } from "@/components/save-button";
 import { formatRupees, TIER_FEE } from "@/lib/money";
 import { AVATAR_PRESETS, ALLOWED_AVATAR_HOSTS } from "@/lib/avatars";
+import { AvatarUpload } from "@/components/avatar-upload";
 import { updateAvatar, updateLawyer, deleteLawyer } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -79,10 +80,10 @@ export default async function AdminEditLawyer({
         <p className="mono-label mt-6 flex items-start gap-2 rounded-lg border border-danger/40 bg-surface px-4 py-3 text-danger">
           <TriangleAlert className="mt-0.5 size-3.5 shrink-0" strokeWidth={2.5} />
           <span>
-            That image host is not allowed, so the photo was not changed. Use
-            one of {ALLOWED_AVATAR_HOSTS.join(", ")} — any other host is
-            refused by the image optimiser and would break the advocate&apos;s
-            page.
+            That photo was not saved. Uploads must be a JPEG, PNG or WebP, and
+            a pasted URL has to come from {ALLOWED_AVATAR_HOSTS.join(", ")} —
+            any other host is refused by the image optimiser and would break
+            the advocate&apos;s page.
           </span>
         </p>
       )}
@@ -90,15 +91,12 @@ export default async function AdminEditLawyer({
       {/* ---- Photo ---- */}
       <section className="card mt-8 p-5 sm:p-6">
         <h2 className="text-xl">Photo</h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate">
-          Pick one below, or paste a URL. There is no file upload — the photo is
-          a link, and only images from{" "}
-          {ALLOWED_AVATAR_HOSTS.map((h) => (
-            <span key={h} className="font-mono-num">
-              {h}{" "}
-            </span>
-          ))}
-          are accepted.
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate">
+          Upload a file, pick one of the stock portraits, or paste a URL. An
+          uploaded photo is cropped square and resized in your browser before it
+          is saved, so it stays small. A pasted URL must come from{" "}
+          {ALLOWED_AVATAR_HOSTS.join(", ")} — any other host is refused by the
+          image optimiser.
         </p>
 
         <div className="mt-5 flex items-center gap-4 border-b border-rule pb-5">
@@ -112,13 +110,24 @@ export default async function AdminEditLawyer({
           <div className="min-w-0">
             <p className="mono-label text-muted">Currently</p>
             <p className="mt-1 truncate text-sm text-slate">
-              {lawyer.user.avatar}
+              {lawyer.user.avatar.startsWith("data:")
+                ? `Uploaded photo · ${Math.round(lawyer.user.avatar.length / 1024)}KB`
+                : lawyer.user.avatar}
             </p>
           </div>
         </div>
 
-        {/* Each preset is its own submit button — one click, no JS. */}
+        {/* Upload — the file is resized in the browser and stored inline. */}
         <form action={updateAvatar} className="mt-5">
+          <input type="hidden" name="id" value={lawyer.id} />
+          <p className="mono-label text-muted">Upload from this device</p>
+          <div className="mt-3">
+            <AvatarUpload />
+          </div>
+        </form>
+
+        {/* Each preset is its own submit button — one click, no JS. */}
+        <form action={updateAvatar} className="mt-6 border-t border-rule pt-5">
           <input type="hidden" name="id" value={lawyer.id} />
           <p className="mono-label text-muted">Choose a photo</p>
           <div className="mt-3 flex flex-wrap gap-2.5">
@@ -151,11 +160,16 @@ export default async function AdminEditLawyer({
           <input type="hidden" name="id" value={lawyer.id} />
           <label className="block">
             <span className="mono-label text-muted">Or paste an image URL</span>
+            {/* Only prefilled when the current photo is a link. An uploaded
+                one is a 20KB data URL and would fill the field with noise. */}
             <input
               name="avatar"
               type="url"
               required
-              defaultValue={lawyer.user.avatar}
+              defaultValue={
+                lawyer.user.avatar.startsWith("data:") ? "" : lawyer.user.avatar
+              }
+              placeholder="https://randomuser.me/api/portraits/men/32.jpg"
               className={field}
             />
           </label>
